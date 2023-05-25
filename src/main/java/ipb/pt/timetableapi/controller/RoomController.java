@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
+@CrossOrigin
 @RequestMapping("/rooms")
 public class RoomController {
 
