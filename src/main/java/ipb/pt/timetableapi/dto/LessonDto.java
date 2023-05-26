@@ -11,4 +11,6 @@ public class LessonDto {
     private String teacher;
     @NotEmpty(message = "Empty student group")
     private String studentGroup;
+    @NotEmpty(message = "Empty color")
+    private String color;
 }

@@ -16,6 +16,7 @@ public class Lesson {
     private String subject;
     private String teacher;
     private String studentGroup;
+    private String color;
 
     // Initialized/Changed by AI
     @ManyToOne
