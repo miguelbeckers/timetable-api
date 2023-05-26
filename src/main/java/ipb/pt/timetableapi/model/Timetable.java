@@ -12,6 +12,6 @@ import java.util.List;
 @NoArgsConstructor
 public class Timetable {
     private List<Timeslot> timeslots;
-    private List<Room> rooms;
+    private List<Classroom> classrooms;
     private List<Lesson> lessons;
 }

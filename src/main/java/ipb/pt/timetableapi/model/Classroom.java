@@ -12,7 +12,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Room {
+public class Classroom {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     public Long id;

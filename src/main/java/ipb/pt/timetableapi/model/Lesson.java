@@ -21,7 +21,7 @@ public class Lesson {
     @ManyToOne
     private Timeslot timeslot;
     @ManyToOne
-    private Room room;
+    private Classroom classroom;
 
     @Override
     public String toString() {
