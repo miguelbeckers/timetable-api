@@ -4,11 +4,14 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.optaplanner.core.api.domain.entity.PlanningEntity;
+import org.optaplanner.core.api.domain.variable.PlanningVariable;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
+@PlanningEntity
 public class Lesson {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -20,8 +23,10 @@ public class Lesson {
 
     // Initialized/Changed by AI
     @ManyToOne
+    @PlanningVariable(valueRangeProviderRefs = "timeslotRange")
     private Timeslot timeslot;
     @ManyToOne
+    @PlanningVariable(valueRangeProviderRefs = "classroomRange")
     private Classroom classroom;
 
     @Override

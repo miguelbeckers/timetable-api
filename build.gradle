@@ -22,6 +22,7 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	implementation 'org.optaplanner:optaplanner-core:9.38.0.Final'
 }
 
 tasks.named('test') {
