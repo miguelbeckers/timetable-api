@@ -21,7 +21,7 @@ public class Lesson {
     private String studentGroup;
     private String color;
 
-    // Initialized/Changed by AI
+    // Initialized/Changed during planning
     @ManyToOne
     @PlanningVariable(valueRangeProviderRefs = "timeslotRange")
     private Timeslot timeslot;
