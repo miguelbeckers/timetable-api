@@ -37,6 +37,7 @@ public class TimetableController {
     TimeslotService timeslotService;
 
 
+
     @PostMapping("/solve")
     public ResponseEntity<Object> solve() {
         Timetable problem = new Timetable(timeslotService.findAll(), classroomService.findAll(), lessonService.findAll());
