@@ -25,6 +25,7 @@ public class Lesson {
     @ManyToOne
     @PlanningVariable(valueRangeProviderRefs = "timeslotRange")
     private Timeslot timeslot;
+
     @ManyToOne
     @PlanningVariable(valueRangeProviderRefs = "classroomRange")
     private Classroom classroom;

@@ -1,17 +1,22 @@
 package ipb.pt.timetableapi.controller;
 
 import ipb.pt.timetableapi.model.Classroom;
-import ipb.pt.timetableapi.model.Timeslot;
+import ipb.pt.timetableapi.model.Lesson;
 import ipb.pt.timetableapi.model.Timetable;
-import jakarta.transaction.Transactional;
+import ipb.pt.timetableapi.service.ClassroomService;
+import ipb.pt.timetableapi.service.LessonService;
+import ipb.pt.timetableapi.service.TimeslotService;
+import org.optaplanner.core.api.solver.SolverJob;
 import org.optaplanner.core.api.solver.SolverManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 
 @Controller
@@ -19,37 +24,36 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/timetables")
 public class TimetableController {
 
-    private static final Long ID = 1L;
+    @Autowired
+    private SolverManager<Timetable, UUID> solverManager;
 
     @Autowired
-    private SolverManager<Timetable, Long> solverManager;
+    private ClassroomService classroomService;
 
-    @GetMapping("/hello")
-    public ResponseEntity<String> hello() {
-        return ResponseEntity.ok().body("hello timetables!");
-    }
+    @Autowired
+    LessonService lessonService;
 
-    @GetMapping
-    public ResponseEntity<Object> getTimetable() {
-        return ResponseEntity.ok(findById(ID));
-    }
+    @Autowired
+    TimeslotService timeslotService;
+
 
     @PostMapping("/solve")
-    public void solve() {
-        solverManager.solveAndListen(1L,
-                this::findById,
-                this::save);
-    }
+    public ResponseEntity<Object> solve() {
+        Timetable problem = new Timetable(timeslotService.findAll(), classroomService.findAll(), lessonService.findAll());
 
-    @Transactional
-    protected Timetable findById(Long id) {
-        return new Timetable(
-                Timeslot.listAll(),
-                Classroom.listAll(),
-                Lesson.listAll());
-    }
+        UUID problemId = UUID.randomUUID();
+        SolverJob<Timetable, UUID> solverJob = solverManager.solve(problemId, problem);
+        Timetable solution;
+        try {
+            solution = solverJob.getFinalBestSolution();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new IllegalStateException("Solving failed.", e);
+        }
 
-    protected void save(Timetable timetable) {
+        for(Lesson lesson: solution.getLessons()) {
+            lessonService.update(lesson);
+        }
 
+        return ResponseEntity.ok().body(solution);
     }
 }

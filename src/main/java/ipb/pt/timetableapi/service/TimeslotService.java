@@ -12,25 +12,25 @@ import java.util.Optional;
 public class TimeslotService {
 
     @Autowired
-    private TimeslotRepository timeSlotRepository;
+    private TimeslotRepository timeslotRepository;
 
     public List<Timeslot> findAll(){
-        return timeSlotRepository.findAll();
+        return timeslotRepository.findAll();
     }
 
     public Optional<Timeslot> findById(Long id){
-        return timeSlotRepository.findById(id);
+        return timeslotRepository.findById(id);
     }
 
-    public Timeslot create(Timeslot timeSlot){
-        return timeSlotRepository.save(timeSlot);
+    public Timeslot create(Timeslot timeslot){
+        return timeslotRepository.save(timeslot);
     }
 
-    public Timeslot update(Timeslot timeSlot){
-        return timeSlotRepository.save(timeSlot);
+    public Timeslot update(Timeslot timeslot){
+        return timeslotRepository.save(timeslot);
     }
 
-    public void delete(Timeslot timeSlot){
-        timeSlotRepository.delete(timeSlot);
+    public void delete(Timeslot timeslot){
+        timeslotRepository.delete(timeslot);
     }
 }
