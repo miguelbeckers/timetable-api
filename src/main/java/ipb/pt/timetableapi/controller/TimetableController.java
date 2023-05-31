@@ -1,6 +1,7 @@
 package ipb.pt.timetableapi.controller;
 
 import ipb.pt.timetableapi.model.Classroom;
+import ipb.pt.timetableapi.model.Lesson;
 import ipb.pt.timetableapi.model.Timeslot;
 import ipb.pt.timetableapi.model.Timetable;
 import jakarta.transaction.Transactional;
@@ -48,8 +49,12 @@ public class TimetableController {
                 Classroom.listAll(),
                 Lesson.listAll());
     }
-
+    @Transactional
     protected void save(Timetable timetable) {
-
+        for (Lesson lesson : timetable.getLessons()) {
+            Lesson attachedLesson  = Lesson.findById(lesson.getId()):
+            attachedLesson.setTimeslot(lesson.getTimeslot());
+            attachedLesson.setClassroom(lesson.getClassroom());
+        }
     }
 }
