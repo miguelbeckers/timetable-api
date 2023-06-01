@@ -12,10 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
@@ -27,16 +25,16 @@ public class TimetableController {
     private static final UUID problemId = UUID.randomUUID();
 
     @Autowired
-    public SolverManager<Timetable, UUID> solverManager;
+    private SolverManager<Timetable, UUID> solverManager;
 
     @Autowired
-    public ClassroomService classroomService;
+    private ClassroomService classroomService;
 
     @Autowired
-    public LessonService lessonService;
+    private LessonService lessonService;
 
     @Autowired
-    public TimeslotService timeslotService;
+    private TimeslotService timeslotService;
 
     @PostMapping("/solve")
     public ResponseEntity<Object> solve() {

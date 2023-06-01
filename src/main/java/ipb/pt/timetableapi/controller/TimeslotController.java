@@ -21,7 +21,7 @@ import java.util.Optional;
 public class TimeslotController {
 
     @Autowired
-    public TimeslotService timeslotService;
+    private TimeslotService timeslotService;
 
     @GetMapping("/hello")
     public ResponseEntity<String> hello() {
