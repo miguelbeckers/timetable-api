@@ -18,7 +18,7 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
                 teacherConflict(constraintFactory),
                 studentGroupConflict(constraintFactory),
                 // Soft constraints
-//                teacherTimeEfficiency(constraintFactory)
+                teacherTimeEfficiency(constraintFactory)
         };
     }
 
@@ -53,15 +53,17 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
                 .asConstraint("Student group conflict");
     }
 
-//    private Constraint teacherTimeEfficiency(ConstraintFactory constraintFactory) {
-//        return constraintFactory
-//                .forEach(Lesson.class)
-//                .join(Lesson.class,
-//                        Joiners.equal(Lesson::getTeacher))
-//                .filter((lesson1, lesson2) => {
-//            Duration between = Duration.between(lesson1.getTimeslot)
-//        })
-//                .reward(HardSoftScore.ONE_SOFT)
-//                .asConstraint("Teacher time efficiency");
-//    }
+    private Constraint teacherTimeEfficiency(ConstraintFactory constraintFactory) {
+        return constraintFactory
+                .forEach(Lesson.class)
+                .join(Lesson.class,
+                        Joiners.equal(Lesson::getTeacher))
+                .filter((lesson1, lesson2) -> {
+            Duration between = Duration.between(lesson1.getTimeslot().getEndTime(),
+                    lesson2.getTimeslot().getStartTime());
+            return !between.isNegative() && between.compareTo(Duration.ofMinutes(30)) <= 0;
+        })
+                .reward(HardSoftScore.ONE_SOFT)
+                .asConstraint("Teacher time efficiency");
+    }
 }

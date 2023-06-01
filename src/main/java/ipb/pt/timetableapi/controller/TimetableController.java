@@ -1,6 +1,5 @@
 package ipb.pt.timetableapi.controller;
 
-import ipb.pt.timetableapi.model.Classroom;
 import ipb.pt.timetableapi.model.Lesson;
 import ipb.pt.timetableapi.model.Timetable;
 import ipb.pt.timetableapi.service.ClassroomService;
@@ -13,8 +12,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
@@ -23,26 +24,24 @@ import java.util.concurrent.ExecutionException;
 @CrossOrigin
 @RequestMapping("/timetables")
 public class TimetableController {
+    private static final UUID problemId = UUID.randomUUID();
 
     @Autowired
-    private SolverManager<Timetable, UUID> solverManager;
+    public SolverManager<Timetable, UUID> solverManager;
 
     @Autowired
-    private ClassroomService classroomService;
+    public ClassroomService classroomService;
 
     @Autowired
-    LessonService lessonService;
+    public LessonService lessonService;
 
     @Autowired
-    TimeslotService timeslotService;
-
-
+    public TimeslotService timeslotService;
 
     @PostMapping("/solve")
     public ResponseEntity<Object> solve() {
         Timetable problem = new Timetable(timeslotService.findAll(), classroomService.findAll(), lessonService.findAll());
 
-        UUID problemId = UUID.randomUUID();
         SolverJob<Timetable, UUID> solverJob = solverManager.solve(problemId, problem);
         Timetable solution;
         try {
@@ -56,5 +55,11 @@ public class TimetableController {
         }
 
         return ResponseEntity.ok().body(solution);
+    }
+
+    @PostMapping("/stop")
+    public ResponseEntity<Object> stop() {
+        solverManager.terminateEarly(problemId);
+        return ResponseEntity.ok().build();
     }
 }

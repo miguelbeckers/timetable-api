@@ -83,4 +83,16 @@ public class LessonController {
         lessonService.delete(areaOptional.get());
         return ResponseEntity.ok().build();
     }
+
+    @PutMapping("/reset")
+    public ResponseEntity<List<Lesson>> reset() {
+        List<Lesson> lessons = lessonService.findAll();
+        List<Lesson> updated = new ArrayList<>();
+        for(Lesson lesson: lessons) {
+            lesson.setTimeslot(null);
+            lesson.setClassroom(null);
+            updated.add(lessonService.update(lesson));
+        }
+        return ResponseEntity.ok().body(updated);
+    }
 }
