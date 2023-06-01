@@ -7,46 +7,61 @@ import org.optaplanner.core.api.score.stream.ConstraintFactory;
 import org.optaplanner.core.api.score.stream.ConstraintProvider;
 import org.optaplanner.core.api.score.stream.Joiners;
 
+import java.time.Duration;
+
 public class TimeTableConstraintProvider implements ConstraintProvider {
     @Override
     public Constraint[] defineConstraints(ConstraintFactory constraintFactory) {
-        return new Constraint[] {
+        return new Constraint[]{
                 // Hard constraints
-//                roomConflict(constraintFactory),
-//                teacherConflict(constraintFactory),
-//                studentGroupConflict(constraintFactory),
+                roomConflict(constraintFactory),
+                teacherConflict(constraintFactory),
+                studentGroupConflict(constraintFactory),
                 // Soft constraints
+//                teacherTimeEfficiency(constraintFactory)
         };
     }
 
-//    private Constraint roomConflict(ConstraintFactory constraintFactory) {
+    private Constraint roomConflict(ConstraintFactory constraintFactory) {
+        return constraintFactory
+                .forEach(Lesson.class)
+                .join(Lesson.class,
+                        Joiners.equal(Lesson::getTimeslot),
+                        Joiners.equal(Lesson::getClassroom),
+                        Joiners.lessThan(Lesson::getId))
+                .penalize(HardSoftScore.ONE_HARD)
+                .asConstraint("Room conflict");
+    }
+
+    private Constraint teacherConflict(ConstraintFactory constraintFactory) {
+        return constraintFactory.forEach(Lesson.class)
+                .join(Lesson.class,
+                        Joiners.equal(Lesson::getTimeslot),
+                        Joiners.equal(Lesson::getTeacher),
+                        Joiners.lessThan(Lesson::getId))
+                .penalize(HardSoftScore.ONE_HARD)
+                .asConstraint("Teacher conflict");
+    }
+
+    private Constraint studentGroupConflict(ConstraintFactory constraintFactory) {
+        return constraintFactory.forEach(Lesson.class)
+                .join(Lesson.class,
+                        Joiners.equal(Lesson::getTimeslot),
+                        Joiners.equal(Lesson::getStudentGroup),
+                        Joiners.lessThan(Lesson::getId))
+                .penalize(HardSoftScore.ONE_HARD)
+                .asConstraint("Student group conflict");
+    }
+
+//    private Constraint teacherTimeEfficiency(ConstraintFactory constraintFactory) {
 //        return constraintFactory
 //                .forEach(Lesson.class)
 //                .join(Lesson.class,
-//                        Joiners.equal(Lesson::getTimeslot),
-//                        Joiners.equal(Lesson::getClassroom),
-//                        Joiners.lessThan(Lesson::getId))
-//                .penalize(HardSoftScore.ONE_HARD)
-//                .asConstraint("Room conflict");
-//    }
-//
-//    private Constraint teacherConflict(ConstraintFactory constraintFactory) {
-//        return constraintFactory.forEach(Lesson.class)
-//                .join(Lesson.class,
-//                        Joiners.equal(Lesson::getTimeslot),
-//                        Joiners.equal(Lesson::getTeacher),
-//                        Joiners.lessThan(Lesson::getId))
-//                .penalize(HardSoftScore.ONE_HARD)
-//                .asConstraint("Teacher conflict");
-//    }
-//
-//    private Constraint studentGroupConflict(ConstraintFactory constraintFactory) {
-//        return constraintFactory.forEach(Lesson.class)
-//                .join(Lesson.class,
-//                        Joiners.equal(Lesson::getTimeslot),
-//                        Joiners.equal(Lesson::getStudentGroup),
-//                        Joiners.lessThan(Lesson::getId))
-//                .penalize(HardSoftScore.ONE_HARD)
-//                .asConstraint("Student group conflict");
+//                        Joiners.equal(Lesson::getTeacher))
+//                .filter((lesson1, lesson2) => {
+//            Duration between = Duration.between(lesson1.getTimeslot)
+//        })
+//                .reward(HardSoftScore.ONE_SOFT)
+//                .asConstraint("Teacher time efficiency");
 //    }
 }
