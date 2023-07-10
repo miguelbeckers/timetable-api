@@ -20,6 +20,7 @@ public class Lesson {
     private String teacher;
     private String studentGroup;
     private String color;
+    private Integer groupSize;
 
     // Initialized/Changed during planning
     @ManyToOne

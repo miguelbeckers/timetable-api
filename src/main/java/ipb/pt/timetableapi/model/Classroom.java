@@ -17,6 +17,7 @@ public class Classroom {
     @GeneratedValue(strategy = GenerationType.AUTO)
     public Long id;
     private String name;
+    private Integer capacity;
 
     @Override
     public String toString() {

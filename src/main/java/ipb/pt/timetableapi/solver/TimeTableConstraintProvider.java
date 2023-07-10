@@ -17,6 +17,7 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
                 roomConflict(constraintFactory),
                 teacherConflict(constraintFactory),
                 studentGroupConflict(constraintFactory),
+                groupSizeAndCapacityConflict(constraintFactory),
                 // Soft constraints
                 teacherTimeEfficiency(constraintFactory)
         };
@@ -59,11 +60,18 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
                 .join(Lesson.class,
                         Joiners.equal(Lesson::getTeacher))
                 .filter((lesson1, lesson2) -> {
-            Duration between = Duration.between(lesson1.getTimeslot().getEndTime(),
-                    lesson2.getTimeslot().getStartTime());
-            return !between.isNegative() && between.compareTo(Duration.ofMinutes(30)) <= 0;
-        })
+                    Duration between = Duration.between(lesson1.getTimeslot().getEndTime(),
+                            lesson2.getTimeslot().getStartTime());
+                    return !between.isNegative() && between.compareTo(Duration.ofMinutes(30)) <= 0;
+                })
                 .reward(HardSoftScore.ONE_SOFT)
                 .asConstraint("Teacher time efficiency");
+    }
+
+    private Constraint groupSizeAndCapacityConflict(ConstraintFactory constraintFactory) {
+        return constraintFactory.forEach(Lesson.class)
+                .filter(lesson -> lesson.getClassroom() != null && lesson.getGroupSize() > lesson.getClassroom().getCapacity())
+                .penalize(HardSoftScore.ONE_HARD)
+                .asConstraint("Group size and capacity conflict");
     }
 }
