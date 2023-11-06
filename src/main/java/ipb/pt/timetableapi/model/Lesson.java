@@ -17,7 +17,8 @@ public class Lesson {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String subject;
-    private String teacher;
+    @ManyToOne
+    private Professor professor;
     private String studentGroup;
     private String color;
     private Integer groupSize;

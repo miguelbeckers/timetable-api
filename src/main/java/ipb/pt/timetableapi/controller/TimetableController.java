@@ -42,6 +42,7 @@ public class TimetableController {
 
         SolverJob<Timetable, UUID> solverJob = solverManager.solve(problemId, problem);
         Timetable solution;
+
         try {
             solution = solverJob.getFinalBestSolution();
         } catch (InterruptedException | ExecutionException e) {
