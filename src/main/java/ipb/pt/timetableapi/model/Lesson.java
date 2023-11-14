@@ -32,6 +32,14 @@ public class Lesson {
     @PlanningVariable(valueRangeProviderRefs = "classroomRange")
     private Classroom classroom;
 
+    public Lesson(String subject, Professor professor, String studentGroup, String color, Integer groupSize) {
+        this.subject = subject;
+        this.professor = professor;
+        this.studentGroup = studentGroup;
+        this.color = color;
+        this.groupSize = groupSize;
+    }
+
     @Override
     public String toString() {
         return subject + " [" + id + "]";

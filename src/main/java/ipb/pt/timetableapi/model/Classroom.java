@@ -19,8 +19,13 @@ public class Classroom {
     private String name;
     private Integer capacity;
 
+    public Classroom(String name, Integer capacity) {
+        this.name = name;
+        this.capacity = capacity;
+    }
+
     @Override
     public String toString() {
-        return name;
+        return name + " [" + id + "]";
     }
 }

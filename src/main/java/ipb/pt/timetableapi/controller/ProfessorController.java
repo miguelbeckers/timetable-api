@@ -5,10 +5,7 @@ import ipb.pt.timetableapi.service.ProfessorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
@@ -19,22 +16,30 @@ public class ProfessorController {
     @Autowired
     private ProfessorService professorService;
 
-    //findAll
     @GetMapping
     public ResponseEntity<Object> getAll() {
         return ResponseEntity.ok(professorService.findAll());
     }
 
-    //findById
     @GetMapping("{id}")
     public ResponseEntity<Object> getById(@PathVariable Long id) {
         Optional<Professor> optional = Optional.ofNullable(professorService.findById(id));
         return optional.<ResponseEntity<Object>>map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    //create
+    @PostMapping
+    public ResponseEntity<Object> create(@RequestBody Professor professor) {
+        return ResponseEntity.ok(professorService.create(professor));
+    }
 
-    //update
-    //delete
+    @PutMapping
+    public ResponseEntity<Object> update(@RequestBody Professor professor) {
+        return ResponseEntity.ok(professorService.update(professor));
+    }
 
+    @DeleteMapping
+    public ResponseEntity<Object> delete(@RequestBody Professor professor) {
+        professorService.delete(professor);
+        return ResponseEntity.ok().build();
+    }
 }
