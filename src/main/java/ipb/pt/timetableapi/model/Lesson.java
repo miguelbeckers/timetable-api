@@ -4,12 +4,14 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.optaplanner.core.api.domain.entity.PlanningEntity;
 import org.optaplanner.core.api.domain.variable.PlanningVariable;
 
 @Entity
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 @PlanningEntity
 public class Lesson {
@@ -31,17 +33,4 @@ public class Lesson {
     @ManyToOne
     @PlanningVariable(valueRangeProviderRefs = "classroomRange")
     private Classroom classroom;
-
-    public Lesson(String subject, Professor professor, String studentGroup, String color, Integer groupSize) {
-        this.subject = subject;
-        this.professor = professor;
-        this.studentGroup = studentGroup;
-        this.color = color;
-        this.groupSize = groupSize;
-    }
-
-    @Override
-    public String toString() {
-        return subject + " [" + id + "]";
-    }
 }

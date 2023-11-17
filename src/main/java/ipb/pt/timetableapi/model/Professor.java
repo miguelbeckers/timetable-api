@@ -7,24 +7,16 @@ import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 public class Professor {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     public Long id;
-
     private String name;
-
-    public Professor(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public String toString() {
-        return name + " [" + id + "]";
-    }
 }

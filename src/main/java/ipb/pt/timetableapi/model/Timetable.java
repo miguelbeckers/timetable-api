@@ -12,7 +12,6 @@ import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
 
 import java.util.List;
 
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -28,10 +27,4 @@ public class Timetable {
     private List<Lesson> lessons;
     @PlanningScore
     private HardSoftScore score;
-
-    public Timetable(List<Timeslot> timeslots, List<Classroom> classrooms, List<Lesson> lessons) {
-        this.timeslots = timeslots;
-        this.classrooms = classrooms;
-        this.lessons = lessons;
-    }
 }

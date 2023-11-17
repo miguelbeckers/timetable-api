@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
@@ -14,6 +15,7 @@ import java.time.LocalTime;
 @Entity
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 public class Timeslot {
     @Id
@@ -22,15 +24,4 @@ public class Timeslot {
     private DayOfWeek dayOfWeek;
     private LocalTime startTime;
     private LocalTime endTime;
-
-    public Timeslot(DayOfWeek dayOfWeek, LocalTime startTime, LocalTime endTime) {
-        this.dayOfWeek = dayOfWeek;
-        this.startTime = startTime;
-        this.endTime = endTime;
-    }
-
-    @Override
-    public String toString() {
-        return dayOfWeek + " - " + startTime;
-    }
 }
