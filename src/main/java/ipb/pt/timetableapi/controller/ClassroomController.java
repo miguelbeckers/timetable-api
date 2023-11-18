@@ -36,7 +36,7 @@ public class ClassroomController {
     @GetMapping("{id}")
     public ResponseEntity<Object> getById(@PathVariable Long id) {
         Optional<Classroom> optional = classroomService.findById(id);
-        return optional.isPresent() ? ResponseEntity.ok(optional.get()) : ResponseEntity.notFound().build();
+        return optional.<ResponseEntity<Object>>map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping()
