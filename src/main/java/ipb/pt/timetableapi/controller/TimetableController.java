@@ -36,29 +36,29 @@ public class TimetableController {
     @Autowired
     private TimeslotService timeslotService;
 
-//    @PostMapping("/solve")
-//    public ResponseEntity<Object> solve() {
-//        Timetable problem = new Timetable(timeslotService.findAll(), classroomService.findAll(), lessonService.findAll());
-//
-//        SolverJob<Timetable, UUID> solverJob = solverManager.solve(problemId, problem);
-//        Timetable solution;
-//
-//        try {
-//            solution = solverJob.getFinalBestSolution();
-//        } catch (InterruptedException | ExecutionException e) {
-//            throw new IllegalStateException("Solving failed.", e);
-//        }
-//
-//        for(Lesson lesson: solution.getLessons()) {
-//            lessonService.update(lesson);
-//        }
-//
-//        return ResponseEntity.ok().body(solution);
-//    }
-//
-//    @PostMapping("/stop")
-//    public ResponseEntity<Object> stop() {
-//        solverManager.terminateEarly(problemId);
-//        return ResponseEntity.ok().build();
-//    }
+    @PostMapping("/solve")
+    public ResponseEntity<Object> solve() {
+        Timetable problem = new Timetable(timeslotService.findAll(), classroomService.findAll(), lessonService.findAll());
+
+        SolverJob<Timetable, UUID> solverJob = solverManager.solve(problemId, problem);
+        Timetable solution;
+
+        try {
+            solution = solverJob.getFinalBestSolution();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new IllegalStateException("Solving failed.", e);
+        }
+
+        for(Lesson lesson: solution.getLessons()) {
+            lessonService.update(lesson);
+        }
+
+        return ResponseEntity.ok().body(solution);
+    }
+
+    @PostMapping("/stop")
+    public ResponseEntity<Object> stop() {
+        solverManager.terminateEarly(problemId);
+        return ResponseEntity.ok().build();
+    }
 }
