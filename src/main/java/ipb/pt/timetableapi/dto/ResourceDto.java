@@ -1,12 +1,10 @@
 package ipb.pt.timetableapi.dto;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
 @Data
 public class ResourceDto {
-    @NotNull(message = "Null quantity")
-    private Integer quantity;
-    @NotNull(message = "Null resourceType")
-    private Long resourceTypeId;
+    @NotEmpty(message = "Empty name")
+    private String name;
 }

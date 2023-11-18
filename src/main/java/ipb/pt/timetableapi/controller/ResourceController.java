@@ -17,14 +17,14 @@ import java.util.Optional;
 
 @Controller
 @CrossOrigin
-@RequestMapping("/resources")
+@RequestMapping("/resource-types")
 public class ResourceController {
     @Autowired
     private ResourceService resourceService;
 
     @GetMapping("/hello")
     public ResponseEntity<String> hello() {
-        return ResponseEntity.ok().body("hello resources!");
+        return ResponseEntity.ok().body("hello resourceTypes!");
     }
 
     @GetMapping

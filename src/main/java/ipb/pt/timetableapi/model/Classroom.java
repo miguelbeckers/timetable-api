@@ -23,5 +23,5 @@ public class Classroom {
     private List<Timeslot> unavailability = new ArrayList<>();
     @OneToMany
     @JsonIgnore
-    private List<Resource> resources = new ArrayList<>();
+    private List<ClassroomResource> classroomResources = new ArrayList<>();
 }

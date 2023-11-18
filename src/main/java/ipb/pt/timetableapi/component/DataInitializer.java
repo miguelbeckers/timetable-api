@@ -1,13 +1,7 @@
 package ipb.pt.timetableapi.component;
 
-import ipb.pt.timetableapi.model.Classroom;
-import ipb.pt.timetableapi.model.Lesson;
-import ipb.pt.timetableapi.model.Professor;
-import ipb.pt.timetableapi.model.Timeslot;
-import ipb.pt.timetableapi.repository.ClassroomRepository;
-import ipb.pt.timetableapi.repository.LessonRepository;
-import ipb.pt.timetableapi.repository.ProfessorRepository;
-import ipb.pt.timetableapi.repository.TimeslotRepository;
+import ipb.pt.timetableapi.model.*;
+import ipb.pt.timetableapi.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -31,9 +25,45 @@ public class DataInitializer implements ApplicationRunner {
     @Autowired
     public TimeslotRepository timeslotRepository;
 
+    @Autowired
+    public SubjectRepository subjectRepository;
+
+    @Autowired
+    public StudentRepository studentRepository;
+
     @Override
     public void run(ApplicationArguments args) throws Exception {
         System.out.println("DataInitializer.run");
+
+        Timeslot timeslot1 = new Timeslot();
+        Timeslot timeslot2 = new Timeslot();
+        timeslot1.setDayOfWeek(DayOfWeek.MONDAY);
+        timeslot1.setStartTime(LocalTime.parse("08:00"));
+        timeslot1.setEndTime(LocalTime.parse("09:00"));
+        timeslot2.setDayOfWeek(DayOfWeek.MONDAY);
+        timeslot2.setStartTime(LocalTime.parse("09:00"));
+        timeslot2.setEndTime(LocalTime.parse("10:00"));
+        Timeslot timeslot1Saved = timeslotRepository.save(timeslot1);
+        Timeslot timeslot2Saved = timeslotRepository.save(timeslot2);
+
+        Classroom classroom1 = new Classroom();
+        classroom1.setName("Room A");
+        Classroom classroom1Saved = classroomRepository.save(classroom1);
+
+        Student student1 = new Student();
+        Student student2 = new Student();
+        student1.setCode("A");
+        student2.setCode("B");
+        Student student1Saved = studentRepository.save(student1);
+        Student student2Saved = studentRepository.save(student2);
+
+        Lesson lesson1 = new Lesson();
+        Lesson lesson2 = new Lesson();
+        lesson1.setStudents(List.of(student1Saved));
+        lesson2.setStudents(List.of(student2Saved));
+        Lesson lesson1Saved = lessonRepository.save(lesson1);
+        Lesson lesson2Saved = lessonRepository.save(lesson2);
+
 //
 //        List<Classroom> classrooms = classroomRepository.saveAll(List.of(
 //                new Classroom("Room J", 30),

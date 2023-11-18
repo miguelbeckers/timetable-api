@@ -28,10 +28,10 @@ public class Lesson {
     private SubjectCourse subjectCourse;
     @ManyToOne
     private SubjectType subjectType;
-    @OneToMany
+    @ManyToMany
     @JsonIgnore
-    private List<ResourceType> resourceTypes = new ArrayList<>();
-    @OneToMany
+    private List<Resource> resources = new ArrayList<>();
+    @ManyToMany
     @JsonIgnore
     private List<Student> students = new ArrayList<>();
 

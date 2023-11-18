@@ -1,6 +1,7 @@
 package ipb.pt.timetableapi.solver;
 
 import ipb.pt.timetableapi.model.Lesson;
+import ipb.pt.timetableapi.model.Student;
 import ipb.pt.timetableapi.repository.ClassroomRepository;
 import ipb.pt.timetableapi.repository.LessonRepository;
 import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
@@ -13,19 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.time.Duration;
 
 public class TimeTableConstraintProvider implements ConstraintProvider {
-    @Autowired
-    private ClassroomRepository classroomRepository;
-
-    @Autowired
-    private LessonRepository lessonRepository;
-
     @Override
     public Constraint[] defineConstraints(ConstraintFactory constraintFactory) {
         return new Constraint[]{
                 // Hard constraints
                 roomConflict(constraintFactory),
 //                professorConflict(constraintFactory),
-//                studentGroupConflict(constraintFactory),
+//                studentConflict(constraintFactory),
 //                groupSizeAndCapacityConflict(constraintFactory),
 //                // Soft constraints
 //                professorTimeEfficiency(constraintFactory)
@@ -56,16 +51,32 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
 //                .penalize(HardSoftScore.ONE_HARD)
 //                .asConstraint("Teacher conflict");
 //    }
-//
-//    private Constraint studentGroupConflict(ConstraintFactory constraintFactory) {
+
+//    private Constraint studentConflict(ConstraintFactory constraintFactory) {
 //        return constraintFactory.forEach(Lesson.class)
 //                .join(Lesson.class,
 //                        Joiners.equal(Lesson::getTimeslot),
-//                        Joiners.equal(Lesson::getStudentGroup),
+//                        Joiners.equal(Lesson::getClassroom),
 //                        Joiners.lessThan(Lesson::getId))
+//                .filter((lesson1, lesson2) ->
+//                        haveCommonStudent(lesson1, lesson2) &&
+//                                !lesson1.getClassroom().equals(lesson2.getClassroom()))
 //                .penalize(HardSoftScore.ONE_HARD)
-//                .asConstraint("Student group conflict");
+//                .asConstraint("Student conflict");
 //    }
+//
+//    private boolean haveCommonStudent(Lesson lesson1, Lesson lesson2) {
+//        for (Student student1 : lesson1.getStudents()) {
+//            for (Student student2 : lesson2.getStudents()) {
+//                if (student1.equals(student2)) {
+//                    return true;
+//                }
+//            }
+//        }
+//        return false;
+//    }
+
+
 //
 //    private Constraint professorTimeEfficiency(ConstraintFactory constraintFactory) {
 //        return constraintFactory
