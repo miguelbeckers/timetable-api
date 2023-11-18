@@ -12,11 +12,9 @@ import java.time.LocalTime;
 public class TimeslotDto {
     @NotNull(message = "Empty day of the week")
     private DayOfWeek dayOfWeek;
-
     @NotNull(message = "Empty start time")
     @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
     private LocalTime startTime;
-
     @NotNull(message = "Empty end time")
     @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
     private LocalTime endTime;

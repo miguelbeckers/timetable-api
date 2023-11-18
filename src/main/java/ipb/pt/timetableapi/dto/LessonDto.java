@@ -4,16 +4,20 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 public class LessonDto {
     @NotEmpty(message = "Empty name")
-    private String subject;
-    @NotEmpty(message = "Empty teacher")
-    private String teacher;
-    @NotEmpty(message = "Empty student group")
-    private String studentGroup;
+    private String name;
     @NotEmpty(message = "Empty color")
     private String color;
-    @NotNull(message = "Empty group size")
-    private Integer groupSize;
+    @NotNull(message = "Null teacher")
+    private Long teacherId;
+    @NotNull(message = "Null subjectCourse")
+    private Long subjectCourseId;
+    @NotNull(message = "Null subjectType")
+    private Long subjectTypeId;
+    private List<Long> resourceIds = new ArrayList<>();
 }

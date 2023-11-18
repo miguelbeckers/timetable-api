@@ -4,10 +4,13 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 public class ClassroomDto {
     @NotEmpty(message = "Empty name")
     private String name;
-    @NotNull(message = "Empty capacity")
-    private Integer capacity;
+    private List<Long> unavailabilityIds = new ArrayList<>();
+    private List<Long> resourceIds = new ArrayList<>();
 }
