@@ -7,7 +7,6 @@ import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
@@ -15,7 +14,6 @@ import java.time.LocalTime;
 @Entity
 @Getter
 @Setter
-@ToString
 @NoArgsConstructor
 public class Timeslot {
     @Id

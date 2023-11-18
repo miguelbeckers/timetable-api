@@ -1,22 +1,24 @@
 package ipb.pt.timetableapi.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
 @Setter
-@ToString
 @NoArgsConstructor
 public class Professor {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    public Long id;
+    private Long id;
     private String name;
+    @ManyToOne
+    private Department department;
+    @OneToMany
+    private List<Timeslot> unavailability = new ArrayList<>();
 }
