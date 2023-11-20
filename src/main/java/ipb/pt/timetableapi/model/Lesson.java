@@ -28,12 +28,12 @@ public class Lesson {
     private SubjectCourse subjectCourse;
     @ManyToOne
     private SubjectType subjectType;
-    @ManyToMany
+    @OneToMany
     @JsonIgnore
-    private List<Resource> resources = new ArrayList<>();
-    @ManyToMany
+    private List<LessonResource> lessonResources = new ArrayList<>();
+    @OneToMany
     @JsonIgnore
-    private List<Student> students = new ArrayList<>();
+    private List<LessonStudent> lessonStudents = new ArrayList<>();
 
     // Initialized/Changed during planning
     @ManyToOne
