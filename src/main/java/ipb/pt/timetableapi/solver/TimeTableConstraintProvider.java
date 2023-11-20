@@ -19,10 +19,10 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
                 roomConflict(constraintFactory),
                 studentConflict(constraintFactory),
                 professorConflict(constraintFactory),
-                resourceAvailability(constraintFactory), // missing test
-                classroomAvailability(constraintFactory), // missing test
-                professorAvailability(constraintFactory), // missing test
-                courseAvailability(constraintFactory), // missing test
+                resourceAvailability(constraintFactory),
+                classroomAvailability(constraintFactory),
+                professorAvailability(constraintFactory),
+                courseAvailability(constraintFactory),
                 // Soft constraints
                 professorTimeEfficiency(constraintFactory)
         };
@@ -79,65 +79,34 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
                 .asConstraint("Teacher conflict");
     }
 
-    private Constraint professorTimeEfficiency(ConstraintFactory constraintFactory) {
-        return constraintFactory
-                .forEach(Lesson.class)
-                .join(Lesson.class,
-                        Joiners.equal(Lesson::getProfessor))
-                .filter((lesson1, lesson2) -> {
-                    Duration between = Duration.between(lesson1.getTimeslot().getEndTime(),
-                            lesson2.getTimeslot().getStartTime());
-                    return !between.isNegative() && between.compareTo(Duration.ofMinutes(30)) <= 0;
-                })
-                .reward(HardSoftScore.ONE_SOFT)
-                .asConstraint("Teacher time efficiency");
-    }
-
     private Constraint resourceAvailability(ConstraintFactory constraintFactory) {
         return constraintFactory
                 .forEach(Lesson.class)
-                .filter(lesson -> !lesson.getLessonResources().isEmpty()) // Only for lessons with resources
-                .ifExists(Lesson.class,
-                        Joiners.equal(Lesson::getTimeslot),
-                        Joiners.equal(Lesson::getClassroom),
-                        Joiners.lessThan(Lesson::getId))
+                .filter(lesson -> lesson.getClassroom() != null)
+                .filter(lesson -> !lesson.getLessonResources().isEmpty())
+                .filter(this::checkResourceAvailability)
                 .penalize(HardSoftScore.ONE_HARD)
-                .asConstraint("Resource availability");
+                .asConstraint("Resource availability conflict");
     }
 
-    private int calculateResourceShortage(Lesson lesson, Lesson conflictingLesson) {
-        int shortage = 0;
-        for (LessonResource lessonResource : lesson.getLessonResources()) {
-            Resource resource = lessonResource.getResource();
-            int requiredQuantity = lesson.getLessonStudents().size(); // Number of students in the lesson
-            int availableQuantity = getAvailableQuantity(resource, lesson.getClassroom());
-            int conflictingQuantity = getRequiredQuantityInConflictingLesson(resource, conflictingLesson);
-            int totalRequiredQuantity = requiredQuantity + conflictingQuantity;
-            int shortfall = Math.max(0, totalRequiredQuantity - availableQuantity);
-            shortage += shortfall;
-        }
-        return shortage;
-    }
+    private boolean checkResourceAvailability(Lesson conflictingLesson) {
+        List<Resource> resourcesOfTheLesson = conflictingLesson.getLessonResources().stream()
+                .map(LessonResource::getResource)
+                .toList();
 
-    private int getAvailableQuantity(Resource resource, Classroom classroom) {
-        // Gets the available quantity of the resource in the classroom
-        for (ClassroomResource classroomResource : classroom.getClassroomResources()) {
-            if (classroomResource.getResource().equals(resource)) {
-                return classroomResource.getQuantity();
-            }
-        }
-        return 0;
-    }
+        List<Resource> resourcesOfTheClassroom = conflictingLesson.getClassroom().getClassroomResources().stream()
+                .map(ClassroomResource::getResource)
+                .toList();
 
-    private int getRequiredQuantityInConflictingLesson(Resource resource, Lesson conflictingLesson) {
-        // Gets the required quantity of the resource in the conflicting lesson
-        int conflictingQuantity = 0;
-        for (LessonResource conflictingLessonResource : conflictingLesson.getLessonResources()) {
-            if (conflictingLessonResource.getResource().equals(resource)) {
-                conflictingQuantity += conflictingLesson.getLessonStudents().size();
-            }
+        // Checks that at least one lesson resource is not present in the classroom
+        if (resourcesOfTheLesson.stream().anyMatch(resource -> !resourcesOfTheClassroom.contains(resource))) {
+            return true;
         }
-        return conflictingQuantity;
+
+        // Checks if the number of available resources is less than the required number
+        return conflictingLesson.getClassroom().getClassroomResources().stream()
+                .filter(classroomResource -> resourcesOfTheLesson.contains(classroomResource.getResource()))
+                .anyMatch(classroomResource -> classroomResource.getQuantity() < conflictingLesson.getLessonResources().size());
     }
 
     private Constraint classroomAvailability(ConstraintFactory constraintFactory) {
@@ -191,7 +160,7 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
     private Constraint courseAvailability(ConstraintFactory constraintFactory) {
         return constraintFactory
                 .forEach(Lesson.class)
-                .filter(lesson -> lesson.getSubjectCourse() != null) //
+                .filter(lesson -> lesson.getSubjectCourse() != null)
                 .ifExists(Lesson.class,
                         Joiners.equal(Lesson::getTimeslot),
                         Joiners.lessThan(Lesson::getId))
@@ -205,5 +174,19 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
         Course course = subjectCourse.getCourse();
         List<Timeslot> courseUnavailability = course.getUnavailability();
         return hasUnavailabilityConflict(conflictingLesson, courseUnavailability);
+    }
+
+    private Constraint professorTimeEfficiency(ConstraintFactory constraintFactory) {
+        return constraintFactory
+                .forEach(Lesson.class)
+                .join(Lesson.class,
+                        Joiners.equal(Lesson::getProfessor))
+                .filter((lesson1, lesson2) -> {
+                    Duration between = Duration.between(lesson1.getTimeslot().getEndTime(),
+                            lesson2.getTimeslot().getStartTime());
+                    return !between.isNegative() && between.compareTo(Duration.ofMinutes(30)) <= 0;
+                })
+                .reward(HardSoftScore.ONE_SOFT)
+                .asConstraint("Teacher time efficiency");
     }
 }
