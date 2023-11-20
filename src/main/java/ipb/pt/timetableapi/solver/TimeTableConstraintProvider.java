@@ -23,10 +23,19 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
                 classroomAvailability(constraintFactory),
                 professorAvailability(constraintFactory),
                 courseAvailability(constraintFactory),
+                // verificar se nao há conflito entre as turmas de um mesmo ano e curso
+
                 // Soft constraints
-                professorTimeEfficiency(constraintFactory)
+                professorTimeEfficiency(constraintFactory) // incluir flag
+                // distribuir a partir do centro do dia - antes do meio dia ou depois das 14h
         };
     }
+
+//    UC1 pode dividir em Ta Tb
+//    UC2 pode dividir em turma Ta Tb Tc Td
+//    nao pode haver conflitos entre UC1ta e UC2ta/tb, UC1tb e UC2tc/td
+//    criar alunos ficticios ao criar as turmas para testar
+//    turno -> lesson
 
     private Constraint roomConflict(ConstraintFactory constraintFactory) {
         return constraintFactory
@@ -106,7 +115,7 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
         // Checks if the number of available resources is less than the required number
         return conflictingLesson.getClassroom().getClassroomResources().stream()
                 .filter(classroomResource -> resourcesOfTheLesson.contains(classroomResource.getResource()))
-                .anyMatch(classroomResource -> classroomResource.getQuantity() < conflictingLesson.getLessonResources().size());
+                .anyMatch(classroomResource -> classroomResource.getQuantity() < conflictingLesson.getLessonStudents().size());
     }
 
     private Constraint classroomAvailability(ConstraintFactory constraintFactory) {

@@ -25,7 +25,7 @@ dependencies {
 
     implementation 'org.optaplanner:optaplanner-bom:9.38.0.Final'
     implementation 'org.optaplanner:optaplanner-spring-boot-starter:9.38.0.Final'
-    testImplementation("org.optaplanner:optaplanner-test")
+    testImplementation('org.optaplanner:optaplanner-test:8.35.0.Final')
 }
 
 tasks.named('test') {
