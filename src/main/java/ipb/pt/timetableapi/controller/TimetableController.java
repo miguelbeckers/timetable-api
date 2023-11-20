@@ -49,7 +49,7 @@ public class TimetableController {
             throw new IllegalStateException("Solving failed.", e);
         }
 
-        for(Lesson lesson: solution.getLessons()) {
+        for (Lesson lesson : solution.getLessons()) {
             lessonService.update(lesson);
         }
 

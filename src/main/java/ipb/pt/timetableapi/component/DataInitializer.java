@@ -31,6 +31,9 @@ public class DataInitializer implements ApplicationRunner {
     @Autowired
     public StudentRepository studentRepository;
 
+    @Autowired
+    public LessonStudentRepository lessonStudentRepository;
+
     @Override
     public void run(ApplicationArguments args) throws Exception {
         System.out.println("DataInitializer.run");
@@ -50,19 +53,32 @@ public class DataInitializer implements ApplicationRunner {
         classroom1.setName("Room A");
         Classroom classroom1Saved = classroomRepository.save(classroom1);
 
+        Classroom classroom2 = new Classroom();
+        classroom2.setName("Room B");
+        Classroom classroom2Saved = classroomRepository.save(classroom2);
+
         Student student1 = new Student();
-        Student student2 = new Student();
         student1.setCode("A");
-        student2.setCode("B");
         Student student1Saved = studentRepository.save(student1);
-        Student student2Saved = studentRepository.save(student2);
 
         Lesson lesson1 = new Lesson();
         Lesson lesson2 = new Lesson();
-        lesson1.setStudents(List.of(student1Saved));
-        lesson2.setStudents(List.of(student2Saved));
         Lesson lesson1Saved = lessonRepository.save(lesson1);
         Lesson lesson2Saved = lessonRepository.save(lesson2);
+
+        LessonStudent lessonStudent1 = new LessonStudent();
+        LessonStudent lessonStudent2 = new LessonStudent();
+        lessonStudent1.setLesson(lesson1Saved);
+        lessonStudent1.setStudent(student1Saved);
+        lessonStudent2.setLesson(lesson2Saved);
+        lessonStudent2.setStudent(student1Saved);
+        LessonStudent lessonStudent1Saved = lessonStudentRepository.save(lessonStudent1);
+        LessonStudent lessonStudent2Saved = lessonStudentRepository.save(lessonStudent2);
+
+        lesson1Saved.setLessonStudents(List.of(lessonStudent1Saved));
+        lesson2Saved.setLessonStudents(List.of(lessonStudent2Saved));
+        Lesson lesson1Updated = lessonRepository.save(lesson1Saved);
+        Lesson lesson2Updated = lessonRepository.save(lesson2Saved);
 
 //
 //        List<Classroom> classrooms = classroomRepository.saveAll(List.of(
