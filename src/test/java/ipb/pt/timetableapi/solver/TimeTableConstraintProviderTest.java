@@ -1,21 +1,15 @@
 package ipb.pt.timetableapi.solver;
 
 
-import ipb.pt.timetableapi.model.Lesson;
-import ipb.pt.timetableapi.model.Timetable;
-import org.junit.jupiter.api.Test;
-import org.optaplanner.core.api.solver.Solver;
-import org.optaplanner.core.api.solver.SolverFactory;
-import org.optaplanner.core.config.solver.SolverConfig;
+//import org.junit.jupiter.api.Test;
 
-import java.time.Duration;
 
 public class TimeTableConstraintProviderTest {
-    SolverFactory<Timetable> solverFactory = SolverFactory.create(new SolverConfig()
-            .withSolutionClass(Timetable.class)
-            .withEntityClasses(Lesson.class)
-            .withTerminationSpentLimit(Duration.ofSeconds(1)));
-    Solver<Timetable> solver = solverFactory.buildSolver();
+//    SolverFactory<Timetable> solverFactory = SolverFactory.create(new SolverConfig()
+//            .withSolutionClass(Timetable.class)
+//            .withEntityClasses(Lesson.class)
+//            .withTerminationSpentLimit(Duration.ofSeconds(1)));
+//    Solver<Timetable> solver = solverFactory.buildSolver();
 
 //    @Test
 //    public void testTimetableConstraints() {
