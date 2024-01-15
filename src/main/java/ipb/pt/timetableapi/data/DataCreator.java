@@ -1,4 +1,4 @@
-package ipb.pt.timetableapi.component;
+package ipb.pt.timetableapi.data;
 
 import ipb.pt.timetableapi.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,7 +7,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DataInitializer implements ApplicationRunner {
+public class DataCreator implements ApplicationRunner {
     @Autowired
     public ClassroomRepository classroomRepository;
 

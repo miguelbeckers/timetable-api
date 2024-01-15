@@ -24,4 +24,7 @@ public class Classroom {
     @OneToMany
     @JsonIgnore
     private List<ClassroomResource> classroomResources = new ArrayList<>();
+
+    private String abbreviation;
+    private int idTipo;
 }
