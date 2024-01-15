@@ -1,7 +1,5 @@
 package ipb.pt.timetableapi.component;
 
-import ipb.pt.timetableapi.newData.model.*;
-import ipb.pt.timetableapi.newData.repository.*;
 import ipb.pt.timetableapi.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
