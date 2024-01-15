@@ -1,5 +1,6 @@
 package ipb.pt.timetableapi.solver;
 
+import ipb.pt.timetableapi.model.*;
 import ipb.pt.timetableapi.newData.model.*;
 import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
 import org.optaplanner.core.api.score.stream.Constraint;
@@ -9,7 +10,6 @@ import org.optaplanner.core.api.score.stream.Joiners;
 
 import java.time.Duration;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class TimeTableConstraintProvider implements ConstraintProvider {
     @Override
