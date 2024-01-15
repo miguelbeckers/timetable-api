@@ -81,10 +81,4 @@ public class PeriodController {
         periodService.delete(areaOptional.get());
         return ResponseEntity.ok().build();
     }
-
-    @PostMapping("/convert")
-    public ResponseEntity<Object> convert() {
-        periodService.convert();
-        return ResponseEntity.ok().build();
-    }
 }

@@ -1,6 +1,6 @@
 package ipb.pt.timetableapi.service;
 
-import ipb.pt.timetableapi.converter.PeriodConverter;
+
 import ipb.pt.timetableapi.model.Period;
 import ipb.pt.timetableapi.repository.PeriodRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +13,6 @@ import java.util.Optional;
 public class PeriodService {
     @Autowired
     private PeriodRepository periodRepository;
-
-    @Autowired
-    private PeriodConverter periodConverter;
 
     public List<Period> findAll(){
         return periodRepository.findAll();
@@ -35,9 +32,5 @@ public class PeriodService {
 
     public void delete(Period period){
         periodRepository.delete(period);
-    }
-
-    public void convert() {
-        periodConverter.convert();
     }
 }
