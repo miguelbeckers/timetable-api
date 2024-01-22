@@ -3,10 +3,13 @@ package ipb.pt.timetableapi.controller;
 import ipb.pt.timetableapi.dto.TimeslotDto;
 import ipb.pt.timetableapi.service.TimeslotService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Arrays;
 
 @Controller
 @CrossOrigin
@@ -17,6 +20,9 @@ public class TimeslotController {
 
     @Autowired
     private RestTemplate restTemplate;
+
+    @Value("${api.base-url}")
+    private String baseUrl;
 
     @GetMapping
     public ResponseEntity<Object> getAll() {
@@ -47,6 +53,20 @@ public class TimeslotController {
     @DeleteMapping()
     public ResponseEntity<Object> deleteAll() {
         timeslotService.deleteAll();
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/load")
+    public ResponseEntity<Object> load() {
+        ResponseEntity<TimeslotDto[]> responseEntity = restTemplate.getForEntity(
+                baseUrl + "/timeslots", TimeslotDto[].class);
+
+        TimeslotDto[] timeslotDtos = responseEntity.getBody();
+        if (timeslotDtos == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        timeslotService.createMany(Arrays.asList(timeslotDtos));
         return ResponseEntity.ok().build();
     }
 }
