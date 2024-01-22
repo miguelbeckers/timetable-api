@@ -1,33 +1,31 @@
-package ipb.pt.timetableapi.data;
+package ipb.pt.timetableapi.component;
 
-import ipb.pt.timetableapi.repository.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DataCreator implements ApplicationRunner {
-    @Autowired
-    public ClassroomRepository classroomRepository;
-
-    @Autowired
-    public LessonRepository lessonRepository;
-
-    @Autowired
-    public ProfessorRepository professorRepository;
-
-    @Autowired
-    public TimeslotRepository timeslotRepository;
-
-    @Autowired
-    public SubjectRepository subjectRepository;
-
-    @Autowired
-    public StudentRepository studentRepository;
-
-    @Autowired
-    public LessonStudentRepository lessonStudentRepository;
+//    @Autowired
+//    public ClassroomRepository classroomRepository;
+//
+//    @Autowired
+//    public LessonRepository lessonRepository;
+//
+//    @Autowired
+//    public ProfessorRepository professorRepository;
+//
+//    @Autowired
+//    public TimeslotRepository timeslotRepository;
+//
+//    @Autowired
+//    public SubjectRepository subjectRepository;
+//
+//    @Autowired
+//    public StudentRepository studentRepository;
+//
+//    @Autowired
+//    public LessonStudentRepository lessonStudentRepository;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
