@@ -1,7 +1,7 @@
 package ipb.pt.timetableapi.controller;
 
 import ipb.pt.timetableapi.model.ClassroomType;
-import ipb.pt.timetableapi.model.ClassroomTypeDto;
+import ipb.pt.timetableapi.dto.ClassroomTypeDto;
 import ipb.pt.timetableapi.service.ClassroomTypeService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;

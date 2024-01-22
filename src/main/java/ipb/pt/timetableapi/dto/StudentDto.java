@@ -1,12 +1,12 @@
 package ipb.pt.timetableapi.dto;
 
-import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 public class StudentDto {
-    @NotEmpty(message = "Empty name")
-    private String name;
-    @NotEmpty(message = "Empty code")
-    private String code;
+    private Long id;
+    private List<Long> subjectCourseIds = new ArrayList<>();
 }

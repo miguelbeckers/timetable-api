@@ -1,6 +1,5 @@
 package ipb.pt.timetableapi.dto;
 
-import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -8,8 +7,10 @@ import java.util.List;
 
 @Data
 public class ClassroomDto {
-    @NotEmpty(message = "Empty name")
+    private Long id;
     private String name;
-    private List<Long> unavailabilityIds = new ArrayList<>();
-    private List<Long> resourceIds = new ArrayList<>();
+    private String abbreviation;
+    private List<Long> unavailability = new ArrayList<>();
+    private List<Long> classroomResources = new ArrayList<>();
+    private Long typeId;
 }

@@ -1,12 +1,10 @@
 package ipb.pt.timetableapi.dto;
 
-import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
 @Data
 public class SubjectDto {
-    @NotEmpty(message = "Empty name")
+    private Long id;
     private String name;
-    @NotEmpty(message = "Empty code")
-    private String code;
+    private String abbreviation;
 }

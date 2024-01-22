@@ -1,7 +1,7 @@
 package ipb.pt.timetableapi.controller;
 
+import ipb.pt.timetableapi.dto.LessonUnitDto;
 import ipb.pt.timetableapi.model.LessonUnit;
-import ipb.pt.timetableapi.model.LessonUnitDto;
 import ipb.pt.timetableapi.service.LessonUnitService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
