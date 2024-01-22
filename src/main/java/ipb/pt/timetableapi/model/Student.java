@@ -14,9 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 public class Student {
     @Id
-//    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private String code;
     @OneToMany
     private List<SubjectCourse> subjectCourses = new ArrayList<>();
 }

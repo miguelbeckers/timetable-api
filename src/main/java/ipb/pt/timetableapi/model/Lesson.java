@@ -1,12 +1,13 @@
 package ipb.pt.timetableapi.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.optaplanner.core.api.domain.entity.PlanningEntity;
-import org.optaplanner.core.api.domain.variable.PlanningVariable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,10 +19,11 @@ import java.util.List;
 @PlanningEntity
 public class Lesson {
     @Id
-//    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String name;
     private String color;
+    private Double hoursPerWeek;
+    private Integer blocks;
     @ManyToOne
     private Professor professor;
     @ManyToOne
@@ -29,17 +31,7 @@ public class Lesson {
     @ManyToOne
     private SubjectType subjectType;
     @OneToMany
-    @JsonIgnore
     private List<LessonResource> lessonResources = new ArrayList<>();
     @OneToMany
-    @JsonIgnore
-    private List<LessonStudent> lessonStudents = new ArrayList<>();
-
-    // Initialized/Changed during planning
-    @ManyToOne
-    @PlanningVariable(valueRangeProviderRefs = "timeslotRange")
-    private Timeslot timeslot;
-    @ManyToOne
-    @PlanningVariable(valueRangeProviderRefs = "classroomRange")
-    private Classroom classroom;
+    private List<Student> students = new ArrayList<>();
 }

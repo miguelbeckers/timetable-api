@@ -14,7 +14,6 @@ import java.util.List;
 @NoArgsConstructor
 public class Professor {
     @Id
-//    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String name;
     private String abbreviation;
@@ -22,10 +21,4 @@ public class Professor {
     private Department department;
     @OneToMany
     private List<Timeslot> unavailability = new ArrayList<>();
-
-    private double eti;
-    private String mail;
-    private double credito;
-    private Integer ipbCodEscola;
-    private Integer ipbEmpNum;
 }

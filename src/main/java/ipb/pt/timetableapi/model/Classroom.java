@@ -1,7 +1,8 @@
 package ipb.pt.timetableapi.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,16 +16,12 @@ import java.util.List;
 @NoArgsConstructor
 public class Classroom {
     @Id
-//    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String name;
+    private String abbreviation;
     @OneToMany
-    @JsonIgnore
     private List<Timeslot> unavailability = new ArrayList<>();
     @OneToMany
-    @JsonIgnore
     private List<ClassroomResource> classroomResources = new ArrayList<>();
-
-    private String abbreviation;
-    private int idTipo;
+    private Long type;
 }

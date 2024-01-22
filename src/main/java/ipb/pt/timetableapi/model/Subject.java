@@ -11,15 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class Subject {
     @Id
-//    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String name;
-    private String code;
-
-    private Integer idDepart;
-    private Integer ipbCodEscola;
-    private Integer ipbCodCurso;
-    private Integer ipbNPlano;
-    private Integer ipbNDisciplina;
-    private Integer ipbNOpcao;
+    private String abbreviation;
 }

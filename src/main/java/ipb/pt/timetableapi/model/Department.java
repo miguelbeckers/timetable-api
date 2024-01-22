@@ -11,11 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class Department {
     @Id
-//    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String name;
     private String abbreviation;
-
-    private Integer ipbCodEscola;
-    private Integer ipbEmpCcusto;
 }

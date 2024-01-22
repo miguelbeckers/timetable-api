@@ -24,13 +24,13 @@ public class Timetable {
     @ValueRangeProvider(id = "classroomRange")
     private List<Classroom> classrooms;
     @PlanningEntityCollectionProperty
-    private List<Lesson> lessons;
+    private List<LessonUnit> lessonUnits;
     @PlanningScore
     private HardSoftScore score;
 
-    public Timetable(List<Timeslot> timeslots, List<Classroom> classrooms, List<Lesson> lessons) {
+    public Timetable(List<Timeslot> timeslots, List<Classroom> classrooms, List<LessonUnit> lessonUnits) {
         this.timeslots = timeslots;
         this.classrooms = classrooms;
-        this.lessons = lessons;
+        this.lessonUnits = lessonUnits;
     }
 }

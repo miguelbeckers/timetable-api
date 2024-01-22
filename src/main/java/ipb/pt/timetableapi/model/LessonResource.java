@@ -11,8 +11,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class LessonResource {
     @Id
-//    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     @ManyToOne
     private Resource resource;
+    private double quantity;
 }

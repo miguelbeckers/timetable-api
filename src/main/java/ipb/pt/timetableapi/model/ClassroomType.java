@@ -1,6 +1,7 @@
 package ipb.pt.timetableapi.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,10 +10,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class ClassroomResource {
+public class ClassroomType {
     @Id
     private Long id;
-    private Integer quantity;
-    @ManyToOne
-    private Resource resource;
+    private String name;
 }

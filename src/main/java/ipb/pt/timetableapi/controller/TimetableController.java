@@ -38,22 +38,23 @@ public class TimetableController {
 
     @PostMapping("/solve")
     public ResponseEntity<Object> solve() {
-        Timetable problem = new Timetable(timeslotService.findAll(), classroomService.findAll(), lessonService.findAll());
-
-        SolverJob<Timetable, UUID> solverJob = solverManager.solve(problemId, problem);
-        Timetable solution;
-
-        try {
-            solution = solverJob.getFinalBestSolution();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new IllegalStateException("Solving failed.", e);
-        }
-
-        for (Lesson lesson : solution.getLessons()) {
-            lessonService.update(lesson);
-        }
-
-        return ResponseEntity.ok().body(solution);
+//        Timetable problem = new Timetable(timeslotService.findAll(), classroomService.findAll(), lessonService.findAll());
+//
+//        SolverJob<Timetable, UUID> solverJob = solverManager.solve(problemId, problem);
+//        Timetable solution;
+//
+//        try {
+//            solution = solverJob.getFinalBestSolution();
+//        } catch (InterruptedException | ExecutionException e) {
+//            throw new IllegalStateException("Solving failed.", e);
+//        }
+//
+//        for (Lesson lesson : solution.getLessons()) {
+//            lessonService.update(lesson);
+//        }
+//
+//        return ResponseEntity.ok().body(solution);
+        return null;
     }
 
     @PostMapping("/stop")
