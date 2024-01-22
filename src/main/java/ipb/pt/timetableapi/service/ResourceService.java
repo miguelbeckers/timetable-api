@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -51,11 +52,15 @@ public class ResourceService {
     }
 
     public void createMany(List<ResourceDto> resourceDtos) {
+        List<Resource> resources = new ArrayList<>();
+
         for (ResourceDto resourceDto : resourceDtos) {
             Resource resource = new Resource();
             BeanUtils.copyProperties(resourceDto, resource);
-            resourceRepository.save(resource);
+            resources.add(resource);
         }
+
+        resourceRepository.saveAll(resources);
     }
 }
 

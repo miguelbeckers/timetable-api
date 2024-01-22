@@ -6,10 +6,13 @@ import ipb.pt.timetableapi.repository.SubjectRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class SubjectService {
@@ -51,11 +54,15 @@ public class SubjectService {
     }
 
     public void createMany(List<SubjectDto> subjectDtos) {
+        List<Subject> subjects = new ArrayList<>();
+
         for (SubjectDto subjectDto : subjectDtos) {
             Subject subject = new Subject();
             BeanUtils.copyProperties(subjectDto, subject);
-            subjectRepository.save(subject);
+            subjects.add(subject);
         }
+
+        subjectRepository.saveAll(subjects);
     }
 }
 

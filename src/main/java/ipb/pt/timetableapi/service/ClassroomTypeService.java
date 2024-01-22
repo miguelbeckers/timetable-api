@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -51,11 +52,15 @@ public class ClassroomTypeService {
     }
 
     public void createMany(List<ClassroomTypeDto> classroomTypeDtos) {
+        List<ClassroomType> classroomTypes = new ArrayList<>();
+
         for (ClassroomTypeDto classroomTypeDto : classroomTypeDtos) {
             ClassroomType classroomType = new ClassroomType();
             BeanUtils.copyProperties(classroomTypeDto, classroomType);
-            classroomTypeRepository.save(classroomType);
+            classroomTypes.add(classroomType);
         }
+
+        classroomTypeRepository.saveAll(classroomTypes);
     }
 }
 

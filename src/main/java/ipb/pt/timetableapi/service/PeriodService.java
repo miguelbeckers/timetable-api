@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -52,11 +53,15 @@ public class PeriodService {
     }
 
     public void createMany(List<PeriodDto> periodDtos) {
+        List<Period> periods = new ArrayList<>();
+
         for (PeriodDto periodDto : periodDtos) {
             Period period = new Period();
             BeanUtils.copyProperties(periodDto, period);
-            periodRepository.save(period);
+            periods.add(period);
         }
+
+        periodRepository.saveAll(periods);
     }
 }
 

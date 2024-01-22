@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -51,11 +52,15 @@ public class SubjectTypeService {
     }
 
     public void createMany(List<SubjectTypeDto> subjectTypeDtos) {
+        List<SubjectType> subjectTypes = new ArrayList<>();
+
         for (SubjectTypeDto subjectTypeDto : subjectTypeDtos) {
             SubjectType subjectType = new SubjectType();
             BeanUtils.copyProperties(subjectTypeDto, subjectType);
-            subjectTypeRepository.save(subjectType);
+            subjectTypes.add(subjectType);
         }
+
+        subjectTypeRepository.saveAll(subjectTypes);
     }
 }
 
