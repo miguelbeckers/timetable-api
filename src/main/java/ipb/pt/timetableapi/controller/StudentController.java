@@ -43,4 +43,10 @@ public class StudentController {
         studentService.findById(id);
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping()
+    public ResponseEntity<Object> deleteAll() {
+        studentService.deleteAll();
+        return ResponseEntity.ok().build();
+    }
 }

@@ -53,5 +53,9 @@ public class ClassroomController {
         return ResponseEntity.ok().build();
     }
 
-
+    @DeleteMapping()
+    public ResponseEntity<Object> deleteAll() {
+        classroomService.deleteAll();
+        return ResponseEntity.ok().build();
+    }
 }

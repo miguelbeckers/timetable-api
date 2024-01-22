@@ -43,4 +43,10 @@ public class DepartmentController {
         departmentService.findById(id);
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping()
+    public ResponseEntity<Object> deleteAll() {
+        departmentService.deleteAll();
+        return ResponseEntity.ok().build();
+    }
 }

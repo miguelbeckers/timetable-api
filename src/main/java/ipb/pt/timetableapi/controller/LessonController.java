@@ -44,6 +44,12 @@ public class LessonController {
         return ResponseEntity.ok().build();
     }
 
+    @DeleteMapping()
+    public ResponseEntity<Object> deleteAll() {
+        lessonService.deleteAll();
+        return ResponseEntity.ok().build();
+    }
+
 //    @PutMapping("/reset")
 //    public ResponseEntity<List<Lesson>> reset() {
 //        List<Lesson> lessons = lessonService.findAll();

@@ -43,4 +43,10 @@ public class ProfessorController {
         professorService.findById(id);
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping()
+    public ResponseEntity<Object> deleteAll() {
+        professorService.deleteAll();
+        return ResponseEntity.ok().build();
+    }
 }

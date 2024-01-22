@@ -43,4 +43,10 @@ public class LessonUnitController {
         lessonUnitService.findById(id);
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping()
+    public ResponseEntity<Object> deleteAll() {
+        lessonUnitService.deleteAll();
+        return ResponseEntity.ok().build();
+    }
 }

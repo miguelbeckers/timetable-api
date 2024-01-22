@@ -43,4 +43,10 @@ public class ClassroomResourceController {
         classroomResourceService.findById(id);
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping()
+    public ResponseEntity<Object> deleteAll() {
+        classroomResourceService.deleteAll();
+        return ResponseEntity.ok().build();
+    }
 }

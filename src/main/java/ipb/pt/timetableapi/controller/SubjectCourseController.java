@@ -43,4 +43,10 @@ public class SubjectCourseController {
         subjectCourseService.findById(id);
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping()
+    public ResponseEntity<Object> deleteAll() {
+        subjectCourseService.deleteAll();
+        return ResponseEntity.ok().build();
+    }
 }

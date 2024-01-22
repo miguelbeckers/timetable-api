@@ -43,4 +43,10 @@ public class TimeslotController {
         timeslotService.findById(id);
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping()
+    public ResponseEntity<Object> deleteAll() {
+        timeslotService.deleteAll();
+        return ResponseEntity.ok().build();
+    }
 }

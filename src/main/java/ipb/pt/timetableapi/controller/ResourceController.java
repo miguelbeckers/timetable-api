@@ -43,4 +43,10 @@ public class ResourceController {
         resourceService.findById(id);
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping()
+    public ResponseEntity<Object> deleteAll() {
+        resourceService.deleteAll();
+        return ResponseEntity.ok().build();
+    }
 }

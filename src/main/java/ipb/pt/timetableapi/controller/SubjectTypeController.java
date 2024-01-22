@@ -43,4 +43,10 @@ public class SubjectTypeController {
         subjectTypeService.findById(id);
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping()
+    public ResponseEntity<Object> deleteAll() {
+        subjectTypeService.deleteAll();
+        return ResponseEntity.ok().build();
+    }
 }

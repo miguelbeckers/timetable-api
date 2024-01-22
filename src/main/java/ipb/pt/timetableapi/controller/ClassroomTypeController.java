@@ -43,4 +43,10 @@ public class ClassroomTypeController {
         classroomTypeService.findById(id);
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping()
+    public ResponseEntity<Object> deleteAll() {
+        classroomTypeService.deleteAll();
+        return ResponseEntity.ok().build();
+    }
 }

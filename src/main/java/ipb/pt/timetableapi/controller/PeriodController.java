@@ -43,4 +43,10 @@ public class PeriodController {
         periodService.findById(id);
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping()
+    public ResponseEntity<Object> deleteAll() {
+        periodService.deleteAll();
+        return ResponseEntity.ok().build();
+    }
 }
