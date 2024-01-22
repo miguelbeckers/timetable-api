@@ -1,35 +1,49 @@
 package ipb.pt.timetableapi.service;
 
+import ipb.pt.timetableapi.dto.SubjectCourseDto;
 import ipb.pt.timetableapi.model.SubjectCourse;
 import ipb.pt.timetableapi.repository.SubjectCourseRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class SubjectCourseService {
     @Autowired
     private SubjectCourseRepository subjectCourseRepository;
 
-    public List<SubjectCourse> findAll(){
+    public List<SubjectCourse> findAll() {
         return subjectCourseRepository.findAll();
     }
 
-    public Optional<SubjectCourse> findById(Long id){
-        return subjectCourseRepository.findById(id);
+    public SubjectCourse findById(Long id) {
+        return subjectCourseRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "SubjectCourse not found"));
     }
 
-    public SubjectCourse create(SubjectCourse subjectCourse){
+    public SubjectCourse create(SubjectCourseDto subjectCourseDto) {
+        SubjectCourse subjectCourse = new SubjectCourse();
+        BeanUtils.copyProperties(subjectCourseDto, subjectCourse);
         return subjectCourseRepository.save(subjectCourse);
     }
 
-    public SubjectCourse update(SubjectCourse subjectCourse){
+    public SubjectCourse update(SubjectCourseDto subjectCourseDto, Long id) {
+        SubjectCourse subjectCourse = subjectCourseRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "SubjectCourse not found"));
+
+        BeanUtils.copyProperties(subjectCourseDto, subjectCourse);
         return subjectCourseRepository.save(subjectCourse);
     }
 
-    public void delete(SubjectCourse subjectCourse){
+    public void delete(Long id) {
+        SubjectCourse subjectCourse = subjectCourseRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "SubjectCourse not found"));
+
         subjectCourseRepository.delete(subjectCourse);
     }
 }
+

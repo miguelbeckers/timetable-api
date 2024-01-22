@@ -1,31 +1,22 @@
 package ipb.pt.timetableapi.controller;
 
-import ipb.pt.timetableapi.model.ClassroomType;
 import ipb.pt.timetableapi.dto.ClassroomTypeDto;
 import ipb.pt.timetableapi.service.ClassroomTypeService;
-import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import org.springframework.web.client.RestTemplate;
 
 @Controller
 @CrossOrigin
-@RequestMapping("/classroom-types")
+@RequestMapping("/classroomType-types")
 public class ClassroomTypeController {
     @Autowired
     private ClassroomTypeService classroomTypeService;
 
-    @GetMapping("/hello")
-    public ResponseEntity<String> hello() {
-        return ResponseEntity.ok().body("hello classroomTypes!");
-    }
+    @Autowired
+    private RestTemplate restTemplate;
 
     @GetMapping
     public ResponseEntity<Object> getAll() {
@@ -34,51 +25,22 @@ public class ClassroomTypeController {
 
     @GetMapping("{id}")
     public ResponseEntity<Object> getById(@PathVariable Long id) {
-        Optional<ClassroomType> optional = classroomTypeService.findById(id);
-        return optional.<ResponseEntity<Object>>map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return ResponseEntity.ok().body(classroomTypeService.findById(id));
     }
 
     @PostMapping()
-    public ResponseEntity<Object> create(@Valid @RequestBody ClassroomTypeDto classroomTypeDto) {
-        ClassroomType classroomType = new ClassroomType();
-        BeanUtils.copyProperties(classroomTypeDto, classroomType);
-        return ResponseEntity.ok().body(classroomTypeService.create(classroomType));
-    }
-
-    @Transactional
-    @PostMapping("/many")
-    public ResponseEntity<List<Object>> createMany(@Valid @RequestBody List<ClassroomTypeDto> classroomTypeDtoList) {
-
-        List<Object> created = new ArrayList<>();
-        for (ClassroomTypeDto classroomTypeDto : classroomTypeDtoList) {
-            ClassroomType classroomType = new ClassroomType();
-            BeanUtils.copyProperties(classroomTypeDto, classroomType);
-            created.add(classroomTypeService.create(classroomType));
-        }
-
-        return ResponseEntity.ok().body(created);
+    public ResponseEntity<Object> create(@RequestBody ClassroomTypeDto classroomTypeDto) {
+        return ResponseEntity.ok().body(classroomTypeService.create(classroomTypeDto));
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Object> update(@Valid @RequestBody ClassroomTypeDto classroomTypeDto, @PathVariable Long id) {
-        Optional<ClassroomType> optional = classroomTypeService.findById(id);
-        if (optional.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        ClassroomType classroomType = optional.get();
-        BeanUtils.copyProperties(classroomTypeDto, classroomType);
-        return ResponseEntity.ok().body(classroomTypeService.update(classroomType));
+    public ResponseEntity<Object> update(@RequestBody ClassroomTypeDto classroomTypeDto, @PathVariable Long id) {
+        return ResponseEntity.ok().body(classroomTypeService.update(classroomTypeDto, id));
     }
 
     @DeleteMapping("{id}")
     public ResponseEntity<Object> delete(@PathVariable Long id) {
-        Optional<ClassroomType> areaOptional = classroomTypeService.findById(id);
-        if (areaOptional.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        classroomTypeService.delete(areaOptional.get());
+        classroomTypeService.findById(id);
         return ResponseEntity.ok().build();
     }
 }

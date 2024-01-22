@@ -1,35 +1,49 @@
 package ipb.pt.timetableapi.service;
 
+import ipb.pt.timetableapi.dto.DepartmentDto;
 import ipb.pt.timetableapi.model.Department;
 import ipb.pt.timetableapi.repository.DepartmentRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class DepartmentService {
     @Autowired
     private DepartmentRepository departmentRepository;
 
-    public List<Department> findAll(){
+    public List<Department> findAll() {
         return departmentRepository.findAll();
     }
 
-    public Optional<Department> findById(Long id){
-        return departmentRepository.findById(id);
+    public Department findById(Long id) {
+        return departmentRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Department not found"));
     }
 
-    public Department create(Department department){
+    public Department create(DepartmentDto departmentDto) {
+        Department department = new Department();
+        BeanUtils.copyProperties(departmentDto, department);
         return departmentRepository.save(department);
     }
 
-    public Department update(Department department){
+    public Department update(DepartmentDto departmentDto, Long id) {
+        Department department = departmentRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Department not found"));
+
+        BeanUtils.copyProperties(departmentDto, department);
         return departmentRepository.save(department);
     }
 
-    public void delete(Department department){
+    public void delete(Long id) {
+        Department department = departmentRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Department not found"));
+
         departmentRepository.delete(department);
     }
 }
+

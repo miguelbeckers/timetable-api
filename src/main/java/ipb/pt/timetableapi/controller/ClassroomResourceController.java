@@ -1,31 +1,22 @@
 package ipb.pt.timetableapi.controller;
 
 import ipb.pt.timetableapi.dto.ClassroomResourceDto;
-import ipb.pt.timetableapi.model.ClassroomResource;
 import ipb.pt.timetableapi.service.ClassroomResourceService;
-import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import org.springframework.web.client.RestTemplate;
 
 @Controller
 @CrossOrigin
-@RequestMapping("/resources")
+@RequestMapping("/classroom-resources")
 public class ClassroomResourceController {
     @Autowired
     private ClassroomResourceService classroomResourceService;
 
-    @GetMapping("/hello")
-    public ResponseEntity<String> hello() {
-        return ResponseEntity.ok().body("hello resources!");
-    }
+    @Autowired
+    private RestTemplate restTemplate;
 
     @GetMapping
     public ResponseEntity<Object> getAll() {
@@ -34,51 +25,22 @@ public class ClassroomResourceController {
 
     @GetMapping("{id}")
     public ResponseEntity<Object> getById(@PathVariable Long id) {
-        Optional<ClassroomResource> optional = classroomResourceService.findById(id);
-        return optional.<ResponseEntity<Object>>map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return ResponseEntity.ok().body(classroomResourceService.findById(id));
     }
 
     @PostMapping()
-    public ResponseEntity<Object> create(@Valid @RequestBody ClassroomResourceDto classroomResourceDto) {
-        ClassroomResource classroomResource = new ClassroomResource();
-        BeanUtils.copyProperties(classroomResourceDto, classroomResource);
-        return ResponseEntity.ok().body(classroomResourceService.create(classroomResource));
-    }
-
-    @Transactional
-    @PostMapping("/many")
-    public ResponseEntity<List<Object>> createMany(@Valid @RequestBody List<ClassroomResourceDto> classroomResourceDtoList) {
-
-        List<Object> created = new ArrayList<>();
-        for (ClassroomResourceDto classroomResourceDto : classroomResourceDtoList) {
-            ClassroomResource classroomResource = new ClassroomResource();
-            BeanUtils.copyProperties(classroomResourceDto, classroomResource);
-            created.add(classroomResourceService.create(classroomResource));
-        }
-
-        return ResponseEntity.ok().body(created);
+    public ResponseEntity<Object> create(@RequestBody ClassroomResourceDto classroomResourceDto) {
+        return ResponseEntity.ok().body(classroomResourceService.create(classroomResourceDto));
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Object> update(@Valid @RequestBody ClassroomResourceDto classroomResourceDto, @PathVariable Long id) {
-        Optional<ClassroomResource> optional = classroomResourceService.findById(id);
-        if (optional.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        ClassroomResource classroomResource = optional.get();
-        BeanUtils.copyProperties(classroomResourceDto, classroomResource);
-        return ResponseEntity.ok().body(classroomResourceService.update(classroomResource));
+    public ResponseEntity<Object> update(@RequestBody ClassroomResourceDto classroomResourceDto, @PathVariable Long id) {
+        return ResponseEntity.ok().body(classroomResourceService.update(classroomResourceDto, id));
     }
 
     @DeleteMapping("{id}")
     public ResponseEntity<Object> delete(@PathVariable Long id) {
-        Optional<ClassroomResource> areaOptional = classroomResourceService.findById(id);
-        if (areaOptional.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        classroomResourceService.delete(areaOptional.get());
+        classroomResourceService.findById(id);
         return ResponseEntity.ok().build();
     }
 }

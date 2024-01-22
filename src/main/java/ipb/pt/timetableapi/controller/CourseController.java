@@ -1,19 +1,12 @@
 package ipb.pt.timetableapi.controller;
 
 import ipb.pt.timetableapi.dto.CourseDto;
-import ipb.pt.timetableapi.model.Course;
 import ipb.pt.timetableapi.service.CourseService;
-import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import org.springframework.web.client.RestTemplate;
 
 @Controller
 @CrossOrigin
@@ -22,10 +15,8 @@ public class CourseController {
     @Autowired
     private CourseService courseService;
 
-    @GetMapping("/hello")
-    public ResponseEntity<String> hello() {
-        return ResponseEntity.ok().body("hello courses!");
-    }
+    @Autowired
+    private RestTemplate restTemplate;
 
     @GetMapping
     public ResponseEntity<Object> getAll() {
@@ -34,51 +25,22 @@ public class CourseController {
 
     @GetMapping("{id}")
     public ResponseEntity<Object> getById(@PathVariable Long id) {
-        Optional<Course> optional = courseService.findById(id);
-        return optional.<ResponseEntity<Object>>map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return ResponseEntity.ok().body(courseService.findById(id));
     }
 
     @PostMapping()
-    public ResponseEntity<Object> create(@Valid @RequestBody CourseDto courseDto) {
-        Course course = new Course();
-        BeanUtils.copyProperties(courseDto, course);
-        return ResponseEntity.ok().body(courseService.create(course));
-    }
-
-    @Transactional
-    @PostMapping("/many")
-    public ResponseEntity<List<Object>> createMany(@Valid @RequestBody List<CourseDto> courseDtoList) {
-
-        List<Object> created = new ArrayList<>();
-        for (CourseDto courseDto : courseDtoList) {
-            Course course = new Course();
-            BeanUtils.copyProperties(courseDto, course);
-            created.add(courseService.create(course));
-        }
-
-        return ResponseEntity.ok().body(created);
+    public ResponseEntity<Object> create(@RequestBody CourseDto courseDto) {
+        return ResponseEntity.ok().body(courseService.create(courseDto));
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Object> update(@Valid @RequestBody CourseDto courseDto, @PathVariable Long id) {
-        Optional<Course> optional = courseService.findById(id);
-        if (optional.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        Course course = optional.get();
-        BeanUtils.copyProperties(courseDto, course);
-        return ResponseEntity.ok().body(courseService.update(course));
+    public ResponseEntity<Object> update(@RequestBody CourseDto courseDto, @PathVariable Long id) {
+        return ResponseEntity.ok().body(courseService.update(courseDto, id));
     }
 
     @DeleteMapping("{id}")
     public ResponseEntity<Object> delete(@PathVariable Long id) {
-        Optional<Course> areaOptional = courseService.findById(id);
-        if (areaOptional.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        courseService.delete(areaOptional.get());
+        courseService.findById(id);
         return ResponseEntity.ok().build();
     }
 }

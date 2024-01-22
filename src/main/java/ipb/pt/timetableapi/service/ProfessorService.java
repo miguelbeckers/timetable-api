@@ -1,9 +1,13 @@
 package ipb.pt.timetableapi.service;
 
+import ipb.pt.timetableapi.dto.ProfessorDto;
 import ipb.pt.timetableapi.model.Professor;
 import ipb.pt.timetableapi.repository.ProfessorRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -17,18 +21,29 @@ public class ProfessorService {
     }
 
     public Professor findById(Long id) {
-        return professorRepository.findById(id).orElse(null);
+        return professorRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Professor not found"));
     }
 
-    public Professor create(Professor professor) {
+    public Professor create(ProfessorDto professorDto) {
+        Professor professor = new Professor();
+        BeanUtils.copyProperties(professorDto, professor);
         return professorRepository.save(professor);
     }
 
-    public Professor update(Professor professor) {
+    public Professor update(ProfessorDto professorDto, Long id) {
+        Professor professor = professorRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Professor not found"));
+
+        BeanUtils.copyProperties(professorDto, professor);
         return professorRepository.save(professor);
     }
 
-    public void delete(Professor professor) {
+    public void delete(Long id) {
+        Professor professor = professorRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Professor not found"));
+
         professorRepository.delete(professor);
     }
 }
+

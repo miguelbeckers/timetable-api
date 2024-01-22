@@ -1,35 +1,48 @@
 package ipb.pt.timetableapi.service;
 
+import ipb.pt.timetableapi.dto.LessonResourceDto;
 import ipb.pt.timetableapi.model.LessonResource;
 import ipb.pt.timetableapi.repository.LessonResourceRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class LessonResourceService {
     @Autowired
     private LessonResourceRepository lessonResourceRepository;
 
-    public List<LessonResource> findAll(){
+    public List<LessonResource> findAll() {
         return lessonResourceRepository.findAll();
     }
 
-    public Optional<LessonResource> findById(Long id){
-        return lessonResourceRepository.findById(id);
+    public LessonResource findById(Long id) {
+        return lessonResourceRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "LessonResource not found"));
     }
 
-    public LessonResource create(LessonResource lessonResource){
+    public LessonResource create(LessonResourceDto lessonResourceDto) {
+        LessonResource lessonResource = new LessonResource();
+        BeanUtils.copyProperties(lessonResourceDto, lessonResource);
         return lessonResourceRepository.save(lessonResource);
     }
 
-    public LessonResource update(LessonResource lessonResource){
+    public LessonResource update(LessonResourceDto lessonResourceDto, Long id) {
+        LessonResource lessonResource = lessonResourceRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "LessonResource not found"));
+
+        BeanUtils.copyProperties(lessonResourceDto, lessonResource);
         return lessonResourceRepository.save(lessonResource);
     }
 
-    public void delete(LessonResource lessonResource){
+    public void delete(Long id) {
+        LessonResource lessonResource = lessonResourceRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "LessonResource not found"));
+
         lessonResourceRepository.delete(lessonResource);
     }
 }

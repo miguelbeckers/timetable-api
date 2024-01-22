@@ -1,19 +1,12 @@
 package ipb.pt.timetableapi.controller;
 
 import ipb.pt.timetableapi.dto.PeriodDto;
-import ipb.pt.timetableapi.model.Period;
 import ipb.pt.timetableapi.service.PeriodService;
-import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import org.springframework.web.client.RestTemplate;
 
 @Controller
 @CrossOrigin
@@ -22,10 +15,8 @@ public class PeriodController {
     @Autowired
     private PeriodService periodService;
 
-    @GetMapping("/hello")
-    public ResponseEntity<String> hello() {
-        return ResponseEntity.ok().body("hello periods!");
-    }
+    @Autowired
+    private RestTemplate restTemplate;
 
     @GetMapping
     public ResponseEntity<Object> getAll() {
@@ -34,51 +25,22 @@ public class PeriodController {
 
     @GetMapping("{id}")
     public ResponseEntity<Object> getById(@PathVariable Long id) {
-        Optional<Period> optional = periodService.findById(id);
-        return optional.<ResponseEntity<Object>>map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return ResponseEntity.ok().body(periodService.findById(id));
     }
 
     @PostMapping()
-    public ResponseEntity<Object> create(@Valid @RequestBody PeriodDto periodDto) {
-        Period period = new Period();
-        BeanUtils.copyProperties(periodDto, period);
-        return ResponseEntity.ok().body(periodService.create(period));
-    }
-
-    @Transactional
-    @PostMapping("/many")
-    public ResponseEntity<List<Object>> createMany(@Valid @RequestBody List<PeriodDto> periodDtoList) {
-
-        List<Object> created = new ArrayList<>();
-        for (PeriodDto periodDto : periodDtoList) {
-            Period period = new Period();
-            BeanUtils.copyProperties(periodDto, period);
-            created.add(periodService.create(period));
-        }
-
-        return ResponseEntity.ok().body(created);
+    public ResponseEntity<Object> create(@RequestBody PeriodDto periodDto) {
+        return ResponseEntity.ok().body(periodService.create(periodDto));
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Object> update(@Valid @RequestBody PeriodDto periodDto, @PathVariable Long id) {
-        Optional<Period> optional = periodService.findById(id);
-        if (optional.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        Period period = optional.get();
-        BeanUtils.copyProperties(periodDto, period);
-        return ResponseEntity.ok().body(periodService.update(period));
+    public ResponseEntity<Object> update(@RequestBody PeriodDto periodDto, @PathVariable Long id) {
+        return ResponseEntity.ok().body(periodService.update(periodDto, id));
     }
 
     @DeleteMapping("{id}")
     public ResponseEntity<Object> delete(@PathVariable Long id) {
-        Optional<Period> areaOptional = periodService.findById(id);
-        if (areaOptional.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        periodService.delete(areaOptional.get());
+        periodService.findById(id);
         return ResponseEntity.ok().build();
     }
 }
