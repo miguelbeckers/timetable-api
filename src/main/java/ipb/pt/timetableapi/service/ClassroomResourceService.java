@@ -45,5 +45,13 @@ public class ClassroomResourceService {
 
         classroomResourceRepository.delete(classroomResource);
     }
+
+    public void createMany(List<ClassroomResourceDto> classroomResourceDtos) {
+        for (ClassroomResourceDto classroomResourceDto : classroomResourceDtos) {
+            ClassroomResource classroomResource = new ClassroomResource();
+            BeanUtils.copyProperties(classroomResourceDto, classroomResource);
+            classroomResourceRepository.save(classroomResource);
+        }
+    }
 }
 

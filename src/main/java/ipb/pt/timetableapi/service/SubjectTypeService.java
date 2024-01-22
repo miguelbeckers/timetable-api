@@ -45,5 +45,13 @@ public class SubjectTypeService {
 
         subjectTypeRepository.delete(subjectType);
     }
+
+    public void createMany(List<SubjectTypeDto> subjectTypeDtos) {
+        for (SubjectTypeDto subjectTypeDto : subjectTypeDtos) {
+            SubjectType subjectType = new SubjectType();
+            BeanUtils.copyProperties(subjectTypeDto, subjectType);
+            subjectTypeRepository.save(subjectType);
+        }
+    }
 }
 

@@ -45,5 +45,13 @@ public class SubjectCourseService {
 
         subjectCourseRepository.delete(subjectCourse);
     }
+
+    public void createMany(List<SubjectCourseDto> subjectCourseDtos) {
+        for (SubjectCourseDto subjectCourseDto : subjectCourseDtos) {
+            SubjectCourse subjectCourse = new SubjectCourse();
+            BeanUtils.copyProperties(subjectCourseDto, subjectCourse);
+            subjectCourseRepository.save(subjectCourse);
+        }
+    }
 }
 

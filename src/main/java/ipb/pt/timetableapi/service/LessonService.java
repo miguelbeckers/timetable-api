@@ -45,4 +45,12 @@ public class LessonService {
 
         lessonRepository.delete(lesson);
     }
+
+    public void createMany(List<LessonDto> lessonDtos) {
+        for (LessonDto lessonDto : lessonDtos) {
+            Lesson lesson = new Lesson();
+            BeanUtils.copyProperties(lessonDto, lesson);
+            lessonRepository.save(lesson);
+        }
+    }
 }

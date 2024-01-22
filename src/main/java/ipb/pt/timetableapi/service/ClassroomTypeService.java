@@ -45,5 +45,13 @@ public class ClassroomTypeService {
 
         classroomTypeRepository.delete(classroomType);
     }
+
+    public void createMany(List<ClassroomTypeDto> classroomTypeDtos) {
+        for (ClassroomTypeDto classroomTypeDto : classroomTypeDtos) {
+            ClassroomType classroomType = new ClassroomType();
+            BeanUtils.copyProperties(classroomTypeDto, classroomType);
+            classroomTypeRepository.save(classroomType);
+        }
+    }
 }
 

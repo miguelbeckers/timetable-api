@@ -46,5 +46,13 @@ public class PeriodService {
 
         periodRepository.delete(period);
     }
+
+    public void createMany(List<PeriodDto> periodDtos) {
+        for (PeriodDto periodDto : periodDtos) {
+            Period period = new Period();
+            BeanUtils.copyProperties(periodDto, period);
+            periodRepository.save(period);
+        }
+    }
 }
 

@@ -45,5 +45,13 @@ public class ProfessorService {
 
         professorRepository.delete(professor);
     }
+
+    public void createMany(List<ProfessorDto> professorDtos) {
+        for (ProfessorDto professorDto : professorDtos) {
+            Professor professor = new Professor();
+            BeanUtils.copyProperties(professorDto, professor);
+            professorRepository.save(professor);
+        }
+    }
 }
 

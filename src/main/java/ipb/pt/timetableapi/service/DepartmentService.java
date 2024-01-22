@@ -45,5 +45,13 @@ public class DepartmentService {
 
         departmentRepository.delete(department);
     }
+
+    public void createMany(List<DepartmentDto> departmentDtos) {
+        for (DepartmentDto departmentDto : departmentDtos) {
+            Department department = new Department();
+            BeanUtils.copyProperties(departmentDto, department);
+            departmentRepository.save(department);
+        }
+    }
 }
 

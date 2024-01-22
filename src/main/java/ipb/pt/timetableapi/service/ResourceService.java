@@ -45,5 +45,13 @@ public class ResourceService {
 
         resourceRepository.delete(resource);
     }
+
+    public void createMany(List<ResourceDto> resourceDtos) {
+        for (ResourceDto resourceDto : resourceDtos) {
+            Resource resource = new Resource();
+            BeanUtils.copyProperties(resourceDto, resource);
+            resourceRepository.save(resource);
+        }
+    }
 }
 

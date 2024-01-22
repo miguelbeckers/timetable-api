@@ -45,5 +45,13 @@ public class TimeslotService {
 
         timeslotRepository.delete(timeslot);
     }
+
+    public void createMany(List<TimeslotDto> timeslotDtos) {
+        for (TimeslotDto timeslotDto : timeslotDtos) {
+            Timeslot timeslot = new Timeslot();
+            BeanUtils.copyProperties(timeslotDto, timeslot);
+            timeslotRepository.save(timeslot);
+        }
+    }
 }
 
