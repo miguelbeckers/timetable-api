@@ -16,7 +16,6 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-@PlanningEntity
 public class Lesson {
     @Id
     private Long id;
