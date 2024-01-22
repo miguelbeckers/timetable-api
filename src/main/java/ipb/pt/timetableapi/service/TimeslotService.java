@@ -46,6 +46,10 @@ public class TimeslotService {
         timeslotRepository.delete(timeslot);
     }
 
+    public void deleteAll() {
+        timeslotRepository.deleteAll();
+    }
+
     public void createMany(List<TimeslotDto> timeslotDtos) {
         for (TimeslotDto timeslotDto : timeslotDtos) {
             Timeslot timeslot = new Timeslot();

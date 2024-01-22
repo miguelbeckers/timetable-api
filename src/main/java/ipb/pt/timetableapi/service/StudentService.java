@@ -46,6 +46,10 @@ public class StudentService {
         studentRepository.delete(student);
     }
 
+    public void deleteAll() {
+        studentRepository.deleteAll();
+    }
+
     public void createMany(List<StudentDto> studentDtos) {
         for (StudentDto studentDto : studentDtos) {
             Student student = new Student();

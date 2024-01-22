@@ -46,6 +46,10 @@ public class SubjectTypeService {
         subjectTypeRepository.delete(subjectType);
     }
 
+    public void deleteAll() {
+        subjectTypeRepository.deleteAll();
+    }
+
     public void createMany(List<SubjectTypeDto> subjectTypeDtos) {
         for (SubjectTypeDto subjectTypeDto : subjectTypeDtos) {
             SubjectType subjectType = new SubjectType();

@@ -46,6 +46,10 @@ public class ProfessorService {
         professorRepository.delete(professor);
     }
 
+    public void deleteAll() {
+        professorRepository.deleteAll();
+    }
+
     public void createMany(List<ProfessorDto> professorDtos) {
         for (ProfessorDto professorDto : professorDtos) {
             Professor professor = new Professor();

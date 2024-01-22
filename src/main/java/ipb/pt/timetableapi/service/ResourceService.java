@@ -46,6 +46,10 @@ public class ResourceService {
         resourceRepository.delete(resource);
     }
 
+    public void deleteAll() {
+        resourceRepository.deleteAll();
+    }
+
     public void createMany(List<ResourceDto> resourceDtos) {
         for (ResourceDto resourceDto : resourceDtos) {
             Resource resource = new Resource();

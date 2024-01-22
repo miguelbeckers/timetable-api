@@ -46,6 +46,10 @@ public class SubjectCourseService {
         subjectCourseRepository.delete(subjectCourse);
     }
 
+    public void deleteAll() {
+        subjectCourseRepository.deleteAll();
+    }
+
     public void createMany(List<SubjectCourseDto> subjectCourseDtos) {
         for (SubjectCourseDto subjectCourseDto : subjectCourseDtos) {
             SubjectCourse subjectCourse = new SubjectCourse();

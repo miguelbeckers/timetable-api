@@ -46,6 +46,10 @@ public class ClassroomService {
         classroomRepository.delete(classroom);
     }
 
+    public void deleteAll() {
+        classroomRepository.deleteAll();
+    }
+
     public void createMany(List<ClassroomDto> classroomDtos) {
         for (ClassroomDto classroomDto : classroomDtos) {
             Classroom classroom = new Classroom();

@@ -46,6 +46,10 @@ public class ClassroomResourceService {
         classroomResourceRepository.delete(classroomResource);
     }
 
+    public void deleteAll() {
+        classroomResourceRepository.deleteAll();
+    }
+
     public void createMany(List<ClassroomResourceDto> classroomResourceDtos) {
         for (ClassroomResourceDto classroomResourceDto : classroomResourceDtos) {
             ClassroomResource classroomResource = new ClassroomResource();

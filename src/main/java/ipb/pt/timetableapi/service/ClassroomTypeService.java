@@ -46,6 +46,10 @@ public class ClassroomTypeService {
         classroomTypeRepository.delete(classroomType);
     }
 
+    public void deleteAll() {
+        classroomTypeRepository.deleteAll();
+    }
+
     public void createMany(List<ClassroomTypeDto> classroomTypeDtos) {
         for (ClassroomTypeDto classroomTypeDto : classroomTypeDtos) {
             ClassroomType classroomType = new ClassroomType();

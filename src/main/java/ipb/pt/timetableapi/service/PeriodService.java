@@ -47,6 +47,10 @@ public class PeriodService {
         periodRepository.delete(period);
     }
 
+    public void deleteAll() {
+        periodRepository.deleteAll();
+    }
+
     public void createMany(List<PeriodDto> periodDtos) {
         for (PeriodDto periodDto : periodDtos) {
             Period period = new Period();

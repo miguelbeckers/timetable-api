@@ -46,6 +46,10 @@ public class DepartmentService {
         departmentRepository.delete(department);
     }
 
+    public void deleteAll() {
+        departmentRepository.deleteAll();
+    }
+
     public void createMany(List<DepartmentDto> departmentDtos) {
         for (DepartmentDto departmentDto : departmentDtos) {
             Department department = new Department();

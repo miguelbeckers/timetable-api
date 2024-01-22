@@ -46,6 +46,10 @@ public class LessonResourceService {
         lessonResourceRepository.delete(lessonResource);
     }
 
+    public void deleteAll() {
+        lessonResourceRepository.deleteAll();
+    }
+
     public void createMany(List<LessonResourceDto> lessonResourceDtos) {
         for (LessonResourceDto lessonResourceDto : lessonResourceDtos) {
             LessonResource lessonResource = new LessonResource();
