@@ -2,6 +2,7 @@ package ipb.pt.timetableapi.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,5 +24,6 @@ public class Classroom {
     private List<Timeslot> unavailability = new ArrayList<>();
     @OneToMany
     private List<ClassroomResource> classroomResources = new ArrayList<>();
-    private Long type;
+    @ManyToOne
+    private ClassroomType classroomType;
 }

@@ -10,7 +10,7 @@ public class ClassroomDto {
     private Long id;
     private String name;
     private String abbreviation;
-    private List<Long> unavailability = new ArrayList<>();
-    private List<Long> classroomResources = new ArrayList<>();
-    private Long typeId;
+    private List<Long> unavailabilityIds = new ArrayList<>();
+    private List<Long> classroomResourceIds = new ArrayList<>();
+    private Long classroomTypeId;
 }
