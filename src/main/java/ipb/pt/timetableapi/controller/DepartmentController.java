@@ -66,7 +66,7 @@ public class DepartmentController {
             return ResponseEntity.notFound().build();
         }
 
-        departmentService.createMany(Arrays.asList(departmentDtos));
+        departmentService.saveAll(Arrays.asList(departmentDtos));
         return ResponseEntity.ok().build();
     }
 }

@@ -57,7 +57,7 @@ public class ClassroomService {
         classroomRepository.deleteAll();
     }
 
-    public void createMany(List<ClassroomDto> classroomDtos) {
+    public void saveAll(List<ClassroomDto> classroomDtos) {
         List<Classroom> classrooms = classroomConverter.toModel(classroomDtos);
         classroomRepository.saveAll(classrooms);
     }

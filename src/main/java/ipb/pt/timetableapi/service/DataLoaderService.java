@@ -76,20 +76,20 @@ public class DataLoaderService {
             List<LessonDto> lessonDtos,
             List<LessonUnitDto> lessonUnitDtos
     ) {
-        subjectService.createMany(subjectDtos);
-        periodService.createMany(periodDtos);
-        resourceService.createMany(resourceDtos);
-        departmentService.createMany(departmentDtos);
-        subjectTypeService.createMany(subjectTypeDtos);
-        timeslotService.createMany(timeslotDtos);
-        professorService.createMany(professorDtos);
-        courseService.createMany(courseDtos);
-        classroomResourceService.createMany(classroomResourceDtos);
-        classroomService.createMany(classroomDtos);
-        lessonResourceService.createMany(lessonResourceDtos);
-        subjectCourseService.createMany(subjectCourseDtos);
-        studentService.createMany(studentDtos);
-        lessonService.createMany(lessonDtos);
-        lessonUnitService.createMany(lessonUnitDtos);
+        subjectService.saveAll(subjectDtos);
+        periodService.saveAll(periodDtos);
+        resourceService.saveAll(resourceDtos);
+        departmentService.saveAll(departmentDtos);
+        subjectTypeService.saveAll(subjectTypeDtos);
+        timeslotService.saveAll(timeslotDtos);
+        professorService.saveAll(professorDtos);
+        courseService.saveAll(courseDtos);
+        classroomResourceService.saveAll(classroomResourceDtos);
+        classroomService.saveAll(classroomDtos);
+        lessonResourceService.saveAll(lessonResourceDtos);
+        subjectCourseService.saveAll(subjectCourseDtos);
+        studentService.saveAll(studentDtos);
+        lessonService.saveAll(lessonDtos);
+        lessonUnitService.saveAll(lessonUnitDtos);
     }
 }

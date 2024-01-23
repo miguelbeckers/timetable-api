@@ -66,7 +66,7 @@ public class ResourceController {
             return ResponseEntity.notFound().build();
         }
 
-        resourceService.createMany(Arrays.asList(resourceDtos));
+        resourceService.saveAll(Arrays.asList(resourceDtos));
         return ResponseEntity.ok().build();
     }
 }

@@ -57,7 +57,7 @@ public class ResourceService {
         resourceRepository.deleteAll();
     }
 
-    public void createMany(List<ResourceDto> resourceDtos) {
+    public void saveAll(List<ResourceDto> resourceDtos) {
         List<Resource> resources = resourceConverter.toModel(resourceDtos);
         resourceRepository.saveAll(resources);
     }

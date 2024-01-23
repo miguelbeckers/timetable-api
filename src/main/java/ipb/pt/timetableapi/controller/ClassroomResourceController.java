@@ -66,7 +66,7 @@ public class ClassroomResourceController {
             return ResponseEntity.notFound().build();
         }
 
-        classroomResourceService.createMany(Arrays.asList(classroomResourceDtos));
+        classroomResourceService.saveAll(Arrays.asList(classroomResourceDtos));
         return ResponseEntity.ok().build();
     }
 }

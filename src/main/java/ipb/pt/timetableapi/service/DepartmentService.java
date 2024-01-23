@@ -57,7 +57,7 @@ public class DepartmentService {
         departmentRepository.deleteAll();
     }
 
-    public void createMany(List<DepartmentDto> departmentDtos) {
+    public void saveAll(List<DepartmentDto> departmentDtos) {
         List<Department> departments = departmentConverter.toModel(departmentDtos);
         departmentRepository.saveAll(departments);
     }

@@ -66,7 +66,7 @@ public class SubjectController {
             return ResponseEntity.notFound().build();
         }
 
-        subjectService.createMany(Arrays.asList(subjectDtos));
+        subjectService.saveAll(Arrays.asList(subjectDtos));
         return ResponseEntity.ok().build();
     }
 }

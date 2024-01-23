@@ -57,7 +57,7 @@ public class ProfessorService {
         professorRepository.deleteAll();
     }
 
-    public void createMany(List<ProfessorDto> professorDtos) {
+    public void saveAll(List<ProfessorDto> professorDtos) {
         List<Professor> professors = professorConverter.toModel(professorDtos);
         professorRepository.saveAll(professors);
     }

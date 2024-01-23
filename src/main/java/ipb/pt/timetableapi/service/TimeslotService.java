@@ -57,7 +57,7 @@ public class TimeslotService {
         timeslotRepository.deleteAll();
     }
 
-    public void createMany(List<TimeslotDto> timeslotDtos) {
+    public void saveAll(List<TimeslotDto> timeslotDtos) {
         List<Timeslot> timeslots = timeslotConverter.toModel(timeslotDtos);
         timeslotRepository.saveAll(timeslots);
     }

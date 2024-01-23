@@ -57,7 +57,7 @@ public class SubjectTypeService {
         subjectTypeRepository.deleteAll();
     }
 
-    public void createMany(List<SubjectTypeDto> subjectTypeDtos) {
+    public void saveAll(List<SubjectTypeDto> subjectTypeDtos) {
         List<SubjectType> subjectTypes = subjectTypeConverter.toModel(subjectTypeDtos);
         subjectTypeRepository.saveAll(subjectTypes);
     }

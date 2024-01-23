@@ -66,7 +66,7 @@ public class TimeslotController {
             return ResponseEntity.notFound().build();
         }
 
-        timeslotService.createMany(Arrays.asList(timeslotDtos));
+        timeslotService.saveAll(Arrays.asList(timeslotDtos));
         return ResponseEntity.ok().build();
     }
 }

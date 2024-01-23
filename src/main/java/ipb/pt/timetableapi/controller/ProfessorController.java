@@ -66,7 +66,7 @@ public class ProfessorController {
             return ResponseEntity.notFound().build();
         }
 
-        professorService.createMany(Arrays.asList(professorDtos));
+        professorService.saveAll(Arrays.asList(professorDtos));
         return ResponseEntity.ok().build();
     }
 }

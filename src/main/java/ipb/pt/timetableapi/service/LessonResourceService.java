@@ -57,7 +57,7 @@ public class LessonResourceService {
         lessonResourceRepository.deleteAll();
     }
 
-    public void createMany(List<LessonResourceDto> lessonResourceDtos) {
+    public void saveAll(List<LessonResourceDto> lessonResourceDtos) {
         List<LessonResource> lessonResources = lessonResourceConverter.toModel(lessonResourceDtos);
         lessonResourceRepository.saveAll(lessonResources);
     }

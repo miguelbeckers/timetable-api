@@ -66,7 +66,7 @@ public class LessonController {
             return ResponseEntity.notFound().build();
         }
 
-        lessonService.createMany(Arrays.asList(lessonDtos));
+        lessonService.saveAll(Arrays.asList(lessonDtos));
         return ResponseEntity.ok().build();
     }
 

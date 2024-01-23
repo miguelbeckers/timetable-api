@@ -57,7 +57,7 @@ public class LessonUnitService {
         lessonUnitRepository.deleteAll();
     }
 
-    public void createMany(List<LessonUnitDto> lessonUnitDtos) {
+    public void saveAll(List<LessonUnitDto> lessonUnitDtos) {
         List<LessonUnit> lessonUnits = lessonUnitConverter.toModel(lessonUnitDtos);
         lessonUnitRepository.saveAll(lessonUnits);
     }

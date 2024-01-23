@@ -66,7 +66,7 @@ public class StudentController {
             return ResponseEntity.notFound().build();
         }
 
-        studentService.createMany(Arrays.asList(studentDtos));
+        studentService.saveAll(Arrays.asList(studentDtos));
         return ResponseEntity.ok().build();
     }
 }

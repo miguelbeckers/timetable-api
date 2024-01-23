@@ -66,7 +66,7 @@ public class PeriodController {
             return ResponseEntity.notFound().build();
         }
 
-        periodService.createMany(Arrays.asList(periodDtos));
+        periodService.saveAll(Arrays.asList(periodDtos));
         return ResponseEntity.ok().build();
     }
 }

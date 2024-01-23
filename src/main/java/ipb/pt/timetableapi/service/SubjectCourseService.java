@@ -57,7 +57,7 @@ public class SubjectCourseService {
         subjectCourseRepository.deleteAll();
     }
 
-    public void createMany(List<SubjectCourseDto> subjectCourseDtos) {
+    public void saveAll(List<SubjectCourseDto> subjectCourseDtos) {
         List<SubjectCourse> subjectCourses = subjectCourseConverter.toModel(subjectCourseDtos);
         subjectCourseRepository.saveAll(subjectCourses);
     }

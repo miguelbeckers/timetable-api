@@ -58,7 +58,7 @@ public class PeriodService {
         periodRepository.deleteAll();
     }
 
-    public void createMany(List<PeriodDto> periodDtos) {
+    public void saveAll(List<PeriodDto> periodDtos) {
         List<Period> periods = periodConverter.toModel(periodDtos);
         periodRepository.saveAll(periods);
     }
