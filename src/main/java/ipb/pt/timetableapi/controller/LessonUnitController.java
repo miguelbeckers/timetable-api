@@ -43,4 +43,9 @@ public class LessonUnitController {
         lessonUnitService.findById(id);
         return ResponseEntity.ok().build();
     }
+
+    @PutMapping("/reset")
+    public ResponseEntity<Object> reset() {
+        return ResponseEntity.ok().body(lessonUnitService.resetAll());
+    }
 }

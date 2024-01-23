@@ -43,16 +43,4 @@ public class LessonController {
         lessonService.findById(id);
         return ResponseEntity.ok().build();
     }
-
-//    @PutMapping("/reset")
-//    public ResponseEntity<List<Lesson>> reset() {
-//        List<Lesson> lessons = lessonService.findAll();
-//        List<Lesson> updated = new ArrayList<>();
-//        for(Lesson lesson: lessons) {
-//            lesson.setTimeslot(null);
-//            lesson.setLesson(null);
-//            updated.add(lessonService.update(lesson));
-//        }
-//        return ResponseEntity.ok().body(updated);
-//    }
 }

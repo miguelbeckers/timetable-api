@@ -61,5 +61,16 @@ public class LessonUnitService {
         List<LessonUnit> lessonUnits = lessonUnitConverter.toModel(lessonUnitDtos);
         lessonUnitRepository.saveAll(lessonUnits);
     }
+
+    public List<LessonUnit> resetAll(){
+        List<LessonUnit> lessonUnits = lessonUnitRepository.findAll();
+
+        lessonUnits.forEach(lessonUnit -> {
+            lessonUnit.setTimeslot(null);
+            lessonUnit.setClassroom(null);
+        });
+
+        return lessonUnitRepository.saveAll(lessonUnits);
+    }
 }
 
