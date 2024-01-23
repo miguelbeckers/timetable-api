@@ -1,6 +1,5 @@
 package ipb.pt.timetableapi.model;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
@@ -22,10 +21,10 @@ public class LessonUnit {
     private Lesson lesson;
 
     // Initialized/Changed during planning
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @PlanningVariable(valueRangeProviderRefs = "timeslotRange")
     private Timeslot timeslot;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @PlanningVariable(valueRangeProviderRefs = "classroomRange")
     private Classroom classroom;
 }

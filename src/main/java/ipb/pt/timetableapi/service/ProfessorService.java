@@ -58,18 +58,8 @@ public class ProfessorService {
     }
 
     public void saveAll(List<ProfessorDto> professorDtos) {
-        try {
-            List<Professor> professors = professorConverter.toModel(professorDtos);
-
-            for (Professor professor : professors) {
-                System.out.println("professor: " + professor.getId());
-                professorRepository.save(professor);
-            }
-
-//            professorRepository.saveAll(professors);
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid professor data");
-        }
+        List<Professor> professors = professorConverter.toModel(professorDtos);
+        professorRepository.saveAll(professors);
     }
 }
 

@@ -32,9 +32,11 @@ public class CourseConverter {
         Course course = new Course();
         BeanUtils.copyProperties(courseDto, course);
 
-        Department department = new Department();
-        department.setId(courseDto.getDepartmentId());
-        course.setDepartment(department);
+        if (courseDto.getDepartmentId() != null) {
+            Department department = new Department();
+            department.setId(courseDto.getDepartmentId());
+            course.setDepartment(department);
+        }
 
         course.setUnavailability(courseDto.getUnavailabilityIds().stream()
                 .map(id -> {
@@ -44,7 +46,7 @@ public class CourseConverter {
                 })
                 .toList());
 
-        course.setCoursePeriod(courseDto.getCoursePeriodIds().stream()
+        course.setPeriods(courseDto.getPeriodIds().stream()
                 .map(id -> {
                     Period coursePeriod = new Period();
                     coursePeriod.setId(id);

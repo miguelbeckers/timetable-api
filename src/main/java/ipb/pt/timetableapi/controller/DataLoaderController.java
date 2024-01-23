@@ -59,6 +59,9 @@ public class DataLoaderController {
         CompletableFuture<ClassroomResourceDto[]> classroomResourceResponse = CompletableFuture.supplyAsync(() -> restTemplate.getForEntity(
                 baseUrl + "/classroom-resources", ClassroomResourceDto[].class).getBody());
 
+        CompletableFuture<ClassroomTypeDto[]> classroomTypeResponse = CompletableFuture.supplyAsync(() -> restTemplate.getForEntity(
+                baseUrl + "/classroom-types", ClassroomTypeDto[].class).getBody());
+
         CompletableFuture<ClassroomDto[]> classroomResponse = CompletableFuture.supplyAsync(() -> restTemplate.getForEntity(
                 baseUrl + "/classrooms", ClassroomDto[].class).getBody());
 
@@ -87,6 +90,7 @@ public class DataLoaderController {
                 professorResponse,
                 courseResponse,
                 classroomResourceResponse,
+                classroomTypeResponse,
                 classroomResponse,
                 lessonResourceResponse,
                 subjectCourseResponse,
@@ -105,6 +109,7 @@ public class DataLoaderController {
                 Arrays.asList(professorResponse.join()),
                 Arrays.asList(courseResponse.join()),
                 Arrays.asList(classroomResourceResponse.join()),
+                Arrays.asList(classroomTypeResponse.join()),
                 Arrays.asList(classroomResponse.join()),
                 Arrays.asList(lessonResourceResponse.join()),
                 Arrays.asList(subjectCourseResponse.join()),
@@ -113,6 +118,6 @@ public class DataLoaderController {
                 Arrays.asList(lessonUnitResponse.join())
         );
 
-        return CompletableFuture.completedFuture(ResponseEntity.ok().body("loaded"));
+        return CompletableFuture.completedFuture(ResponseEntity.ok().body("Data loaded successfully!"));
     }
 }

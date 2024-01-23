@@ -57,7 +57,7 @@ public class ClassroomTypeService {
         classroomTypeRepository.deleteAll();
     }
 
-    public void createMany(List<ClassroomTypeDto> classroomTypeDtos) {
+    public void saveAll(List<ClassroomTypeDto> classroomTypeDtos) {
         List<ClassroomType> classroomTypes = classroomTypeConverter.toModel(classroomTypeDtos);
         classroomTypeRepository.saveAll(classroomTypes);
     }

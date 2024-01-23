@@ -17,10 +17,10 @@ public class Classroom {
     private Long id;
     private String name;
     private String abbreviation;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     private ClassroomType classroomType;
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany
     private List<Timeslot> unavailability = new ArrayList<>();
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany
     private List<ClassroomResource> classroomResources = new ArrayList<>();
 }

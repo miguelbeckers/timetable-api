@@ -12,5 +12,5 @@ public class CourseDto {
     private String abbreviation;
     private Long departmentId;
     private List<Long> unavailabilityIds = new ArrayList<>();
-    private List<Long> coursePeriodIds = new ArrayList<>();
+    private List<Long> periodIds = new ArrayList<>();
 }

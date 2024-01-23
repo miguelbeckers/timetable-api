@@ -19,14 +19,14 @@ public class Lesson {
     private String color;
     private Double hoursPerWeek;
     private Integer blocks;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     private SubjectCourse subjectCourse;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     private SubjectType subjectType;
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Professor> professors = new ArrayList<>();
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany
     private List<LessonResource> lessonResources = new ArrayList<>();
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany
+    private List<Professor> professors = new ArrayList<>();
+    @ManyToMany
     private List<Student> students = new ArrayList<>();
 }

@@ -1,6 +1,8 @@
 package ipb.pt.timetableapi.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,6 +17,6 @@ import java.util.List;
 public class Student {
     @Id
     private Long id;
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany
     private List<SubjectCourse> subjectCourses = new ArrayList<>();
 }

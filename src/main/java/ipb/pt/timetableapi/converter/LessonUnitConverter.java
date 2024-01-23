@@ -30,9 +30,10 @@ public class LessonUnitConverter {
         LessonUnit lessonUnit = new LessonUnit();
         BeanUtils.copyProperties(lessonUnitDto, lessonUnit);
 
-        Lesson lesson = new Lesson();
-        lesson.setId(lessonUnitDto.getLessonId());
-        lessonUnit.setLesson(lesson);
+        // FIXME: review the associations
+//        Lesson lesson = new Lesson();
+//        lesson.setId(lessonUnitDto.getLessonId());
+//        lessonUnit.setLesson(lesson);
 
         return lessonUnit;
     }

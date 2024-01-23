@@ -17,6 +17,7 @@ public class DataLoaderService {
     private final ProfessorService professorService;
     private final CourseService courseService;
     private final ClassroomResourceService classroomResourceService;
+    private final ClassroomTypeService classroomTypeService;
     private final ClassroomService classroomService;
     private final LessonResourceService lessonResourceService;
     private final SubjectCourseService subjectCourseService;
@@ -35,6 +36,7 @@ public class DataLoaderService {
             ProfessorService professorService,
             CourseService courseService,
             ClassroomResourceService classroomResourceService,
+            ClassroomTypeService classroomTypeService,
             ClassroomService classroomService,
             LessonResourceService lessonResourceService,
             SubjectCourseService subjectCourseService,
@@ -51,6 +53,7 @@ public class DataLoaderService {
         this.professorService = professorService;
         this.courseService = courseService;
         this.classroomResourceService = classroomResourceService;
+        this.classroomTypeService = classroomTypeService;
         this.classroomService = classroomService;
         this.lessonResourceService = lessonResourceService;
         this.subjectCourseService = subjectCourseService;
@@ -69,6 +72,7 @@ public class DataLoaderService {
             List<ProfessorDto> professorDtos,
             List<CourseDto> courseDtos,
             List<ClassroomResourceDto> classroomResourceDtos,
+            List<ClassroomTypeDto> classroomTypeDtos,
             List<ClassroomDto> classroomDtos,
             List<LessonResourceDto> lessonResourceDtos,
             List<SubjectCourseDto> subjectCourseDtos,
@@ -101,11 +105,14 @@ public class DataLoaderService {
         professorService.saveAll(professorDtos);
         courseService.saveAll(courseDtos);
         classroomResourceService.saveAll(classroomResourceDtos);
+        classroomTypeService.saveAll(classroomTypeDtos);
         classroomService.saveAll(classroomDtos);
         lessonResourceService.saveAll(lessonResourceDtos);
         subjectCourseService.saveAll(subjectCourseDtos);
         studentService.saveAll(studentDtos);
         lessonService.saveAll(lessonDtos);
         lessonUnitService.saveAll(lessonUnitDtos);
+
+        System.out.println("Data persisted successfully!");
     }
 }

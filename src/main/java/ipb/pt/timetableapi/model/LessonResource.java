@@ -1,6 +1,8 @@
 package ipb.pt.timetableapi.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,7 +14,7 @@ import lombok.Setter;
 public class LessonResource {
     @Id
     private Long id;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     private Resource resource;
     private double quantity;
 }
