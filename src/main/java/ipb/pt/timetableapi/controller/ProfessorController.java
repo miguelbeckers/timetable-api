@@ -3,26 +3,20 @@ package ipb.pt.timetableapi.controller;
 import ipb.pt.timetableapi.dto.ProfessorDto;
 import ipb.pt.timetableapi.service.ProfessorService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
-
-import java.util.Arrays;
 
 @Controller
 @CrossOrigin
 @RequestMapping("/professors")
 public class ProfessorController {
-    @Autowired
-    private ProfessorService professorService;
+    private final ProfessorService professorService;
 
     @Autowired
-    private RestTemplate restTemplate;
-
-    @Value("${api.base-url}")
-    private String baseUrl;
+    public ProfessorController(ProfessorService professorService) {
+        this.professorService = professorService;
+    }
 
     @GetMapping
     public ResponseEntity<Object> getAll() {
@@ -47,26 +41,6 @@ public class ProfessorController {
     @DeleteMapping("{id}")
     public ResponseEntity<Object> delete(@PathVariable Long id) {
         professorService.findById(id);
-        return ResponseEntity.ok().build();
-    }
-
-    @DeleteMapping()
-    public ResponseEntity<Object> deleteAll() {
-        professorService.deleteAll();
-        return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/load")
-    public ResponseEntity<Object> load() {
-        ResponseEntity<ProfessorDto[]> responseEntity = restTemplate.getForEntity(
-                baseUrl + "/professors", ProfessorDto[].class);
-
-        ProfessorDto[] professorDtos = responseEntity.getBody();
-        if (professorDtos == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        professorService.saveAll(Arrays.asList(professorDtos));
         return ResponseEntity.ok().build();
     }
 }

@@ -3,7 +3,6 @@ package ipb.pt.timetableapi.controller;
 import ipb.pt.timetableapi.dto.*;
 import ipb.pt.timetableapi.service.DataLoaderService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Controller;
@@ -17,8 +16,7 @@ import java.util.concurrent.CompletableFuture;
 @Controller
 @RequestMapping("/data")
 public class DataLoaderController {
-    @Value("${api.base-url}")
-    private String baseUrl;
+    private final String baseUrl = "http://localhost:8081";
     private final RestTemplate restTemplate;
     private final DataLoaderService dataLoaderService;
 
