@@ -1,5 +1,6 @@
 package ipb.pt.timetableapi.service;
 
+import ipb.pt.timetableapi.converter.ClassroomTypeConverter;
 import ipb.pt.timetableapi.dto.ClassroomTypeDto;
 import ipb.pt.timetableapi.model.ClassroomType;
 import ipb.pt.timetableapi.repository.ClassroomTypeRepository;
@@ -9,13 +10,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class ClassroomTypeService {
+    private final ClassroomTypeRepository classroomTypeRepository;
+    private final ClassroomTypeConverter classroomTypeConverter;
+
     @Autowired
-    private ClassroomTypeRepository classroomTypeRepository;
+    public ClassroomTypeService(ClassroomTypeRepository classroomTypeRepository, ClassroomTypeConverter classroomTypeConverter) {
+        this.classroomTypeRepository = classroomTypeRepository;
+        this.classroomTypeConverter = classroomTypeConverter;
+    }
 
     public List<ClassroomType> findAll() {
         return classroomTypeRepository.findAll();
@@ -52,14 +58,7 @@ public class ClassroomTypeService {
     }
 
     public void createMany(List<ClassroomTypeDto> classroomTypeDtos) {
-        List<ClassroomType> classroomTypes = new ArrayList<>();
-
-        for (ClassroomTypeDto classroomTypeDto : classroomTypeDtos) {
-            ClassroomType classroomType = new ClassroomType();
-            BeanUtils.copyProperties(classroomTypeDto, classroomType);
-            classroomTypes.add(classroomType);
-        }
-
+        List<ClassroomType> classroomTypes = classroomTypeConverter.toModel(classroomTypeDtos);
         classroomTypeRepository.saveAll(classroomTypes);
     }
 }

@@ -1,5 +1,6 @@
 package ipb.pt.timetableapi.service;
 
+import ipb.pt.timetableapi.converter.ClassroomResourceConverter;
 import ipb.pt.timetableapi.dto.ClassroomResourceDto;
 import ipb.pt.timetableapi.model.ClassroomResource;
 import ipb.pt.timetableapi.repository.ClassroomResourceRepository;
@@ -9,13 +10,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class ClassroomResourceService {
+    private final ClassroomResourceRepository classroomResourceRepository;
+    private final ClassroomResourceConverter classroomResourceConverter;
+
     @Autowired
-    private ClassroomResourceRepository classroomResourceRepository;
+    public ClassroomResourceService(ClassroomResourceRepository classroomResourceRepository, ClassroomResourceConverter classroomResourceConverter) {
+        this.classroomResourceRepository = classroomResourceRepository;
+        this.classroomResourceConverter = classroomResourceConverter;
+    }
 
     public List<ClassroomResource> findAll() {
         return classroomResourceRepository.findAll();
@@ -52,14 +58,7 @@ public class ClassroomResourceService {
     }
 
     public void createMany(List<ClassroomResourceDto> classroomResourceDtos) {
-        List<ClassroomResource> classroomResources = new ArrayList<>();
-
-        for (ClassroomResourceDto classroomResourceDto : classroomResourceDtos) {
-            ClassroomResource classroomResource = new ClassroomResource();
-            BeanUtils.copyProperties(classroomResourceDto, classroomResource);
-            classroomResources.add(classroomResource);
-        }
-
+        List<ClassroomResource> classroomResources = classroomResourceConverter.toModel(classroomResourceDtos);
         classroomResourceRepository.saveAll(classroomResources);
     }
 }

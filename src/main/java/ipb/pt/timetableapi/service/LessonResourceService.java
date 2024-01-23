@@ -1,5 +1,6 @@
 package ipb.pt.timetableapi.service;
 
+import ipb.pt.timetableapi.converter.LessonResourceConverter;
 import ipb.pt.timetableapi.dto.LessonResourceDto;
 import ipb.pt.timetableapi.model.LessonResource;
 import ipb.pt.timetableapi.repository.LessonResourceRepository;
@@ -9,13 +10,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class LessonResourceService {
+    private final LessonResourceRepository lessonResourceRepository;
+    private final LessonResourceConverter lessonResourceConverter;
+
     @Autowired
-    private LessonResourceRepository lessonResourceRepository;
+    public LessonResourceService(LessonResourceRepository lessonResourceRepository, LessonResourceConverter lessonResourceConverter) {
+        this.lessonResourceRepository = lessonResourceRepository;
+        this.lessonResourceConverter = lessonResourceConverter;
+    }
 
     public List<LessonResource> findAll() {
         return lessonResourceRepository.findAll();
@@ -52,14 +58,7 @@ public class LessonResourceService {
     }
 
     public void createMany(List<LessonResourceDto> lessonResourceDtos) {
-        List<LessonResource> lessonResources = new ArrayList<>();
-
-        for (LessonResourceDto lessonResourceDto : lessonResourceDtos) {
-            LessonResource lessonResource = new LessonResource();
-            BeanUtils.copyProperties(lessonResourceDto, lessonResource);
-            lessonResources.add(lessonResource);
-        }
-
+        List<LessonResource> lessonResources = lessonResourceConverter.toModel(lessonResourceDtos);
         lessonResourceRepository.saveAll(lessonResources);
     }
 }

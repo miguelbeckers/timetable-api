@@ -1,6 +1,7 @@
 package ipb.pt.timetableapi.service;
 
 
+import ipb.pt.timetableapi.converter.PeriodConverter;
 import ipb.pt.timetableapi.dto.PeriodDto;
 import ipb.pt.timetableapi.model.Period;
 import ipb.pt.timetableapi.repository.PeriodRepository;
@@ -10,13 +11,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class PeriodService {
+    private final PeriodRepository periodRepository;
+    private final PeriodConverter periodConverter;
+
     @Autowired
-    private PeriodRepository periodRepository;
+    public PeriodService(PeriodRepository periodRepository, PeriodConverter periodConverter) {
+        this.periodRepository = periodRepository;
+        this.periodConverter = periodConverter;
+    }
 
     public List<Period> findAll() {
         return periodRepository.findAll();
@@ -53,14 +59,7 @@ public class PeriodService {
     }
 
     public void createMany(List<PeriodDto> periodDtos) {
-        List<Period> periods = new ArrayList<>();
-
-        for (PeriodDto periodDto : periodDtos) {
-            Period period = new Period();
-            BeanUtils.copyProperties(periodDto, period);
-            periods.add(period);
-        }
-
+        List<Period> periods = periodConverter.toModel(periodDtos);
         periodRepository.saveAll(periods);
     }
 }

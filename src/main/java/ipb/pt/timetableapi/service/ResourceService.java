@@ -1,5 +1,6 @@
 package ipb.pt.timetableapi.service;
 
+import ipb.pt.timetableapi.converter.ResourceConverter;
 import ipb.pt.timetableapi.dto.ResourceDto;
 import ipb.pt.timetableapi.model.Resource;
 import ipb.pt.timetableapi.repository.ResourceRepository;
@@ -9,13 +10,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class ResourceService {
+    private final ResourceRepository resourceRepository;
+    private final ResourceConverter resourceConverter;
+
     @Autowired
-    private ResourceRepository resourceRepository;
+    public ResourceService(ResourceRepository resourceRepository, ResourceConverter resourceConverter) {
+        this.resourceRepository = resourceRepository;
+        this.resourceConverter = resourceConverter;
+    }
 
     public List<Resource> findAll() {
         return resourceRepository.findAll();
@@ -52,14 +58,7 @@ public class ResourceService {
     }
 
     public void createMany(List<ResourceDto> resourceDtos) {
-        List<Resource> resources = new ArrayList<>();
-
-        for (ResourceDto resourceDto : resourceDtos) {
-            Resource resource = new Resource();
-            BeanUtils.copyProperties(resourceDto, resource);
-            resources.add(resource);
-        }
-
+        List<Resource> resources = resourceConverter.toModel(resourceDtos);
         resourceRepository.saveAll(resources);
     }
 }

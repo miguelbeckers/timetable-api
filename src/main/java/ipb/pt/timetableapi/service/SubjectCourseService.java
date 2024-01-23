@@ -1,5 +1,6 @@
 package ipb.pt.timetableapi.service;
 
+import ipb.pt.timetableapi.converter.SubjectCourseConverter;
 import ipb.pt.timetableapi.dto.SubjectCourseDto;
 import ipb.pt.timetableapi.model.SubjectCourse;
 import ipb.pt.timetableapi.repository.SubjectCourseRepository;
@@ -9,13 +10,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class SubjectCourseService {
+    private final SubjectCourseRepository subjectCourseRepository;
+    private final SubjectCourseConverter subjectCourseConverter;
+
     @Autowired
-    private SubjectCourseRepository subjectCourseRepository;
+    public SubjectCourseService(SubjectCourseRepository subjectCourseRepository, SubjectCourseConverter subjectCourseConverter) {
+        this.subjectCourseRepository = subjectCourseRepository;
+        this.subjectCourseConverter = subjectCourseConverter;
+    }
 
     public List<SubjectCourse> findAll() {
         return subjectCourseRepository.findAll();
@@ -52,14 +58,7 @@ public class SubjectCourseService {
     }
 
     public void createMany(List<SubjectCourseDto> subjectCourseDtos) {
-        List<SubjectCourse> subjectCourses = new ArrayList<>();
-
-        for (SubjectCourseDto subjectCourseDto : subjectCourseDtos) {
-            SubjectCourse subjectCourse = new SubjectCourse();
-            BeanUtils.copyProperties(subjectCourseDto, subjectCourse);
-            subjectCourses.add(subjectCourse);
-        }
-
+        List<SubjectCourse> subjectCourses = subjectCourseConverter.toModel(subjectCourseDtos);
         subjectCourseRepository.saveAll(subjectCourses);
     }
 }

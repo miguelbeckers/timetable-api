@@ -1,5 +1,6 @@
 package ipb.pt.timetableapi.service;
 
+import ipb.pt.timetableapi.converter.DepartmentConverter;
 import ipb.pt.timetableapi.dto.DepartmentDto;
 import ipb.pt.timetableapi.model.Department;
 import ipb.pt.timetableapi.repository.DepartmentRepository;
@@ -9,13 +10,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class DepartmentService {
+    private final DepartmentRepository departmentRepository;
+    private final DepartmentConverter departmentConverter;
+
     @Autowired
-    private DepartmentRepository departmentRepository;
+    public DepartmentService(DepartmentRepository departmentRepository, DepartmentConverter departmentConverter) {
+        this.departmentRepository = departmentRepository;
+        this.departmentConverter = departmentConverter;
+    }
 
     public List<Department> findAll() {
         return departmentRepository.findAll();
@@ -52,13 +58,7 @@ public class DepartmentService {
     }
 
     public void createMany(List<DepartmentDto> departmentDtos) {
-        List<Department> departments = new ArrayList<>();
-
-        for (DepartmentDto departmentDto : departmentDtos) {
-            Department department = new Department();
-            BeanUtils.copyProperties(departmentDto, department);
-        }
-
+        List<Department> departments = departmentConverter.toModel(departmentDtos);
         departmentRepository.saveAll(departments);
     }
 }

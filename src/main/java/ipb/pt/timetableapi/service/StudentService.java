@@ -1,5 +1,6 @@
 package ipb.pt.timetableapi.service;
 
+import ipb.pt.timetableapi.converter.StudentConverter;
 import ipb.pt.timetableapi.dto.StudentDto;
 import ipb.pt.timetableapi.model.Student;
 import ipb.pt.timetableapi.repository.StudentRepository;
@@ -9,13 +10,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class StudentService {
+    private final StudentRepository studentRepository;
+    private final StudentConverter studentConverter;
+
     @Autowired
-    private StudentRepository studentRepository;
+    public StudentService(StudentRepository studentRepository, StudentConverter studentConverter) {
+        this.studentRepository = studentRepository;
+        this.studentConverter = studentConverter;
+    }
 
     public List<Student> findAll() {
         return studentRepository.findAll();
@@ -52,14 +58,7 @@ public class StudentService {
     }
 
     public void createMany(List<StudentDto> studentDtos) {
-        List<Student> students = new ArrayList<>();
-
-        for (StudentDto studentDto : studentDtos) {
-            Student student = new Student();
-            BeanUtils.copyProperties(studentDto, student);
-            students.add(student);
-        }
-
+        List<Student> students = studentConverter.toModel(studentDtos);
         studentRepository.saveAll(students);
     }
 }

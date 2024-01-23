@@ -1,6 +1,7 @@
 package ipb.pt.timetableapi.service;
 
 
+import ipb.pt.timetableapi.converter.CourseConverter;
 import ipb.pt.timetableapi.dto.CourseDto;
 import ipb.pt.timetableapi.model.Course;
 import ipb.pt.timetableapi.repository.CourseRepository;
@@ -10,13 +11,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class CourseService {
+    private final CourseRepository courseRepository;
+    private final CourseConverter courseConverter;
+
     @Autowired
-    private CourseRepository courseRepository;
+    public CourseService(CourseRepository courseRepository, CourseConverter courseConverter) {
+        this.courseRepository = courseRepository;
+        this.courseConverter = courseConverter;
+    }
 
     public List<Course> findAll() {
         return courseRepository.findAll();
@@ -53,13 +59,7 @@ public class CourseService {
     }
 
     public void createMany(List<CourseDto> courseDtos) {
-        List<Course> courses = new ArrayList<>();
-
-        for (CourseDto courseDto : courseDtos) {
-            Course course = new Course();
-            BeanUtils.copyProperties(courseDto, course);
-            courses.add(course);
-        }
+        List<Course> courses = courseConverter.toModel(courseDtos);
         courseRepository.saveAll(courses);
     }
 }

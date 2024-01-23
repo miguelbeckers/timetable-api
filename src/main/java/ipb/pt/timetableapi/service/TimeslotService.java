@@ -1,5 +1,6 @@
 package ipb.pt.timetableapi.service;
 
+import ipb.pt.timetableapi.converter.TimeslotConverter;
 import ipb.pt.timetableapi.dto.TimeslotDto;
 import ipb.pt.timetableapi.model.Timeslot;
 import ipb.pt.timetableapi.repository.TimeslotRepository;
@@ -13,8 +14,14 @@ import java.util.List;
 
 @Service
 public class TimeslotService {
+    private final TimeslotRepository timeslotRepository;
+    private final TimeslotConverter timeslotConverter;
+
     @Autowired
-    private TimeslotRepository timeslotRepository;
+    public TimeslotService(TimeslotRepository timeslotRepository, TimeslotConverter timeslotConverter) {
+        this.timeslotRepository = timeslotRepository;
+        this.timeslotConverter = timeslotConverter;
+    }
 
     public List<Timeslot> findAll() {
         return timeslotRepository.findAll();
@@ -51,11 +58,8 @@ public class TimeslotService {
     }
 
     public void createMany(List<TimeslotDto> timeslotDtos) {
-        for (TimeslotDto timeslotDto : timeslotDtos) {
-            Timeslot timeslot = new Timeslot();
-            BeanUtils.copyProperties(timeslotDto, timeslot);
-            timeslotRepository.save(timeslot);
-        }
+        List<Timeslot> timeslots = timeslotConverter.toModel(timeslotDtos);
+        timeslotRepository.saveAll(timeslots);
     }
 }
 

@@ -1,5 +1,6 @@
 package ipb.pt.timetableapi.service;
 
+import ipb.pt.timetableapi.converter.SubjectTypeConverter;
 import ipb.pt.timetableapi.dto.SubjectTypeDto;
 import ipb.pt.timetableapi.model.SubjectType;
 import ipb.pt.timetableapi.repository.SubjectTypeRepository;
@@ -9,13 +10,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class SubjectTypeService {
+    private final SubjectTypeRepository subjectTypeRepository;
+    private final SubjectTypeConverter subjectTypeConverter;
+
     @Autowired
-    private SubjectTypeRepository subjectTypeRepository;
+    public SubjectTypeService(SubjectTypeRepository subjectTypeRepository, SubjectTypeConverter subjectTypeConverter) {
+        this.subjectTypeRepository = subjectTypeRepository;
+        this.subjectTypeConverter = subjectTypeConverter;
+    }
 
     public List<SubjectType> findAll() {
         return subjectTypeRepository.findAll();
@@ -52,14 +58,7 @@ public class SubjectTypeService {
     }
 
     public void createMany(List<SubjectTypeDto> subjectTypeDtos) {
-        List<SubjectType> subjectTypes = new ArrayList<>();
-
-        for (SubjectTypeDto subjectTypeDto : subjectTypeDtos) {
-            SubjectType subjectType = new SubjectType();
-            BeanUtils.copyProperties(subjectTypeDto, subjectType);
-            subjectTypes.add(subjectType);
-        }
-
+        List<SubjectType> subjectTypes = subjectTypeConverter.toModel(subjectTypeDtos);
         subjectTypeRepository.saveAll(subjectTypes);
     }
 }

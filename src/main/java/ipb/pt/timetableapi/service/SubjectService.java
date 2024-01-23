@@ -1,23 +1,27 @@
 package ipb.pt.timetableapi.service;
 
+import ipb.pt.timetableapi.converter.SubjectConverter;
 import ipb.pt.timetableapi.dto.SubjectDto;
 import ipb.pt.timetableapi.model.Subject;
 import ipb.pt.timetableapi.repository.SubjectRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 public class SubjectService {
+    private final SubjectRepository subjectRepository;
+    private final SubjectConverter subjectConverter;
+
     @Autowired
-    private SubjectRepository subjectRepository;
+    public SubjectService(SubjectRepository subjectRepository, SubjectConverter subjectConverter) {
+        this.subjectRepository = subjectRepository;
+        this.subjectConverter = subjectConverter;
+    }
 
     public List<Subject> findAll() {
         return subjectRepository.findAll();
@@ -54,14 +58,7 @@ public class SubjectService {
     }
 
     public void createMany(List<SubjectDto> subjectDtos) {
-        List<Subject> subjects = new ArrayList<>();
-
-        for (SubjectDto subjectDto : subjectDtos) {
-            Subject subject = new Subject();
-            BeanUtils.copyProperties(subjectDto, subject);
-            subjects.add(subject);
-        }
-
+        List<Subject> subjects = subjectConverter.toModel(subjectDtos);
         subjectRepository.saveAll(subjects);
     }
 }
