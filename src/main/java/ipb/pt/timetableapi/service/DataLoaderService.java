@@ -76,6 +76,22 @@ public class DataLoaderService {
             List<LessonDto> lessonDtos,
             List<LessonUnitDto> lessonUnitDtos
     ) {
+        subjectService.deleteAll();
+        periodService.deleteAll();
+        resourceService.deleteAll();
+        departmentService.deleteAll();
+        subjectTypeService.deleteAll();
+        timeslotService.deleteAll();
+        professorService.deleteAll();
+        courseService.deleteAll();
+        classroomResourceService.deleteAll();
+        classroomService.deleteAll();
+        lessonResourceService.deleteAll();
+        subjectCourseService.deleteAll();
+        studentService.deleteAll();
+        lessonService.deleteAll();
+        lessonUnitService.deleteAll();
+
         subjectService.saveAll(subjectDtos);
         periodService.saveAll(periodDtos);
         resourceService.saveAll(resourceDtos);
