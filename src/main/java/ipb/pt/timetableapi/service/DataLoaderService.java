@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class DataLoaderService {
@@ -80,28 +81,36 @@ public class DataLoaderService {
             List<LessonDto> lessonDtos,
             List<LessonUnitDto> lessonUnitDtos
     ) {
-        lessonUnitService.deleteAll();
-        lessonService.deleteAll();
-        studentService.deleteAll();
-        subjectCourseService.deleteAll();
-        lessonResourceService.deleteAll();
-        classroomService.deleteAll();
-        classroomResourceService.deleteAll();
-        courseService.deleteAll();
-        professorService.deleteAll();
-        timeslotService.deleteAll();
-        subjectTypeService.deleteAll();
-        departmentService.deleteAll();
-        resourceService.deleteAll();
-        periodService.deleteAll();
-        subjectService.deleteAll();
+        CompletableFuture<Void> deleteAllFuture = CompletableFuture.runAsync(() -> {
+            lessonUnitService.deleteAll();
+            lessonService.deleteAll();
+            studentService.deleteAll();
+            subjectCourseService.deleteAll();
+            lessonResourceService.deleteAll();
+            classroomService.deleteAll();
+            classroomResourceService.deleteAll();
+            courseService.deleteAll();
+            professorService.deleteAll();
+            timeslotService.deleteAll();
+            subjectTypeService.deleteAll();
+            departmentService.deleteAll();
+            resourceService.deleteAll();
+            periodService.deleteAll();
+            subjectService.deleteAll();
+        });
 
-        subjectService.saveAll(subjectDtos);
-        periodService.saveAll(periodDtos);
-        resourceService.saveAll(resourceDtos);
-        departmentService.saveAll(departmentDtos);
-        subjectTypeService.saveAll(subjectTypeDtos);
-        timeslotService.saveAll(timeslotDtos);
+        CompletableFuture<Void> saveAllFuture = deleteAllFuture.thenComposeAsync(result -> CompletableFuture.runAsync(() -> {
+            subjectService.saveAll(subjectDtos);
+            periodService.saveAll(periodDtos);
+            resourceService.saveAll(resourceDtos);
+            departmentService.saveAll(departmentDtos);
+            subjectTypeService.saveAll(subjectTypeDtos);
+            timeslotService.saveAll(timeslotDtos);
+        }));
+
+        CompletableFuture<Void> combinedFuture = CompletableFuture.allOf(deleteAllFuture, saveAllFuture);
+        combinedFuture.join();
+
         professorService.saveAll(professorDtos);
         courseService.saveAll(courseDtos);
         classroomResourceService.saveAll(classroomResourceDtos);
