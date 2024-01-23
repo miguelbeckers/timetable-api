@@ -14,6 +14,8 @@ public class LessonUnitConverter {
     public LessonUnitDto toDto(LessonUnit lessonUnit) {
         LessonUnitDto lessonUnitDto = new LessonUnitDto();
         BeanUtils.copyProperties(lessonUnit, lessonUnitDto);
+        lessonUnitDto.setTimeslotId(lessonUnit.getTimeslot().getId());
+        lessonUnitDto.setLessonId(lessonUnit.getLesson().getId());
         return lessonUnitDto;
     }
 

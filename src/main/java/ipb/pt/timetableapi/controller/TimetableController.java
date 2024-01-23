@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
@@ -58,7 +59,9 @@ public class TimetableController {
             throw new IllegalStateException("Solving failed.", e);
         }
 
-        for (LessonUnitDto lessonUnitDto : lessonUnitConverter.toDto(solution.getLessonUnits())) {
+        List<LessonUnitDto> lessonUnitDtos = lessonUnitConverter.toDto(solution.getLessonUnits());
+
+        for (LessonUnitDto lessonUnitDto : lessonUnitDtos) {
             lessonUnitService.update(lessonUnitDto, lessonUnitDto.getId());
         }
 
