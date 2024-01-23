@@ -13,6 +13,6 @@ public class ClassroomResource {
     @Id
     private Long id;
     private Integer quantity;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private Resource resource;
 }

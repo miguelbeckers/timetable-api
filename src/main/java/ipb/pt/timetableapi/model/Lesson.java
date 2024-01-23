@@ -1,13 +1,9 @@
 package ipb.pt.timetableapi.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.optaplanner.core.api.domain.entity.PlanningEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,14 +19,14 @@ public class Lesson {
     private String color;
     private Double hoursPerWeek;
     private Integer blocks;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private SubjectCourse subjectCourse;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private SubjectType subjectType;
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Professor> professors = new ArrayList<>();
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LessonResource> lessonResources = new ArrayList<>();
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Student> students = new ArrayList<>();
 }

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 @CrossOrigin
-@RequestMapping("/department")
+@RequestMapping("/departments")
 public class DepartmentController {
     private final DepartmentService departmentService;
 

@@ -15,6 +15,6 @@ import java.util.List;
 public class Student {
     @Id
     private Long id;
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SubjectCourse> subjectCourses = new ArrayList<>();
 }

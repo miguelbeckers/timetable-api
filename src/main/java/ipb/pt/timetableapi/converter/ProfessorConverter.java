@@ -8,7 +8,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class ProfessorConverter {
@@ -35,7 +37,12 @@ public class ProfessorConverter {
         department.setId(professorDto.getDepartmentId());
         professor.setDepartment(department);
 
-        professor.setUnavailability(professorDto.getUnavailabilityIds().stream()
+        List<Long> professorUnavailabilityIds = professorDto.getUnavailabilityIds();
+        Set<Long> uniqueProfessorUnavailabilityIds = new HashSet<>(professorUnavailabilityIds);
+        uniqueProfessorUnavailabilityIds.clear();
+        professorUnavailabilityIds.addAll(uniqueProfessorUnavailabilityIds);
+
+        professor.setUnavailability(professorUnavailabilityIds.stream()
                 .map(periodDto -> {
                     Timeslot timeslot = new Timeslot();
                     timeslot.setId(periodDto);

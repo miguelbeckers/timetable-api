@@ -1,9 +1,6 @@
 package ipb.pt.timetableapi.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,10 +17,10 @@ public class Course {
     private Long id;
     private String name;
     private String abbreviation;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private Department department;
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Timeslot> unavailability = new ArrayList<>();
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Period> coursePeriod = new ArrayList<>();
 }

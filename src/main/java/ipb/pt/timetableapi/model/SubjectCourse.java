@@ -1,5 +1,6 @@
 package ipb.pt.timetableapi.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
@@ -14,10 +15,10 @@ import lombok.Setter;
 public class SubjectCourse {
     @Id
     private Long id;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private Course course;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private Subject subject;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private Period period;
 }

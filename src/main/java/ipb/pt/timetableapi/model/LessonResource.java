@@ -12,7 +12,7 @@ import lombok.Setter;
 public class LessonResource {
     @Id
     private Long id;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private Resource resource;
     private double quantity;
 }

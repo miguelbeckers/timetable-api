@@ -17,8 +17,8 @@ public class Professor {
     private Long id;
     private String name;
     private String abbreviation;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private Department department;
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Timeslot> unavailability = new ArrayList<>();
 }
