@@ -1,7 +1,7 @@
 package ipb.pt.timetableapi.converter;
 
 import ipb.pt.timetableapi.dto.LessonDto;
-import ipb.pt.timetableapi.model.Lesson;
+import ipb.pt.timetableapi.model.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
@@ -28,6 +28,39 @@ public class LessonConverter {
     public Lesson toModel(LessonDto lessonDto) {
         Lesson lesson = new Lesson();
         BeanUtils.copyProperties(lessonDto, lesson);
+
+        SubjectCourse subjectCourse = new SubjectCourse();
+        subjectCourse.setId(lessonDto.getSubjectCourseId());
+        lesson.setSubjectCourse(subjectCourse);
+
+        SubjectType subjectType = new SubjectType();
+        subjectType.setId(lessonDto.getSubjectTypeId());
+        lesson.setSubjectType(subjectType);
+
+        lesson.setProfessors(lessonDto.getProfessorIds().stream()
+                .map(professorId -> {
+                    Professor professor = new Professor();
+                    professor.setId(professorId);
+                    return professor;
+                })
+                .toList());
+
+        lesson.setLessonResources(lessonDto.getLessonResourceIds().stream()
+                .map(lessonResourceId -> {
+                    LessonResource lessonResource = new LessonResource();
+                    lessonResource.setId(lessonResourceId);
+                    return lessonResource;
+                })
+                .toList());
+
+        lesson.setStudents(lessonDto.getStudentIds().stream()
+                .map(studentId -> {
+                    Student student = new Student();
+                    student.setId(studentId);
+                    return student;
+                })
+                .toList());
+
         return lesson;
     }
 

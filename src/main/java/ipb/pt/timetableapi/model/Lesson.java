@@ -24,11 +24,11 @@ public class Lesson {
     private Double hoursPerWeek;
     private Integer blocks;
     @ManyToOne
-    private Professor professor;
-    @ManyToOne
     private SubjectCourse subjectCourse;
     @ManyToOne
     private SubjectType subjectType;
+    @OneToMany
+    private List<Professor> professors = new ArrayList<>();
     @OneToMany
     private List<LessonResource> lessonResources = new ArrayList<>();
     @OneToMany

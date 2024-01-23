@@ -2,6 +2,9 @@ package ipb.pt.timetableapi.converter;
 
 import ipb.pt.timetableapi.dto.CourseDto;
 import ipb.pt.timetableapi.model.Course;
+import ipb.pt.timetableapi.model.Department;
+import ipb.pt.timetableapi.model.Period;
+import ipb.pt.timetableapi.model.Timeslot;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
@@ -28,6 +31,27 @@ public class CourseConverter {
     public Course toModel(CourseDto courseDto) {
         Course course = new Course();
         BeanUtils.copyProperties(courseDto, course);
+
+        Department department = new Department();
+        department.setId(courseDto.getDepartmentId());
+        course.setDepartment(department);
+
+        course.setUnavailability(courseDto.getUnavailabilityIds().stream()
+                .map(id -> {
+                    Timeslot unavailability = new Timeslot();
+                    unavailability.setId(id);
+                    return unavailability;
+                })
+                .toList());
+
+        course.setCoursePeriod(courseDto.getCoursePeriodIds().stream()
+                .map(id -> {
+                    Period coursePeriod = new Period();
+                    coursePeriod.setId(id);
+                    return coursePeriod;
+                })
+                .toList());
+
         return course;
     }
 

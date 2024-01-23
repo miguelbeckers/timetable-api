@@ -21,29 +21,6 @@ import java.util.Optional;
 
 @Component
 public class ClassroomConverter {
-//    private final HashMap<Long, Timeslot> unavailabilityMap = new HashMap<>();
-//    private final HashMap<Long, ClassroomResource> classroomResourceMap = new HashMap<>();
-//    private final HashMap<Long, ClassroomType> classroomTypeMap = new HashMap<>();
-//
-//    @Autowired
-//    public ClassroomConverter(
-//            TimeslotRepository timeslotRepository,
-//            ClassroomResourceRepository classroomResourceRepository,
-//            ClassroomTypeRepository classroomTypeRepository) {
-//
-//        for (Timeslot timeslot : timeslotRepository.findAll()) {
-//            unavailabilityMap.put(timeslot.getId(), timeslot);
-//        }
-//
-//        for (ClassroomResource classroomResource : classroomResourceRepository.findAll()) {
-//            classroomResourceMap.put(classroomResource.getId(), classroomResource);
-//        }
-//
-//        for (ClassroomType classroomType : classroomTypeRepository.findAll()) {
-//            classroomTypeMap.put(classroomType.getId(), classroomType);
-//        }
-//    }
-
     public ClassroomDto toDto(Classroom classroom) {
         ClassroomDto classroomDto = new ClassroomDto();
         BeanUtils.copyProperties(classroom, classroomDto);
@@ -68,27 +45,29 @@ public class ClassroomConverter {
         Classroom classroom = new Classroom();
         BeanUtils.copyProperties(classroomDto, classroom);
 
-//        classroom.setUnavailability(
-//                classroomDto.getUnavailabilityIds().stream()
-//                        .map(unavailabilityMap::get)
-//                        .map(Optional::ofNullable)
-//                        .map(optionalTimeslot -> optionalTimeslot.orElseThrow(
-//                                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Timeslot not found")))
-//                        .toList()
-//        );
-//
-//        classroom.setClassroomResources(
-//                classroomDto.getClassroomResourceIds().stream()
-//                        .map(classroomResourceMap::get)
-//                        .map(Optional::ofNullable)
-//                        .map(optionalResource -> optionalResource.orElseThrow(
-//                                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ClassroomResource not found")))
-//                        .toList()
-//        );
-//
-//        classroom.setClassroomType(Optional.ofNullable(classroomTypeMap.get(classroomDto.getClassroomTypeId()))
-//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ClassroomType not found"))
-//        );
+        classroom.setUnavailability(
+                classroomDto.getUnavailabilityIds().stream()
+                        .map(unavailability -> {
+                            Timeslot timeslot = new Timeslot();
+                            timeslot.setId(unavailability);
+                            return timeslot;
+                        })
+                        .toList()
+        );
+
+        classroom.setClassroomResources(
+                classroomDto.getClassroomResourceIds().stream()
+                        .map(classroomResourceId -> {
+                            ClassroomResource classroomResource = new ClassroomResource();
+                            classroomResource.setId(classroomResourceId);
+                            return classroomResource;
+                        })
+                        .toList()
+        );
+
+        ClassroomType classroomType = new ClassroomType();
+        classroomType.setId(classroomDto.getClassroomTypeId());
+        classroom.setClassroomType(classroomType);
 
         return classroom;
     }

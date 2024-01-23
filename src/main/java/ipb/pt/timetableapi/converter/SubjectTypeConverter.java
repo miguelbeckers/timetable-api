@@ -28,6 +28,8 @@ public class SubjectTypeConverter {
     public SubjectType toModel(SubjectTypeDto subjectTypeDto) {
         SubjectType subjectType = new SubjectType();
         BeanUtils.copyProperties(subjectTypeDto, subjectType);
+
+
         return subjectType;
     }
 

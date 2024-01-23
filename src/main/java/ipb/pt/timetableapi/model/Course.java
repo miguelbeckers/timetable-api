@@ -24,4 +24,6 @@ public class Course {
     private Department department;
     @OneToMany
     private List<Timeslot> unavailability = new ArrayList<>();
+    @OneToMany
+    private List<Period> coursePeriod = new ArrayList<>();
 }

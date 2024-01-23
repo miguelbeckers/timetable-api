@@ -2,6 +2,7 @@ package ipb.pt.timetableapi.converter;
 
 import ipb.pt.timetableapi.dto.LessonResourceDto;
 import ipb.pt.timetableapi.model.LessonResource;
+import ipb.pt.timetableapi.model.Resource;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
@@ -28,6 +29,11 @@ public class LessonResourceConverter {
     public LessonResource toModel(LessonResourceDto lessonResourceDto) {
         LessonResource lessonResource = new LessonResource();
         BeanUtils.copyProperties(lessonResourceDto, lessonResource);
+
+        Resource resource = new Resource();
+        resource.setId(lessonResourceDto.getResourceId());
+        lessonResource.setResource(resource);
+
         return lessonResource;
     }
 
