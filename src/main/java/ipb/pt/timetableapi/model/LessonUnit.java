@@ -21,6 +21,7 @@ public class LessonUnit {
     @JsonIgnore
     @ManyToOne
     private Lesson lesson;
+    private String color;
 
     // Initialized/Changed during planning
     @ManyToOne

@@ -4,7 +4,6 @@ import ipb.pt.timetableapi.converter.LessonUnitConverter;
 import ipb.pt.timetableapi.dto.LessonUnitDto;
 import ipb.pt.timetableapi.model.LessonUnit;
 import ipb.pt.timetableapi.repository.LessonUnitRepository;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -33,16 +32,20 @@ public class LessonUnitService {
     }
 
     public LessonUnit create(LessonUnitDto lessonUnitDto) {
-        LessonUnit lessonUnit = new LessonUnit();
-        BeanUtils.copyProperties(lessonUnitDto, lessonUnit);
-        return lessonUnitRepository.save(lessonUnit);
+        return lessonUnitRepository.save(lessonUnitConverter.toModel(lessonUnitDto));
     }
 
     public LessonUnit update(LessonUnitDto lessonUnitDto, Long id) {
-        LessonUnit lessonUnit = lessonUnitRepository.findById(id).orElseThrow(
+        lessonUnitRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "LessonUnit not found"));
 
-        BeanUtils.copyProperties(lessonUnitDto, lessonUnit);
+        return lessonUnitRepository.save(lessonUnitConverter.toModel(lessonUnitDto));
+    }
+
+    public LessonUnit update(LessonUnit lessonUnit) {
+        lessonUnitRepository.findById(lessonUnit.getId()).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "LessonUnit not found"));
+
         return lessonUnitRepository.save(lessonUnit);
     }
 
@@ -59,10 +62,11 @@ public class LessonUnitService {
 
     public void saveAll(List<LessonUnitDto> lessonUnitDtos) {
         List<LessonUnit> lessonUnits = lessonUnitConverter.toModel(lessonUnitDtos);
+
         lessonUnitRepository.saveAll(lessonUnits);
     }
 
-    public List<LessonUnit> resetAll(){
+    public List<LessonUnit> resetAll() {
         List<LessonUnit> lessonUnits = lessonUnitRepository.findAll();
 
         lessonUnits.forEach(lessonUnit -> {

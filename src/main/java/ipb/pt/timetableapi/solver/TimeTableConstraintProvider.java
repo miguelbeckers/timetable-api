@@ -1,6 +1,6 @@
 package ipb.pt.timetableapi.solver;
 
-import ipb.pt.timetableapi.model.*;
+import ipb.pt.timetableapi.model.LessonUnit;
 import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
 import org.optaplanner.core.api.score.stream.Constraint;
 import org.optaplanner.core.api.score.stream.ConstraintFactory;
@@ -8,7 +8,7 @@ import org.optaplanner.core.api.score.stream.ConstraintProvider;
 import org.optaplanner.core.api.score.stream.Joiners;
 
 import java.time.Duration;
-import java.util.List;
+import java.util.Collections;
 
 public class TimeTableConstraintProvider implements ConstraintProvider {
     @Override
@@ -16,27 +16,20 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
         return new Constraint[]{
                 // Hard constraints
                 roomConflict(constraintFactory),
+                professorConflict(constraintFactory),
 //                studentConflict(constraintFactory),
-//                professorConflict(constraintFactory),
 //                resourceAvailability(constraintFactory),
 //                classroomAvailability(constraintFactory),
 //                professorAvailability(constraintFactory),
 //                courseAvailability(constraintFactory),
                 // verificar se nao há conflito entre as turmas de um mesmo ano e curso
-
                 // verificar se não há conflito de aluno
 
                 // Soft constraints
-//                professorTimeEfficiency(constraintFactory) // incluir flag
+                professorTimeEfficiency(constraintFactory) // incluir flag
                 // distribuir a partir do centro do dia - antes do meio dia ou depois das 14h
         };
     }
-
-//    UC1 pode dividir em Ta Tb
-//    UC2 pode dividir em turma Ta Tb Tc Td
-//    nao pode haver conflitos entre UC1ta e UC2ta/tb, UC1tb e UC2tc/td
-//    criar alunos ficticios ao criar as turmas para testar
-//    turno -> lesson
 
     private Constraint roomConflict(ConstraintFactory constraintFactory) {
         return constraintFactory
@@ -48,6 +41,43 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
                 .penalize(HardSoftScore.ONE_HARD)
                 .asConstraint("Room conflict");
     }
+
+    private Constraint professorConflict(ConstraintFactory constraintFactory) {
+        return constraintFactory
+                .forEach(LessonUnit.class)
+                .join(LessonUnit.class,
+                        Joiners.equal(LessonUnit::getTimeslot),
+                        Joiners.lessThan(LessonUnit::getId),
+                        Joiners.filtering((lessonUnit, otherLessonUnit) ->
+                                !Collections.disjoint(
+                                        lessonUnit.getLesson().getProfessors(),
+                                        otherLessonUnit.getLesson().getProfessors()
+                                )
+                        ))
+                .penalize(HardSoftScore.ONE_HARD)
+                .asConstraint("Teacher conflict");
+    }
+
+    private Constraint professorTimeEfficiency(ConstraintFactory constraintFactory) {
+        return constraintFactory
+                .forEach(LessonUnit.class)
+                .join(LessonUnit.class, Joiners.equal((lessonUnit) -> lessonUnit.getLesson().getProfessors()))
+                .filter((lessonUnit1, lessonUnit2) -> {
+                    Duration between = Duration.between(
+                            lessonUnit1.getTimeslot().getEndTime(),
+                            lessonUnit2.getTimeslot().getStartTime()
+                    );
+                    return !between.isNegative() && between.compareTo(Duration.ofMinutes(30)) <= 0;
+                })
+                .reward(HardSoftScore.ONE_SOFT)
+                .asConstraint("Teacher time efficiency");
+    }
+
+//    UC1 pode dividir em Ta Tb
+//    UC2 pode dividir em turma Ta Tb Tc Td
+//    nao pode haver conflitos entre UC1ta e UC2ta/tb, UC1tb e UC2tc/td
+//    criar alunos ficticios ao criar as turmas para testar
+//    turno -> lesson
 
     //TODO: checar antes de descomentar
 //    private Constraint studentConflict(ConstraintFactory constraintFactory) {
@@ -80,15 +110,7 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
 //                .collect(Collectors.toList());
 //    }
 
-//    private Constraint professorConflict(ConstraintFactory constraintFactory) {
-//        return constraintFactory.forEach(Lesson.class)
-//                .join(Lesson.class,
-//                        Joiners.equal(Lesson::getTimeslot),
-//                        Joiners.equal(Lesson::getProfessor),
-//                        Joiners.lessThan(Lesson::getId))
-//                .penalize(HardSoftScore.ONE_HARD)
-//                .asConstraint("Teacher conflict");
-//    }
+
 //
 //    private Constraint resourceAvailability(ConstraintFactory constraintFactory) {
 //        return constraintFactory

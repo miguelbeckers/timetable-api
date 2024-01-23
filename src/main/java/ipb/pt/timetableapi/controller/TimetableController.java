@@ -1,7 +1,6 @@
 package ipb.pt.timetableapi.controller;
 
-import ipb.pt.timetableapi.converter.LessonUnitConverter;
-import ipb.pt.timetableapi.dto.LessonUnitDto;
+import ipb.pt.timetableapi.model.LessonUnit;
 import ipb.pt.timetableapi.model.Timetable;
 import ipb.pt.timetableapi.service.ClassroomService;
 import ipb.pt.timetableapi.service.LessonUnitService;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
@@ -29,21 +27,18 @@ public class TimetableController {
     private final ClassroomService classroomService;
     private final LessonUnitService lessonUnitService;
     private final TimeslotService timeslotService;
-    private final LessonUnitConverter lessonUnitConverter;
 
     @Autowired
     public TimetableController(
             SolverManager<Timetable, UUID> solverManager,
             ClassroomService classroomService,
             LessonUnitService lessonUnitService,
-            TimeslotService timeslotService,
-            LessonUnitConverter lessonUnitConverter
+            TimeslotService timeslotService
     ) {
         this.solverManager = solverManager;
         this.classroomService = classroomService;
         this.lessonUnitService = lessonUnitService;
         this.timeslotService = timeslotService;
-        this.lessonUnitConverter = lessonUnitConverter;
     }
 
     @PostMapping("/solve")
@@ -59,10 +54,8 @@ public class TimetableController {
             throw new IllegalStateException("Solving failed.", e);
         }
 
-        List<LessonUnitDto> lessonUnitDtos = lessonUnitConverter.toDto(solution.getLessonUnits());
-
-        for (LessonUnitDto lessonUnitDto : lessonUnitDtos) {
-            lessonUnitService.update(lessonUnitDto, lessonUnitDto.getId());
+        for (LessonUnit lessonUnit : solution.getLessonUnits()) {
+            lessonUnitService.update(lessonUnit);
         }
 
         return ResponseEntity.ok().body(solution);
