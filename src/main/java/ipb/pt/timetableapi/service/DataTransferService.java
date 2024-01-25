@@ -1,5 +1,6 @@
 package ipb.pt.timetableapi.service;
 
+import ipb.pt.timetableapi.converter.LessonUnitConverter;
 import ipb.pt.timetableapi.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -8,7 +9,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @Service
-public class DataLoaderService {
+public class DataTransferService {
     private final SubjectService subjectService;
     private final PeriodService periodService;
     private final ResourceService resourceService;
@@ -25,9 +26,10 @@ public class DataLoaderService {
     private final StudentService studentService;
     private final LessonService lessonService;
     private final LessonUnitService lessonUnitService;
+    private final LessonUnitConverter lessonUnitConverter;
 
     @Autowired
-    public DataLoaderService(
+    public DataTransferService(
             SubjectService subjectService,
             PeriodService periodService,
             ResourceService resourceService,
@@ -43,7 +45,8 @@ public class DataLoaderService {
             SubjectCourseService subjectCourseService,
             StudentService studentService,
             LessonService lessonService,
-            LessonUnitService lessonUnitService
+            LessonUnitService lessonUnitService,
+            LessonUnitConverter lessonUnitConverter
     ) {
         this.subjectService = subjectService;
         this.periodService = periodService;
@@ -61,6 +64,7 @@ public class DataLoaderService {
         this.studentService = studentService;
         this.lessonService = lessonService;
         this.lessonUnitService = lessonUnitService;
+        this.lessonUnitConverter = lessonUnitConverter;
     }
 
     public void persistAll(
@@ -81,6 +85,34 @@ public class DataLoaderService {
             List<LessonDto> lessonDtos,
             List<LessonUnitDto> lessonUnitDtos
     ) {
+        deleteAll();
+
+        CompletableFuture<Void> saveAllFuture = CompletableFuture.runAsync(() -> {
+            subjectService.saveAll(subjectDtos);
+            periodService.saveAll(periodDtos);
+            resourceService.saveAll(resourceDtos);
+            departmentService.saveAll(departmentDtos);
+            subjectTypeService.saveAll(subjectTypeDtos);
+            timeslotService.saveAll(timeslotDtos);
+        });
+
+        CompletableFuture.allOf(saveAllFuture).join();
+
+        professorService.saveAll(professorDtos);
+        courseService.saveAll(courseDtos);
+        classroomResourceService.saveAll(classroomResourceDtos);
+        classroomTypeService.saveAll(classroomTypeDtos);
+        classroomService.saveAll(classroomDtos);
+        lessonResourceService.saveAll(lessonResourceDtos);
+        subjectCourseService.saveAll(subjectCourseDtos);
+        studentService.saveAll(studentDtos);
+        lessonService.saveAll(lessonDtos);
+        lessonUnitService.saveAll(lessonUnitDtos);
+
+        System.out.println("Data persisted successfully!");
+    }
+
+    public void deleteAll() {
         CompletableFuture<Void> deleteAllFuture = CompletableFuture.runAsync(() -> {
             lessonUnitService.deleteAll();
             lessonService.deleteAll();
@@ -99,29 +131,10 @@ public class DataLoaderService {
             subjectService.deleteAll();
         });
 
-        CompletableFuture<Void> saveAllFuture = deleteAllFuture.thenComposeAsync(result -> CompletableFuture.runAsync(() -> {
-            subjectService.saveAll(subjectDtos);
-            periodService.saveAll(periodDtos);
-            resourceService.saveAll(resourceDtos);
-            departmentService.saveAll(departmentDtos);
-            subjectTypeService.saveAll(subjectTypeDtos);
-            timeslotService.saveAll(timeslotDtos);
-        }));
+        CompletableFuture.allOf(deleteAllFuture).join();
+    }
 
-        CompletableFuture<Void> combinedFuture = CompletableFuture.allOf(deleteAllFuture, saveAllFuture);
-        combinedFuture.join();
-
-        professorService.saveAll(professorDtos);
-        courseService.saveAll(courseDtos);
-        classroomResourceService.saveAll(classroomResourceDtos);
-        classroomTypeService.saveAll(classroomTypeDtos);
-        classroomService.saveAll(classroomDtos);
-        lessonResourceService.saveAll(lessonResourceDtos);
-        subjectCourseService.saveAll(subjectCourseDtos);
-        studentService.saveAll(studentDtos);
-        lessonService.saveAll(lessonDtos);
-        lessonUnitService.saveAll(lessonUnitDtos);
-
-        System.out.println("Data persisted successfully!");
+    public List<LessonUnitDto> getResult() {
+        return lessonUnitConverter.toDto(lessonUnitService.findAll());
     }
 }

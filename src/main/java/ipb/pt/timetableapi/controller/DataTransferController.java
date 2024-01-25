@@ -1,12 +1,13 @@
 package ipb.pt.timetableapi.controller;
 
 import ipb.pt.timetableapi.dto.*;
-import ipb.pt.timetableapi.service.DataLoaderService;
+import ipb.pt.timetableapi.service.DataTransferService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestTemplate;
 
@@ -15,23 +16,23 @@ import java.util.concurrent.CompletableFuture;
 
 @Controller
 @RequestMapping("/data")
-public class DataLoaderController {
+public class DataTransferController {
     private final String baseUrl = "http://localhost:8081";
     private final RestTemplate restTemplate;
-    private final DataLoaderService dataLoaderService;
+    private final DataTransferService dataTransferService;
 
     @Autowired
-    public DataLoaderController(
+    public DataTransferController(
             RestTemplate restTemplate,
-            DataLoaderService dataLoaderService
+            DataTransferService dataTransferService
     ) {
         this.restTemplate = restTemplate;
-        this.dataLoaderService = dataLoaderService;
+        this.dataTransferService = dataTransferService;
     }
 
     @Async
     @GetMapping("/load-all")
-    public CompletableFuture<ResponseEntity<Object>> load() {
+    public CompletableFuture<ResponseEntity<Object>> loadAll() {
         CompletableFuture<SubjectDto[]> subjectResponse = CompletableFuture.supplyAsync(() -> restTemplate.getForEntity(
                 baseUrl + "/subjects", SubjectDto[].class).getBody());
 
@@ -99,7 +100,7 @@ public class DataLoaderController {
                 lessonUnitResponse
         ).join();
 
-        dataLoaderService.persistAll(
+        dataTransferService.persistAll(
                 Arrays.asList(subjectResponse.join()),
                 Arrays.asList(periodResponse.join()),
                 Arrays.asList(resourceResponse.join()),
@@ -119,5 +120,11 @@ public class DataLoaderController {
         );
 
         return CompletableFuture.completedFuture(ResponseEntity.ok().body("Data loaded successfully!"));
+    }
+
+    @PostMapping("/export-result")
+    public ResponseEntity<Object> exportResult() {
+        restTemplate.postForEntity(baseUrl + "/horarios", dataTransferService.getResult(), Void.class);
+        return ResponseEntity.ok().body("Result exported successfully!");
     }
 }
