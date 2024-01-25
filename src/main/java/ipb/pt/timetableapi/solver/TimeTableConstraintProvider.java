@@ -17,7 +17,6 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
                 // Hard constraints
                 roomConflict(constraintFactory),
                 professorConflict(constraintFactory),
-//                studentConflict(constraintFactory),
 //                resourceAvailability(constraintFactory),
 //                classroomAvailability(constraintFactory),
 //                professorAvailability(constraintFactory),
@@ -78,37 +77,6 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
 //    nao pode haver conflitos entre UC1ta e UC2ta/tb, UC1tb e UC2tc/td
 //    criar alunos ficticios ao criar as turmas para testar
 //    turno -> lesson
-
-    //TODO: checar antes de descomentar
-//    private Constraint studentConflict(ConstraintFactory constraintFactory) {
-//        return constraintFactory
-//                .forEach(Lesson.class)
-//                .join(Lesson.class,
-//                        Joiners.equal(Lesson::getTimeslot),
-//                        Joiners.lessThan(Lesson::getId))
-//                .filter(this::haveStudentConflict)
-//                .penalize(HardSoftScore.ONE_HARD)
-//                .asConstraint("Student conflict");
-//    }
-//
-//    private boolean haveStudentConflict(Lesson lesson1, Lesson lesson2) {
-//        List<Student> students1 = getStudentsInLesson(lesson1);
-//        List<Student> students2 = getStudentsInLesson(lesson2);
-//
-//        for (Student student1 : students1) {
-//            if (students2.contains(student1)) {
-//                return true; // Student is in two places at the same time
-//            }
-//        }
-//
-//        return false;
-//    }
-//
-//    private List<Student> getStudentsInLesson(Lesson lesson) {
-//        return lesson.getLessonStudents().stream()
-//                .map(LessonStudent::getStudent)
-//                .collect(Collectors.toList());
-//    }
 
 
 //
