@@ -1,6 +1,5 @@
 package ipb.pt.timetableapi.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
@@ -18,10 +17,8 @@ import org.optaplanner.core.api.domain.variable.PlanningVariable;
 public class LessonUnit {
     @Id
     private Long id;
-    @JsonIgnore
     @ManyToOne
     private Lesson lesson;
-    private String color;
 
     // Initialized/Changed during planning
     @ManyToOne
