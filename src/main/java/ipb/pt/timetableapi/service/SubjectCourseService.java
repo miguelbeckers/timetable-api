@@ -4,7 +4,6 @@ import ipb.pt.timetableapi.converter.SubjectCourseConverter;
 import ipb.pt.timetableapi.dto.SubjectCourseDto;
 import ipb.pt.timetableapi.model.SubjectCourse;
 import ipb.pt.timetableapi.repository.SubjectCourseRepository;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -33,16 +32,15 @@ public class SubjectCourseService {
     }
 
     public SubjectCourse create(SubjectCourseDto subjectCourseDto) {
-        SubjectCourse subjectCourse = new SubjectCourse();
-        BeanUtils.copyProperties(subjectCourseDto, subjectCourse);
+        SubjectCourse subjectCourse = subjectCourseConverter.toModel(subjectCourseDto);
         return subjectCourseRepository.save(subjectCourse);
     }
 
     public SubjectCourse update(SubjectCourseDto subjectCourseDto, Long id) {
-        SubjectCourse subjectCourse = subjectCourseRepository.findById(id).orElseThrow(
+        subjectCourseRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "SubjectCourse not found"));
 
-        BeanUtils.copyProperties(subjectCourseDto, subjectCourse);
+        SubjectCourse subjectCourse = subjectCourseConverter.toModel(subjectCourseDto);
         return subjectCourseRepository.save(subjectCourse);
     }
 

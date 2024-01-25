@@ -4,7 +4,6 @@ import ipb.pt.timetableapi.converter.StudentConverter;
 import ipb.pt.timetableapi.dto.StudentDto;
 import ipb.pt.timetableapi.model.Student;
 import ipb.pt.timetableapi.repository.StudentRepository;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -33,16 +32,15 @@ public class StudentService {
     }
 
     public Student create(StudentDto studentDto) {
-        Student student = new Student();
-        BeanUtils.copyProperties(studentDto, student);
+        Student student = studentConverter.toModel(studentDto);
         return studentRepository.save(student);
     }
 
     public Student update(StudentDto studentDto, Long id) {
-        Student student = studentRepository.findById(id).orElseThrow(
+        studentRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Student not found"));
 
-        BeanUtils.copyProperties(studentDto, student);
+        Student student = studentConverter.toModel(studentDto);
         return studentRepository.save(student);
     }
 

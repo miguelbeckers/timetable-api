@@ -4,7 +4,6 @@ import ipb.pt.timetableapi.converter.DepartmentConverter;
 import ipb.pt.timetableapi.dto.DepartmentDto;
 import ipb.pt.timetableapi.model.Department;
 import ipb.pt.timetableapi.repository.DepartmentRepository;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -33,16 +32,15 @@ public class DepartmentService {
     }
 
     public Department create(DepartmentDto departmentDto) {
-        Department department = new Department();
-        BeanUtils.copyProperties(departmentDto, department);
+        Department department = departmentConverter.toModel(departmentDto);
         return departmentRepository.save(department);
     }
 
     public Department update(DepartmentDto departmentDto, Long id) {
-        Department department = departmentRepository.findById(id).orElseThrow(
+         departmentRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Department not found"));
 
-        BeanUtils.copyProperties(departmentDto, department);
+        Department department = departmentConverter.toModel(departmentDto);
         return departmentRepository.save(department);
     }
 

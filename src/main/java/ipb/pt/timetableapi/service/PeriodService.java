@@ -5,7 +5,6 @@ import ipb.pt.timetableapi.converter.PeriodConverter;
 import ipb.pt.timetableapi.dto.PeriodDto;
 import ipb.pt.timetableapi.model.Period;
 import ipb.pt.timetableapi.repository.PeriodRepository;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -34,16 +33,15 @@ public class PeriodService {
     }
 
     public Period create(PeriodDto periodDto) {
-        Period period = new Period();
-        BeanUtils.copyProperties(periodDto, period);
+        Period period = periodConverter.toModel(periodDto);
         return periodRepository.save(period);
     }
 
     public Period update(PeriodDto periodDto, Long id) {
-        Period period = periodRepository.findById(id).orElseThrow(
+        periodRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Period not found"));
 
-        BeanUtils.copyProperties(periodDto, period);
+        Period period = periodConverter.toModel(periodDto);
         return periodRepository.save(period);
     }
 

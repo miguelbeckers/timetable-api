@@ -4,7 +4,6 @@ import ipb.pt.timetableapi.converter.ClassroomResourceConverter;
 import ipb.pt.timetableapi.dto.ClassroomResourceDto;
 import ipb.pt.timetableapi.model.ClassroomResource;
 import ipb.pt.timetableapi.repository.ClassroomResourceRepository;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -33,16 +32,15 @@ public class ClassroomResourceService {
     }
 
     public ClassroomResource create(ClassroomResourceDto classroomResourceDto) {
-        ClassroomResource classroomResource = new ClassroomResource();
-        BeanUtils.copyProperties(classroomResourceDto, classroomResource);
+        ClassroomResource classroomResource = classroomResourceConverter.toModel(classroomResourceDto);
         return classroomResourceRepository.save(classroomResource);
     }
 
     public ClassroomResource update(ClassroomResourceDto classroomResourceDto, Long id) {
-        ClassroomResource classroomResource = classroomResourceRepository.findById(id).orElseThrow(
+        classroomResourceRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ClassroomResource not found"));
 
-        BeanUtils.copyProperties(classroomResourceDto, classroomResource);
+        ClassroomResource classroomResource = classroomResourceConverter.toModel(classroomResourceDto);
         return classroomResourceRepository.save(classroomResource);
     }
 

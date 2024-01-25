@@ -4,7 +4,6 @@ import ipb.pt.timetableapi.converter.TimeslotConverter;
 import ipb.pt.timetableapi.dto.TimeslotDto;
 import ipb.pt.timetableapi.model.Timeslot;
 import ipb.pt.timetableapi.repository.TimeslotRepository;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -33,16 +32,15 @@ public class TimeslotService {
     }
 
     public Timeslot create(TimeslotDto timeslotDto) {
-        Timeslot timeslot = new Timeslot();
-        BeanUtils.copyProperties(timeslotDto, timeslot);
+        Timeslot timeslot = timeslotConverter.toModel(timeslotDto);
         return timeslotRepository.save(timeslot);
     }
 
     public Timeslot update(TimeslotDto timeslotDto, Long id) {
-        Timeslot timeslot = timeslotRepository.findById(id).orElseThrow(
+        timeslotRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Timeslot not found"));
 
-        BeanUtils.copyProperties(timeslotDto, timeslot);
+        Timeslot timeslot = timeslotConverter.toModel(timeslotDto);
         return timeslotRepository.save(timeslot);
     }
 

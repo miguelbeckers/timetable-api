@@ -4,7 +4,6 @@ import ipb.pt.timetableapi.converter.LessonResourceConverter;
 import ipb.pt.timetableapi.dto.LessonResourceDto;
 import ipb.pt.timetableapi.model.LessonResource;
 import ipb.pt.timetableapi.repository.LessonResourceRepository;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -33,16 +32,15 @@ public class LessonResourceService {
     }
 
     public LessonResource create(LessonResourceDto lessonResourceDto) {
-        LessonResource lessonResource = new LessonResource();
-        BeanUtils.copyProperties(lessonResourceDto, lessonResource);
+        LessonResource lessonResource = lessonResourceConverter.toModel(lessonResourceDto);
         return lessonResourceRepository.save(lessonResource);
     }
 
     public LessonResource update(LessonResourceDto lessonResourceDto, Long id) {
-        LessonResource lessonResource = lessonResourceRepository.findById(id).orElseThrow(
+        lessonResourceRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "LessonResource not found"));
 
-        BeanUtils.copyProperties(lessonResourceDto, lessonResource);
+        LessonResource lessonResource = lessonResourceConverter.toModel(lessonResourceDto);
         return lessonResourceRepository.save(lessonResource);
     }
 

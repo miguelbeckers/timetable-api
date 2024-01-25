@@ -5,15 +5,12 @@ import ipb.pt.timetableapi.converter.CourseConverter;
 import ipb.pt.timetableapi.dto.CourseDto;
 import ipb.pt.timetableapi.model.Course;
 import ipb.pt.timetableapi.repository.CourseRepository;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class CourseService {
@@ -36,16 +33,15 @@ public class CourseService {
     }
 
     public Course create(CourseDto courseDto) {
-        Course course = new Course();
-        BeanUtils.copyProperties(courseDto, course);
+        Course course = courseConverter.toModel(courseDto);
         return courseRepository.save(course);
     }
 
     public Course update(CourseDto courseDto, Long id) {
-        Course course = courseRepository.findById(id).orElseThrow(
+        courseRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Course not found"));
 
-        BeanUtils.copyProperties(courseDto, course);
+        Course course = courseConverter.toModel(courseDto);
         return courseRepository.save(course);
     }
 

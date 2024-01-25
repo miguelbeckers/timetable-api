@@ -4,7 +4,6 @@ import ipb.pt.timetableapi.converter.ClassroomConverter;
 import ipb.pt.timetableapi.dto.ClassroomDto;
 import ipb.pt.timetableapi.model.Classroom;
 import ipb.pt.timetableapi.repository.ClassroomRepository;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -33,16 +32,15 @@ public class ClassroomService {
     }
 
     public Classroom create(ClassroomDto classroomDto) {
-        Classroom classroom = new Classroom();
-        BeanUtils.copyProperties(classroomDto, classroom);
+        Classroom classroom = classroomConverter.toModel(classroomDto);
         return classroomRepository.save(classroom);
     }
 
     public Classroom update(ClassroomDto classroomDto, Long id) {
-        Classroom classroom = classroomRepository.findById(id).orElseThrow(
+        classroomRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Classroom not found"));
 
-        BeanUtils.copyProperties(classroomDto, classroom);
+        Classroom classroom = classroomConverter.toModel(classroomDto);
         return classroomRepository.save(classroom);
     }
 

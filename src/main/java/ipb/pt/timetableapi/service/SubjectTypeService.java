@@ -4,7 +4,6 @@ import ipb.pt.timetableapi.converter.SubjectTypeConverter;
 import ipb.pt.timetableapi.dto.SubjectTypeDto;
 import ipb.pt.timetableapi.model.SubjectType;
 import ipb.pt.timetableapi.repository.SubjectTypeRepository;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -33,16 +32,15 @@ public class SubjectTypeService {
     }
 
     public SubjectType create(SubjectTypeDto subjectTypeDto) {
-        SubjectType subjectType = new SubjectType();
-        BeanUtils.copyProperties(subjectTypeDto, subjectType);
+        SubjectType subjectType = subjectTypeConverter.toModel(subjectTypeDto);
         return subjectTypeRepository.save(subjectType);
     }
 
     public SubjectType update(SubjectTypeDto subjectTypeDto, Long id) {
-        SubjectType subjectType = subjectTypeRepository.findById(id).orElseThrow(
+        subjectTypeRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "SubjectType not found"));
 
-        BeanUtils.copyProperties(subjectTypeDto, subjectType);
+        SubjectType subjectType = subjectTypeConverter.toModel(subjectTypeDto);
         return subjectTypeRepository.save(subjectType);
     }
 

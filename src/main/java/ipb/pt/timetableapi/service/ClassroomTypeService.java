@@ -4,7 +4,6 @@ import ipb.pt.timetableapi.converter.ClassroomTypeConverter;
 import ipb.pt.timetableapi.dto.ClassroomTypeDto;
 import ipb.pt.timetableapi.model.ClassroomType;
 import ipb.pt.timetableapi.repository.ClassroomTypeRepository;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -33,16 +32,15 @@ public class ClassroomTypeService {
     }
 
     public ClassroomType create(ClassroomTypeDto classroomTypeDto) {
-        ClassroomType classroomType = new ClassroomType();
-        BeanUtils.copyProperties(classroomTypeDto, classroomType);
+        ClassroomType classroomType = classroomTypeConverter.toModel(classroomTypeDto);
         return classroomTypeRepository.save(classroomType);
     }
 
     public ClassroomType update(ClassroomTypeDto classroomTypeDto, Long id) {
-        ClassroomType classroomType = classroomTypeRepository.findById(id).orElseThrow(
+        classroomTypeRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ClassroomType not found"));
 
-        BeanUtils.copyProperties(classroomTypeDto, classroomType);
+        ClassroomType classroomType = classroomTypeConverter.toModel(classroomTypeDto);
         return classroomTypeRepository.save(classroomType);
     }
 

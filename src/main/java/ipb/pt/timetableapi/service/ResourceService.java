@@ -4,7 +4,6 @@ import ipb.pt.timetableapi.converter.ResourceConverter;
 import ipb.pt.timetableapi.dto.ResourceDto;
 import ipb.pt.timetableapi.model.Resource;
 import ipb.pt.timetableapi.repository.ResourceRepository;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -33,16 +32,15 @@ public class ResourceService {
     }
 
     public Resource create(ResourceDto resourceDto) {
-        Resource resource = new Resource();
-        BeanUtils.copyProperties(resourceDto, resource);
+        Resource resource = resourceConverter.toModel(resourceDto);
         return resourceRepository.save(resource);
     }
 
     public Resource update(ResourceDto resourceDto, Long id) {
-        Resource resource = resourceRepository.findById(id).orElseThrow(
+        resourceRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Resource not found"));
 
-        BeanUtils.copyProperties(resourceDto, resource);
+        Resource resource = resourceConverter.toModel(resourceDto);
         return resourceRepository.save(resource);
     }
 
