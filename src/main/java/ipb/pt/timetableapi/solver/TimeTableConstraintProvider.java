@@ -22,11 +22,14 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
                 classroomAvailability(constraintFactory),
                 professorAvailability(constraintFactory),
                 courseAvailability(constraintFactory),
-                // TODO: check if there is no time conflicts between unitLessons from the same course
+                // TODO: studentGroupConflict
+                // TODO: courseLessonsConflict
+                // TODO: lessonBlocksDivision
 
                 // Soft constraints
                 professorTimeEfficiency(constraintFactory)
-                // TODO: give a reward for the unitLessons placed between 10h and 14h
+                // TODO: middayDistribution
+                // TODO: lessonClassroomEfficiency
         };
     }
 
