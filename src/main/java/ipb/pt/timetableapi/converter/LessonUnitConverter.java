@@ -1,8 +1,10 @@
 package ipb.pt.timetableapi.converter;
 
 import ipb.pt.timetableapi.dto.LessonUnitDto;
+import ipb.pt.timetableapi.model.Classroom;
 import ipb.pt.timetableapi.model.Lesson;
 import ipb.pt.timetableapi.model.LessonUnit;
+import ipb.pt.timetableapi.model.Timeslot;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
@@ -43,6 +45,18 @@ public class LessonUnitConverter {
         Lesson lesson = new Lesson();
         lesson.setId(lessonUnitDto.getLessonId());
         lessonUnit.setLesson(lesson);
+
+        if (lessonUnitDto.getTimeslotId() != null) {
+            Timeslot timeslot = new Timeslot();
+            timeslot.setId(lessonUnitDto.getTimeslotId());
+            lessonUnit.setTimeslot(timeslot);
+        }
+
+        if (lessonUnitDto.getClassroomId() != null) {
+            Classroom classroom = new Classroom();
+            classroom.setId(lessonUnitDto.getClassroomId());
+            lessonUnit.setClassroom(classroom);
+        }
 
         return lessonUnit;
     }
