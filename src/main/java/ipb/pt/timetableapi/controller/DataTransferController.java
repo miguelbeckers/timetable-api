@@ -2,6 +2,7 @@ package ipb.pt.timetableapi.controller;
 
 import ipb.pt.timetableapi.dto.*;
 import ipb.pt.timetableapi.service.DataTransferService;
+import ipb.pt.timetableapi.service.LessonUnitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
@@ -20,14 +21,17 @@ public class DataTransferController {
     private final String baseUrl = "http://localhost:8081";
     private final RestTemplate restTemplate;
     private final DataTransferService dataTransferService;
+    private final LessonUnitService lessonUnitService;
 
     @Autowired
     public DataTransferController(
             RestTemplate restTemplate,
-            DataTransferService dataTransferService
+            DataTransferService dataTransferService,
+            LessonUnitService lessonUnitService
     ) {
         this.restTemplate = restTemplate;
         this.dataTransferService = dataTransferService;
+        this.lessonUnitService = lessonUnitService;
     }
 
     @Async
@@ -124,7 +128,7 @@ public class DataTransferController {
 
     @PostMapping("/export-result")
     public ResponseEntity<Object> exportResult() {
-        restTemplate.postForEntity(baseUrl + "/horarios", dataTransferService.getResult(), Void.class);
+        restTemplate.postForEntity(baseUrl + "/horarios", lessonUnitService.findAll(), Void.class);
         return ResponseEntity.ok().body("Result exported successfully!");
     }
 }

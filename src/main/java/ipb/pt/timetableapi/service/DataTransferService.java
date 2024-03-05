@@ -1,6 +1,5 @@
 package ipb.pt.timetableapi.service;
 
-import ipb.pt.timetableapi.converter.LessonUnitConverter;
 import ipb.pt.timetableapi.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,7 +25,6 @@ public class DataTransferService {
     private final StudentService studentService;
     private final LessonService lessonService;
     private final LessonUnitService lessonUnitService;
-    private final LessonUnitConverter lessonUnitConverter;
 
     @Autowired
     public DataTransferService(
@@ -45,8 +43,7 @@ public class DataTransferService {
             SubjectCourseService subjectCourseService,
             StudentService studentService,
             LessonService lessonService,
-            LessonUnitService lessonUnitService,
-            LessonUnitConverter lessonUnitConverter
+            LessonUnitService lessonUnitService
     ) {
         this.subjectService = subjectService;
         this.periodService = periodService;
@@ -64,7 +61,6 @@ public class DataTransferService {
         this.studentService = studentService;
         this.lessonService = lessonService;
         this.lessonUnitService = lessonUnitService;
-        this.lessonUnitConverter = lessonUnitConverter;
     }
 
     public void persistAll(
@@ -128,9 +124,5 @@ public class DataTransferService {
         resourceService.deleteAll();
         periodService.deleteAll();
         subjectService.deleteAll();
-    }
-
-    public List<LessonUnitDto> getResult() {
-        return lessonUnitConverter.toDto(lessonUnitService.findAll());
     }
 }
