@@ -48,7 +48,7 @@ public class TimetableController {
         try {
             Timetable solution = solverJob.getFinalBestSolution();
             lessonUnitRepository.saveAll(solution.getLessonUnits());
-            return ResponseEntity.ok().body(solution);
+            return ResponseEntity.ok().body(solution.getScore());
         } catch (InterruptedException | ExecutionException e) {
             throw new IllegalStateException("Solving failed.", e);
         }
