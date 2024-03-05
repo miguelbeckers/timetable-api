@@ -22,26 +22,26 @@ public class StudentService {
         this.studentConverter = studentConverter;
     }
 
-    public List<Student> findAll() {
-        return studentRepository.findAll();
+    public List<StudentDto> findAll() {
+        return studentConverter.toDto(studentRepository.findAll());
     }
 
-    public Student findById(Long id) {
-        return studentRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Student not found"));
+    public StudentDto findById(Long id) {
+        return studentConverter.toDto(studentRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Student not found")));
     }
 
-    public Student create(StudentDto studentDto) {
+    public StudentDto create(StudentDto studentDto) {
         Student student = studentConverter.toModel(studentDto);
-        return studentRepository.save(student);
+        return studentConverter.toDto(studentRepository.save(student));
     }
 
-    public Student update(StudentDto studentDto, Long id) {
+    public StudentDto update(StudentDto studentDto, Long id) {
         studentRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Student not found"));
 
         Student student = studentConverter.toModel(studentDto);
-        return studentRepository.save(student);
+        return studentConverter.toDto(studentRepository.save(student));
     }
 
     public void delete(Long id) {
@@ -55,8 +55,8 @@ public class StudentService {
         studentRepository.deleteAll();
     }
 
-    public void saveAll(List<StudentDto> studentDtos) {
+    public List<StudentDto> saveAll(List<StudentDto> studentDtos) {
         List<Student> students = studentConverter.toModel(studentDtos);
-        studentRepository.saveAll(students);
+        return studentConverter.toDto(studentRepository.saveAll(students));
     }
 }

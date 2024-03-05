@@ -22,26 +22,26 @@ public class ResourceService {
         this.resourceConverter = resourceConverter;
     }
 
-    public List<Resource> findAll() {
-        return resourceRepository.findAll();
+    public List<ResourceDto> findAll() {
+        return resourceConverter.toDto(resourceRepository.findAll());
     }
 
-    public Resource findById(Long id) {
-        return resourceRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Resource not found"));
+    public ResourceDto findById(Long id) {
+        return resourceConverter.toDto(resourceRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Resource not found")));
     }
 
-    public Resource create(ResourceDto resourceDto) {
+    public ResourceDto create(ResourceDto resourceDto) {
         Resource resource = resourceConverter.toModel(resourceDto);
-        return resourceRepository.save(resource);
+        return resourceConverter.toDto(resourceRepository.save(resource));
     }
 
-    public Resource update(ResourceDto resourceDto, Long id) {
+    public ResourceDto update(ResourceDto resourceDto, Long id) {
         resourceRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Resource not found"));
 
         Resource resource = resourceConverter.toModel(resourceDto);
-        return resourceRepository.save(resource);
+        return resourceConverter.toDto(resourceRepository.save(resource));
     }
 
     public void delete(Long id) {
@@ -55,9 +55,9 @@ public class ResourceService {
         resourceRepository.deleteAll();
     }
 
-    public void saveAll(List<ResourceDto> resourceDtos) {
+    public List<ResourceDto> saveAll(List<ResourceDto> resourceDtos) {
         List<Resource> resources = resourceConverter.toModel(resourceDtos);
-        resourceRepository.saveAll(resources);
+        return resourceConverter.toDto(resourceRepository.saveAll(resources));
     }
 }
 

@@ -22,24 +22,26 @@ public class LessonUnitService {
         this.lessonUnitConverter = lessonUnitConverter;
     }
 
-    public List<LessonUnit> findAll() {
-        return lessonUnitRepository.findAll();
+    public List<LessonUnitDto> findAll() {
+        return lessonUnitConverter.toDto(lessonUnitRepository.findAll());
     }
 
-    public LessonUnit findById(Long id) {
-        return lessonUnitRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "LessonUnit not found"));
+    public LessonUnitDto findById(Long id) {
+        return lessonUnitConverter.toDto(lessonUnitRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "LessonUnit not found")));
     }
 
-    public LessonUnit create(LessonUnitDto lessonUnitDto) {
-        return lessonUnitRepository.save(lessonUnitConverter.toModel(lessonUnitDto));
+    public LessonUnitDto create(LessonUnitDto lessonUnitDto) {
+        LessonUnit lessonUnit = lessonUnitConverter.toModel(lessonUnitDto);
+        return lessonUnitConverter.toDto(lessonUnitRepository.save(lessonUnit));
     }
 
-    public LessonUnit update(LessonUnitDto lessonUnitDto, Long id) {
+    public LessonUnitDto update(LessonUnitDto lessonUnitDto, Long id) {
         lessonUnitRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "LessonUnit not found"));
 
-        return lessonUnitRepository.save(lessonUnitConverter.toModel(lessonUnitDto));
+        LessonUnit lessonUnit = lessonUnitConverter.toModel(lessonUnitDto);
+        return lessonUnitConverter.toDto(lessonUnitRepository.save(lessonUnit));
     }
 
     public LessonUnit update(LessonUnit lessonUnit) {
@@ -60,13 +62,13 @@ public class LessonUnitService {
         lessonUnitRepository.deleteAll();
     }
 
-    public void saveAll(List<LessonUnitDto> lessonUnitDtos) {
+    public List<LessonUnitDto> saveAll(List<LessonUnitDto> lessonUnitDtos) {
         List<LessonUnit> lessonUnits = lessonUnitConverter.toModel(lessonUnitDtos);
 
-        lessonUnitRepository.saveAll(lessonUnits);
+        return lessonUnitConverter.toDto(lessonUnitRepository.saveAll(lessonUnits));
     }
 
-    public List<LessonUnit> resetAll() {
+    public List<LessonUnitDto> resetAll() {
         List<LessonUnit> lessonUnits = lessonUnitRepository.findAll();
 
         lessonUnits.forEach(lessonUnit -> {
@@ -74,7 +76,7 @@ public class LessonUnitService {
             lessonUnit.setClassroom(null);
         });
 
-        return lessonUnitRepository.saveAll(lessonUnits);
+        return lessonUnitConverter.toDto(lessonUnitRepository.saveAll(lessonUnits));
     }
 }
 

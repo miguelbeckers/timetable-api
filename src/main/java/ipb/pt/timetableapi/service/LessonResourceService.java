@@ -22,26 +22,26 @@ public class LessonResourceService {
         this.lessonResourceConverter = lessonResourceConverter;
     }
 
-    public List<LessonResource> findAll() {
-        return lessonResourceRepository.findAll();
+    public List<LessonResourceDto> findAll() {
+        return lessonResourceConverter.toDto(lessonResourceRepository.findAll());
     }
 
-    public LessonResource findById(Long id) {
-        return lessonResourceRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "LessonResource not found"));
+    public LessonResourceDto findById(Long id) {
+        return lessonResourceConverter.toDto(lessonResourceRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "LessonResource not found")));
     }
 
-    public LessonResource create(LessonResourceDto lessonResourceDto) {
+    public LessonResourceDto create(LessonResourceDto lessonResourceDto) {
         LessonResource lessonResource = lessonResourceConverter.toModel(lessonResourceDto);
-        return lessonResourceRepository.save(lessonResource);
+        return lessonResourceConverter.toDto(lessonResourceRepository.save(lessonResource));
     }
 
-    public LessonResource update(LessonResourceDto lessonResourceDto, Long id) {
+    public LessonResourceDto update(LessonResourceDto lessonResourceDto, Long id) {
         lessonResourceRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "LessonResource not found"));
 
         LessonResource lessonResource = lessonResourceConverter.toModel(lessonResourceDto);
-        return lessonResourceRepository.save(lessonResource);
+        return lessonResourceConverter.toDto(lessonResourceRepository.save(lessonResource));
     }
 
     public void delete(Long id) {
@@ -55,8 +55,8 @@ public class LessonResourceService {
         lessonResourceRepository.deleteAll();
     }
 
-    public void saveAll(List<LessonResourceDto> lessonResourceDtos) {
+    public List<LessonResourceDto> saveAll(List<LessonResourceDto> lessonResourceDtos) {
         List<LessonResource> lessonResources = lessonResourceConverter.toModel(lessonResourceDtos);
-        lessonResourceRepository.saveAll(lessonResources);
+        return lessonResourceConverter.toDto(lessonResourceRepository.saveAll(lessonResources));
     }
 }

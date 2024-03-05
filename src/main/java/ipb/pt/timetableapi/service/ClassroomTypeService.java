@@ -22,26 +22,26 @@ public class ClassroomTypeService {
         this.classroomTypeConverter = classroomTypeConverter;
     }
 
-    public List<ClassroomType> findAll() {
-        return classroomTypeRepository.findAll();
+    public List<ClassroomTypeDto> findAll() {
+        return classroomTypeConverter.toDto(classroomTypeRepository.findAll());
     }
 
-    public ClassroomType findById(Long id) {
-        return classroomTypeRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ClassroomType not found"));
+    public ClassroomTypeDto findById(Long id) {
+        return classroomTypeConverter.toDto(classroomTypeRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ClassroomType not found")));
     }
 
-    public ClassroomType create(ClassroomTypeDto classroomTypeDto) {
+    public ClassroomTypeDto create(ClassroomTypeDto classroomTypeDto) {
         ClassroomType classroomType = classroomTypeConverter.toModel(classroomTypeDto);
-        return classroomTypeRepository.save(classroomType);
+        return classroomTypeConverter.toDto(classroomTypeRepository.save(classroomType));
     }
 
-    public ClassroomType update(ClassroomTypeDto classroomTypeDto, Long id) {
+    public ClassroomTypeDto update(ClassroomTypeDto classroomTypeDto, Long id) {
         classroomTypeRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ClassroomType not found"));
 
         ClassroomType classroomType = classroomTypeConverter.toModel(classroomTypeDto);
-        return classroomTypeRepository.save(classroomType);
+        return classroomTypeConverter.toDto(classroomTypeRepository.save(classroomType));
     }
 
     public void delete(Long id) {
@@ -55,9 +55,9 @@ public class ClassroomTypeService {
         classroomTypeRepository.deleteAll();
     }
 
-    public void saveAll(List<ClassroomTypeDto> classroomTypeDtos) {
+    public List<ClassroomTypeDto> saveAll(List<ClassroomTypeDto> classroomTypeDtos) {
         List<ClassroomType> classroomTypes = classroomTypeConverter.toModel(classroomTypeDtos);
-        classroomTypeRepository.saveAll(classroomTypes);
+        return classroomTypeConverter.toDto(classroomTypeRepository.saveAll(classroomTypes));
     }
 }
 

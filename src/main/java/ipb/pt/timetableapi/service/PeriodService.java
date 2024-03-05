@@ -23,26 +23,26 @@ public class PeriodService {
         this.periodConverter = periodConverter;
     }
 
-    public List<Period> findAll() {
-        return periodRepository.findAll();
+    public List<PeriodDto> findAll() {
+        return periodConverter.toDto(periodRepository.findAll());
     }
 
-    public Period findById(Long id) {
-        return periodRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Period not found"));
+    public PeriodDto findById(Long id) {
+        return periodConverter.toDto(periodRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Period not found")));
     }
 
-    public Period create(PeriodDto periodDto) {
+    public PeriodDto create(PeriodDto periodDto) {
         Period period = periodConverter.toModel(periodDto);
-        return periodRepository.save(period);
+        return periodConverter.toDto(periodRepository.save(period));
     }
 
-    public Period update(PeriodDto periodDto, Long id) {
+    public PeriodDto update(PeriodDto periodDto, Long id) {
         periodRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Period not found"));
 
         Period period = periodConverter.toModel(periodDto);
-        return periodRepository.save(period);
+        return periodConverter.toDto(periodRepository.save(period));
     }
 
     public void delete(Long id) {
@@ -56,9 +56,9 @@ public class PeriodService {
         periodRepository.deleteAll();
     }
 
-    public void saveAll(List<PeriodDto> periodDtos) {
+    public List<PeriodDto> saveAll(List<PeriodDto> periodDtos) {
         List<Period> periods = periodConverter.toModel(periodDtos);
-        periodRepository.saveAll(periods);
+        return periodConverter.toDto(periodRepository.saveAll(periods));
     }
 }
 

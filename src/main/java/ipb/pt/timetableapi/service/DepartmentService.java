@@ -22,26 +22,26 @@ public class DepartmentService {
         this.departmentConverter = departmentConverter;
     }
 
-    public List<Department> findAll() {
-        return departmentRepository.findAll();
+    public List<DepartmentDto> findAll() {
+        return departmentConverter.toDto(departmentRepository.findAll());
     }
 
-    public Department findById(Long id) {
-        return departmentRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Department not found"));
+    public DepartmentDto findById(Long id) {
+        return departmentConverter.toDto(departmentRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Department not found")));
     }
 
-    public Department create(DepartmentDto departmentDto) {
+    public DepartmentDto create(DepartmentDto departmentDto) {
         Department department = departmentConverter.toModel(departmentDto);
-        return departmentRepository.save(department);
+        return departmentConverter.toDto(departmentRepository.save(department));
     }
 
-    public Department update(DepartmentDto departmentDto, Long id) {
+    public DepartmentDto update(DepartmentDto departmentDto, Long id) {
          departmentRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Department not found"));
 
         Department department = departmentConverter.toModel(departmentDto);
-        return departmentRepository.save(department);
+        return departmentConverter.toDto(departmentRepository.save(department));
     }
 
     public void delete(Long id) {
@@ -55,9 +55,9 @@ public class DepartmentService {
         departmentRepository.deleteAll();
     }
 
-    public void saveAll(List<DepartmentDto> departmentDtos) {
+    public List<DepartmentDto> saveAll(List<DepartmentDto> departmentDtos) {
         List<Department> departments = departmentConverter.toModel(departmentDtos);
-        departmentRepository.saveAll(departments);
+        return departmentConverter.toDto(departmentRepository.saveAll(departments));
     }
 }
 

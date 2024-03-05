@@ -22,26 +22,26 @@ public class SubjectTypeService {
         this.subjectTypeConverter = subjectTypeConverter;
     }
 
-    public List<SubjectType> findAll() {
-        return subjectTypeRepository.findAll();
+    public List<SubjectTypeDto> findAll() {
+        return subjectTypeConverter.toDto(subjectTypeRepository.findAll());
     }
 
-    public SubjectType findById(Long id) {
-        return subjectTypeRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "SubjectType not found"));
+    public SubjectTypeDto findById(Long id) {
+        return subjectTypeConverter.toDto(subjectTypeRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "SubjectType not found")));
     }
 
-    public SubjectType create(SubjectTypeDto subjectTypeDto) {
+    public SubjectTypeDto create(SubjectTypeDto subjectTypeDto) {
         SubjectType subjectType = subjectTypeConverter.toModel(subjectTypeDto);
-        return subjectTypeRepository.save(subjectType);
+        return subjectTypeConverter.toDto(subjectTypeRepository.save(subjectType));
     }
 
-    public SubjectType update(SubjectTypeDto subjectTypeDto, Long id) {
+    public SubjectTypeDto update(SubjectTypeDto subjectTypeDto, Long id) {
         subjectTypeRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "SubjectType not found"));
 
         SubjectType subjectType = subjectTypeConverter.toModel(subjectTypeDto);
-        return subjectTypeRepository.save(subjectType);
+        return subjectTypeConverter.toDto(subjectTypeRepository.save(subjectType));
     }
 
     public void delete(Long id) {
@@ -55,9 +55,9 @@ public class SubjectTypeService {
         subjectTypeRepository.deleteAll();
     }
 
-    public void saveAll(List<SubjectTypeDto> subjectTypeDtos) {
+    public List<SubjectTypeDto> saveAll(List<SubjectTypeDto> subjectTypeDtos) {
         List<SubjectType> subjectTypes = subjectTypeConverter.toModel(subjectTypeDtos);
-        subjectTypeRepository.saveAll(subjectTypes);
+        return subjectTypeConverter.toDto(subjectTypeRepository.saveAll(subjectTypes));
     }
 }
 

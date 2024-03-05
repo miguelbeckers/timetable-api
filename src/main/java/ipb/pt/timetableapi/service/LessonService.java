@@ -22,26 +22,26 @@ public class LessonService {
         this.lessonConverter = lessonConverter;
     }
 
-    public List<Lesson> findAll() {
-        return lessonRepository.findAll();
+    public List<LessonDto> findAll() {
+        return lessonConverter.toDto(lessonRepository.findAll());
     }
 
-    public Lesson findById(Long id) {
-        return lessonRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Lesson not found"));
+    public LessonDto findById(Long id) {
+        return lessonConverter.toDto(lessonRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Lesson not found")));
     }
 
-    public Lesson create(LessonDto lessonDto) {
+    public LessonDto create(LessonDto lessonDto) {
         Lesson lesson = lessonConverter.toModel(lessonDto);
-        return lessonRepository.save(lesson);
+        return lessonConverter.toDto(lessonRepository.save(lesson));
     }
 
-    public Lesson update(LessonDto lessonDto, Long id) {
+    public LessonDto update(LessonDto lessonDto, Long id) {
         lessonRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Lesson not found"));
 
         Lesson lesson = lessonConverter.toModel(lessonDto);
-        return lessonRepository.save(lesson);
+        return lessonConverter.toDto(lessonRepository.save(lesson));
     }
 
     public void delete(Long id) {
@@ -55,8 +55,8 @@ public class LessonService {
         lessonRepository.deleteAll();
     }
 
-    public void saveAll(List<LessonDto> lessonDtos) {
+    public List<LessonDto> saveAll(List<LessonDto> lessonDtos) {
         List<Lesson> lessons = lessonConverter.toModel(lessonDtos);
-        lessonRepository.saveAll(lessons);
+        return lessonConverter.toDto(lessonRepository.saveAll(lessons));
     }
 }

@@ -1,10 +1,9 @@
 package ipb.pt.timetableapi.controller;
 
-import ipb.pt.timetableapi.model.LessonUnit;
 import ipb.pt.timetableapi.model.Timetable;
-import ipb.pt.timetableapi.service.ClassroomService;
-import ipb.pt.timetableapi.service.LessonUnitService;
-import ipb.pt.timetableapi.service.TimeslotService;
+import ipb.pt.timetableapi.repository.ClassroomRepository;
+import ipb.pt.timetableapi.repository.LessonUnitRepository;
+import ipb.pt.timetableapi.repository.TimeslotRepository;
 import org.optaplanner.core.api.solver.SolverJob;
 import org.optaplanner.core.api.solver.SolverManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,41 +23,35 @@ import java.util.concurrent.ExecutionException;
 public class TimetableController {
     private static final UUID problemId = UUID.randomUUID();
     private final SolverManager<Timetable, UUID> solverManager;
-    private final ClassroomService classroomService;
-    private final LessonUnitService lessonUnitService;
-    private final TimeslotService timeslotService;
+    private final ClassroomRepository classroomRepository;
+    private final LessonUnitRepository lessonUnitRepository;
+    private final TimeslotRepository timeslotRepository;
 
     @Autowired
     public TimetableController(
             SolverManager<Timetable, UUID> solverManager,
-            ClassroomService classroomService,
-            LessonUnitService lessonUnitService,
-            TimeslotService timeslotService
+            ClassroomRepository classroomRepository,
+            LessonUnitRepository lessonUnitRepository,
+            TimeslotRepository timeslotRepository
     ) {
         this.solverManager = solverManager;
-        this.classroomService = classroomService;
-        this.lessonUnitService = lessonUnitService;
-        this.timeslotService = timeslotService;
+        this.classroomRepository = classroomRepository;
+        this.lessonUnitRepository = lessonUnitRepository;
+        this.timeslotRepository = timeslotRepository;
     }
 
     @PostMapping("/solve")
     public ResponseEntity<Object> solve() {
-        Timetable problem = new Timetable(timeslotService.findAll(), classroomService.findAll(), lessonUnitService.findAll());
-
+        Timetable problem = new Timetable(timeslotRepository.findAll(), classroomRepository.findAll(), lessonUnitRepository.findAll());
         SolverJob<Timetable, UUID> solverJob = solverManager.solve(problemId, problem);
-        Timetable solution;
 
         try {
-            solution = solverJob.getFinalBestSolution();
+            Timetable solution = solverJob.getFinalBestSolution();
+            lessonUnitRepository.saveAll(solution.getLessonUnits());
+            return ResponseEntity.ok().body(solution);
         } catch (InterruptedException | ExecutionException e) {
             throw new IllegalStateException("Solving failed.", e);
         }
-
-        for (LessonUnit lessonUnit : solution.getLessonUnits()) {
-            lessonUnitService.update(lessonUnit);
-        }
-
-        return ResponseEntity.ok().body(solution);
     }
 
     @PostMapping("/stop")

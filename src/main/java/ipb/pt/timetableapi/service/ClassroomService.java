@@ -22,26 +22,26 @@ public class ClassroomService {
         this.classroomConverter = classroomConverter;
     }
 
-    public List<Classroom> findAll() {
-        return classroomRepository.findAll();
+    public List<ClassroomDto> findAll() {
+        return classroomConverter.toDto(classroomRepository.findAll());
     }
 
-    public Classroom findById(Long id) {
-        return classroomRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Classroom not found"));
+    public ClassroomDto findById(Long id) {
+        return classroomConverter.toDto(classroomRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Classroom not found")));
     }
 
-    public Classroom create(ClassroomDto classroomDto) {
+    public ClassroomDto create(ClassroomDto classroomDto) {
         Classroom classroom = classroomConverter.toModel(classroomDto);
-        return classroomRepository.save(classroom);
+        return classroomConverter.toDto(classroomRepository.save(classroom));
     }
 
-    public Classroom update(ClassroomDto classroomDto, Long id) {
+    public ClassroomDto update(ClassroomDto classroomDto, Long id) {
         classroomRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Classroom not found"));
 
         Classroom classroom = classroomConverter.toModel(classroomDto);
-        return classroomRepository.save(classroom);
+        return classroomConverter.toDto(classroomRepository.save(classroom));
     }
 
     public void delete(Long id) {
@@ -55,8 +55,8 @@ public class ClassroomService {
         classroomRepository.deleteAll();
     }
 
-    public void saveAll(List<ClassroomDto> classroomDtos) {
+    public List<ClassroomDto> saveAll(List<ClassroomDto> classroomDtos) {
         List<Classroom> classrooms = classroomConverter.toModel(classroomDtos);
-        classroomRepository.saveAll(classrooms);
+        return classroomConverter.toDto(classroomRepository.saveAll(classrooms));
     }
 }

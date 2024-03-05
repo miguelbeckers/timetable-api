@@ -17,31 +17,32 @@ public class ClassroomResourceService {
     private final ClassroomResourceConverter classroomResourceConverter;
 
     @Autowired
-    public ClassroomResourceService(ClassroomResourceRepository classroomResourceRepository, ClassroomResourceConverter classroomResourceConverter) {
+    public ClassroomResourceService(ClassroomResourceRepository classroomResourceRepository,
+                                    ClassroomResourceConverter classroomResourceConverter) {
         this.classroomResourceRepository = classroomResourceRepository;
         this.classroomResourceConverter = classroomResourceConverter;
     }
 
-    public List<ClassroomResource> findAll() {
-        return classroomResourceRepository.findAll();
+    public List<ClassroomResourceDto> findAll() {
+        return classroomResourceConverter.toDto(classroomResourceRepository.findAll());
     }
 
-    public ClassroomResource findById(Long id) {
-        return classroomResourceRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ClassroomResource not found"));
+    public ClassroomResourceDto findById(Long id) {
+        return classroomResourceConverter.toDto(classroomResourceRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ClassroomResource not found")));
     }
 
-    public ClassroomResource create(ClassroomResourceDto classroomResourceDto) {
+    public ClassroomResourceDto create(ClassroomResourceDto classroomResourceDto) {
         ClassroomResource classroomResource = classroomResourceConverter.toModel(classroomResourceDto);
-        return classroomResourceRepository.save(classroomResource);
+        return classroomResourceConverter.toDto(classroomResourceRepository.save(classroomResource));
     }
 
-    public ClassroomResource update(ClassroomResourceDto classroomResourceDto, Long id) {
+    public ClassroomResourceDto update(ClassroomResourceDto classroomResourceDto, Long id) {
         classroomResourceRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ClassroomResource not found"));
 
         ClassroomResource classroomResource = classroomResourceConverter.toModel(classroomResourceDto);
-        return classroomResourceRepository.save(classroomResource);
+        return classroomResourceConverter.toDto(classroomResourceRepository.save(classroomResource));
     }
 
     public void delete(Long id) {
@@ -55,9 +56,9 @@ public class ClassroomResourceService {
         classroomResourceRepository.deleteAll();
     }
 
-    public void saveAll(List<ClassroomResourceDto> classroomResourceDtos) {
+    public List<ClassroomResourceDto> saveAll(List<ClassroomResourceDto> classroomResourceDtos) {
         List<ClassroomResource> classroomResources = classroomResourceConverter.toModel(classroomResourceDtos);
-        classroomResourceRepository.saveAll(classroomResources);
+        return classroomResourceConverter.toDto(classroomResourceRepository.saveAll(classroomResources));
     }
 }
 

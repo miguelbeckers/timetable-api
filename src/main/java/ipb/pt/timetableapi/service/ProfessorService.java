@@ -26,22 +26,22 @@ public class ProfessorService {
         return professorRepository.findAll();
     }
 
-    public Professor findById(Long id) {
-        return professorRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Professor not found"));
+    public ProfessorDto findById(Long id) {
+        return professorConverter.toDto(professorRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Professor not found")));
     }
 
-    public Professor create(ProfessorDto professorDto) {
+    public ProfessorDto create(ProfessorDto professorDto) {
         Professor professor = professorConverter.toModel(professorDto);
-        return professorRepository.save(professor);
+        return professorConverter.toDto(professorRepository.save(professor));
     }
 
-    public Professor update(ProfessorDto professorDto, Long id) {
+    public ProfessorDto update(ProfessorDto professorDto, Long id) {
         professorRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Professor not found"));
 
         Professor professor = professorConverter.toModel(professorDto);
-        return professorRepository.save(professor);
+        return professorConverter.toDto(professorRepository.save(professor));
     }
 
     public void delete(Long id) {
@@ -55,9 +55,9 @@ public class ProfessorService {
         professorRepository.deleteAll();
     }
 
-    public void saveAll(List<ProfessorDto> professorDtos) {
+    public List<ProfessorDto> saveAll(List<ProfessorDto> professorDtos) {
         List<Professor> professors = professorConverter.toModel(professorDtos);
-        professorRepository.saveAll(professors);
+        return professorConverter.toDto(professorRepository.saveAll(professors));
     }
 }
 

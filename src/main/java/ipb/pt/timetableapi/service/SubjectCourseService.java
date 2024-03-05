@@ -22,26 +22,26 @@ public class SubjectCourseService {
         this.subjectCourseConverter = subjectCourseConverter;
     }
 
-    public List<SubjectCourse> findAll() {
-        return subjectCourseRepository.findAll();
+    public List<SubjectCourseDto> findAll() {
+        return subjectCourseConverter.toDto(subjectCourseRepository.findAll());
     }
 
-    public SubjectCourse findById(Long id) {
-        return subjectCourseRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "SubjectCourse not found"));
+    public SubjectCourseDto findById(Long id) {
+        return subjectCourseConverter.toDto(subjectCourseRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "SubjectCourse not found")));
     }
 
-    public SubjectCourse create(SubjectCourseDto subjectCourseDto) {
+    public SubjectCourseDto create(SubjectCourseDto subjectCourseDto) {
         SubjectCourse subjectCourse = subjectCourseConverter.toModel(subjectCourseDto);
-        return subjectCourseRepository.save(subjectCourse);
+        return subjectCourseConverter.toDto(subjectCourseRepository.save(subjectCourse));
     }
 
-    public SubjectCourse update(SubjectCourseDto subjectCourseDto, Long id) {
+    public SubjectCourseDto update(SubjectCourseDto subjectCourseDto, Long id) {
         subjectCourseRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "SubjectCourse not found"));
 
         SubjectCourse subjectCourse = subjectCourseConverter.toModel(subjectCourseDto);
-        return subjectCourseRepository.save(subjectCourse);
+        return subjectCourseConverter.toDto(subjectCourseRepository.save(subjectCourse));
     }
 
     public void delete(Long id) {
@@ -55,9 +55,9 @@ public class SubjectCourseService {
         subjectCourseRepository.deleteAll();
     }
 
-    public void saveAll(List<SubjectCourseDto> subjectCourseDtos) {
+    public List<SubjectCourseDto> saveAll(List<SubjectCourseDto> subjectCourseDtos) {
         List<SubjectCourse> subjectCourses = subjectCourseConverter.toModel(subjectCourseDtos);
-        subjectCourseRepository.saveAll(subjectCourses);
+        return subjectCourseConverter.toDto(subjectCourseRepository.saveAll(subjectCourses));
     }
 }
 

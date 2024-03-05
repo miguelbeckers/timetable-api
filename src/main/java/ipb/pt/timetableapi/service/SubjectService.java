@@ -22,26 +22,26 @@ public class SubjectService {
         this.subjectConverter = subjectConverter;
     }
 
-    public List<Subject> findAll() {
-        return subjectRepository.findAll();
+    public List<SubjectDto> findAll() {
+        return subjectConverter.toDto(subjectRepository.findAll());
     }
 
-    public Subject findById(Long id) {
-        return subjectRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Subject not found"));
+    public SubjectDto findById(Long id) {
+        return subjectConverter.toDto(subjectRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Subject not found")));
     }
 
-    public Subject create(SubjectDto subjectDto) {
+    public SubjectDto create(SubjectDto subjectDto) {
         Subject subject = subjectConverter.toModel(subjectDto);
-        return subjectRepository.save(subject);
+        return subjectConverter.toDto(subjectRepository.save(subject));
     }
 
-    public Subject update(SubjectDto subjectDto, Long id) {
+    public SubjectDto update(SubjectDto subjectDto, Long id) {
         subjectRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Subject not found"));
 
         Subject subject = subjectConverter.toModel(subjectDto);
-        return subjectRepository.save(subject);
+        return subjectConverter.toDto(subjectRepository.save(subject));
     }
 
     public void delete(Long id) {
@@ -55,9 +55,9 @@ public class SubjectService {
         subjectRepository.deleteAll();
     }
 
-    public void saveAll(List<SubjectDto> subjectDtos) {
+    public List<SubjectDto> saveAll(List<SubjectDto> subjectDtos) {
         List<Subject> subjects = subjectConverter.toModel(subjectDtos);
-        subjectRepository.saveAll(subjects);
+        return subjectConverter.toDto(subjectRepository.saveAll(subjects));
     }
 }
 

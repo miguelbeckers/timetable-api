@@ -22,26 +22,26 @@ public class TimeslotService {
         this.timeslotConverter = timeslotConverter;
     }
 
-    public List<Timeslot> findAll() {
-        return timeslotRepository.findAll();
+    public List<TimeslotDto> findAll() {
+        return timeslotConverter.toDto(timeslotRepository.findAll());
     }
 
-    public Timeslot findById(Long id) {
-        return timeslotRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Timeslot not found"));
+    public TimeslotDto findById(Long id) {
+        return timeslotConverter.toDto(timeslotRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Timeslot not found")));
     }
 
-    public Timeslot create(TimeslotDto timeslotDto) {
+    public TimeslotDto create(TimeslotDto timeslotDto) {
         Timeslot timeslot = timeslotConverter.toModel(timeslotDto);
-        return timeslotRepository.save(timeslot);
+        return timeslotConverter.toDto(timeslotRepository.save(timeslot));
     }
 
-    public Timeslot update(TimeslotDto timeslotDto, Long id) {
+    public TimeslotDto update(TimeslotDto timeslotDto, Long id) {
         timeslotRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Timeslot not found"));
 
         Timeslot timeslot = timeslotConverter.toModel(timeslotDto);
-        return timeslotRepository.save(timeslot);
+        return timeslotConverter.toDto(timeslotRepository.save(timeslot));
     }
 
     public void delete(Long id) {
@@ -55,9 +55,9 @@ public class TimeslotService {
         timeslotRepository.deleteAll();
     }
 
-    public void saveAll(List<TimeslotDto> timeslotDtos) {
+    public List<TimeslotDto> saveAll(List<TimeslotDto> timeslotDtos) {
         List<Timeslot> timeslots = timeslotConverter.toModel(timeslotDtos);
-        timeslotRepository.saveAll(timeslots);
+        return timeslotConverter.toDto(timeslotRepository.saveAll(timeslots));
     }
 }
 
