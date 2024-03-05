@@ -113,25 +113,21 @@ public class DataTransferService {
     }
 
     public void deleteAll() {
-        CompletableFuture<Void> deleteAllFuture = CompletableFuture.runAsync(() -> {
-            lessonUnitService.deleteAll();
-            lessonService.deleteAll();
-            studentService.deleteAll();
-            subjectCourseService.deleteAll();
-            lessonResourceService.deleteAll();
-            classroomService.deleteAll();
-            classroomResourceService.deleteAll();
-            courseService.deleteAll();
-            professorService.deleteAll();
-            timeslotService.deleteAll();
-            subjectTypeService.deleteAll();
-            departmentService.deleteAll();
-            resourceService.deleteAll();
-            periodService.deleteAll();
-            subjectService.deleteAll();
-        });
-
-        CompletableFuture.allOf(deleteAllFuture).join();
+        lessonUnitService.deleteAll();
+        lessonService.deleteAll();
+        studentService.deleteAll();
+        subjectCourseService.deleteAll();
+        lessonResourceService.deleteAll();
+        classroomService.deleteAll();
+        classroomResourceService.deleteAll();
+        courseService.deleteAll();
+        professorService.deleteAll();
+        timeslotService.deleteAll();
+        subjectTypeService.deleteAll();
+        departmentService.deleteAll();
+        resourceService.deleteAll();
+        periodService.deleteAll();
+        subjectService.deleteAll();
     }
 
     public List<LessonUnitDto> getResult() {
