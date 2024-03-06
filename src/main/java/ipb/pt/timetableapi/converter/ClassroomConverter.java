@@ -5,19 +5,11 @@ import ipb.pt.timetableapi.model.Classroom;
 import ipb.pt.timetableapi.model.ClassroomResource;
 import ipb.pt.timetableapi.model.ClassroomType;
 import ipb.pt.timetableapi.model.Timeslot;
-import ipb.pt.timetableapi.repository.ClassroomResourceRepository;
-import ipb.pt.timetableapi.repository.ClassroomTypeRepository;
-import ipb.pt.timetableapi.repository.TimeslotRepository;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 
 @Component
 public class ClassroomConverter {

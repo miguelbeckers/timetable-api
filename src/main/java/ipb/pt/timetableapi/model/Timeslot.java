@@ -5,6 +5,7 @@ import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.optaplanner.core.api.domain.lookup.PlanningId;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
@@ -15,6 +16,7 @@ import java.time.LocalTime;
 @NoArgsConstructor
 public class Timeslot {
     @Id
+    @PlanningId
     private Long id;
     private DayOfWeek dayOfWeek;
     private LocalTime startTime;
