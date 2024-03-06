@@ -45,13 +45,16 @@ public class TimetableController {
         Timetable problem = new Timetable(timeslotRepository.findAll(), classroomRepository.findAll(), lessonUnitRepository.findAll());
         SolverJob<Timetable, UUID> solverJob = solverManager.solve(problemId, problem);
 
+        Timetable solution;
+
         try {
-            Timetable solution = solverJob.getFinalBestSolution();
-            lessonUnitRepository.saveAll(solution.getLessonUnits());
-            return ResponseEntity.ok().body(solution.getScore());
+            solution = solverJob.getFinalBestSolution();
         } catch (InterruptedException | ExecutionException e) {
             throw new IllegalStateException("Solving failed.", e);
         }
+
+        lessonUnitRepository.saveAll(solution.getLessonUnits());
+        return ResponseEntity.ok().body("Solving completed with score: " + solution.getScore());
     }
 
     @PostMapping("/stop")
