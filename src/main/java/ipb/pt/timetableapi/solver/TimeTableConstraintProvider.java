@@ -8,6 +8,7 @@ import org.optaplanner.core.api.score.stream.ConstraintProvider;
 import org.optaplanner.core.api.score.stream.Joiners;
 
 import java.time.Duration;
+import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -21,18 +22,19 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
                 // Hard constraints
                 roomConflict(constraintFactory),
                 professorConflict(constraintFactory),
-                resourceAvailability(constraintFactory),
-                classroomAvailability(constraintFactory),
-                professorAvailability(constraintFactory),
-                courseAvailability(constraintFactory),
-                courseLessonsConflict(constraintFactory),
-                studentGroupConflict(constraintFactory),
+//                resourceAvailability(constraintFactory),
+//                classroomAvailability(constraintFactory),
+//                professorAvailability(constraintFactory),
+//                courseAvailability(constraintFactory),
+//                courseLessonsConflict(constraintFactory),
+//                studentGroupConflict(constraintFactory),
 
                 // Soft constraints
-                professorTimeEfficiency(constraintFactory),
-                lessonBlockSizeEfficiency(constraintFactory),
-                lessonTimeEfficiency(constraintFactory),
-                lessonClassroomEfficiency(constraintFactory)
+//                professorTimeEfficiency(constraintFactory),
+//                lessonBlockSizeEfficiency(constraintFactory),
+//                lessonTimeEfficiency(constraintFactory),
+//                lessonClassroomEfficiency(constraintFactory)
+//                startTimeBetweenTenAndTwo(constraintFactory)
         };
     }
 
@@ -152,7 +154,7 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
                         Joiners.equal(LessonUnit::getTimeslot),
                         Joiners.lessThan(LessonUnit::getId))
                 .filter(this::hasCourseUnavailabilityConflict)
-                .penalize(HardSoftScore.ofHard(50))
+                .penalize(HardSoftScore.ONE_HARD)
                 .asConstraint("Course unavailability conflict");
     }
 
@@ -172,7 +174,7 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
                                 .equals(lessonUnit2.getLesson().getSubjectCourse().getCourse())
                                 && !lessonUnit1.getLesson().equals(lessonUnit2.getLesson())
                 ))
-                .reward(HardSoftScore.ONE_HARD)
+                .penalize(HardSoftScore.ONE_HARD)
                 .asConstraint("Course lessons conflict");
     }
 
@@ -218,7 +220,7 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
                 .join(LessonUnit.class, Joiners.equal(LessonUnit::getLesson))
                 .filter((lessonUnit1, lessonUnit2) -> lessonUnit1.getClassroom().equals(lessonUnit2.getClassroom())
                         && !lessonUnit1.getTimeslot().equals(lessonUnit2.getTimeslot()))
-                .penalize(HardSoftScore.ONE_SOFT)
+                .reward(HardSoftScore.ONE_SOFT)
                 .asConstraint("Lesson classroom efficiency");
     }
 
@@ -245,5 +247,19 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
                 })
                 .reward(HardSoftScore.ONE_SOFT)
                 .asConstraint("Lesson time efficiency");
+    }
+
+    private Constraint startTimeBetweenTenAndTwo(ConstraintFactory constraintFactory) {
+        return constraintFactory
+                .forEach(LessonUnit.class)
+                .filter(lessonUnit -> isStartTimeBetweenTenAndTwo(lessonUnit.getTimeslot().getStartTime()))
+                .reward(HardSoftScore.ONE_SOFT)
+                .asConstraint("Start time between 10 and 14");
+    }
+
+    private boolean isStartTimeBetweenTenAndTwo(LocalTime startTime) {
+        return startTime != null
+                && startTime.isAfter(LocalTime.of(10, 0))
+                && startTime.isBefore(LocalTime.of(14, 0));
     }
 }
