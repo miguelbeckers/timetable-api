@@ -15,7 +15,6 @@ import java.util.List;
 import static org.optaplanner.core.api.score.stream.ConstraintCollectors.count;
 
 public class TimeTableConstraintProvider implements ConstraintProvider {
-
     @Override
     public Constraint[] defineConstraints(ConstraintFactory constraintFactory) {
         return new Constraint[]{
@@ -211,13 +210,14 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
         return hasUnavailabilityConflict(conflictingLessonUnit, courseUnavailability);
     }
 
-    //FIXME: change to hard constraint
     private Constraint lessonBlockSizeEfficiency(ConstraintFactory constraintFactory) {
+        int UNITS_PER_HOUR = 2;
+
         return constraintFactory
                 .forEach(LessonUnit.class)
                 .groupBy(LessonUnit::getLesson, lessonUnit -> lessonUnit.getTimeslot().getDayOfWeek(), count())
-                .filter((lesson, dayOfWeek, count) -> count == lesson.getHoursPerWeek() / lesson.getBlocks())
-                .reward(LESSON_BLOCK_SIZE_EFFICIENCY_SCORE)
+                .filter((lesson, dayOfWeek, count) -> count != lesson.getHoursPerWeek() * UNITS_PER_HOUR / lesson.getBlocks())
+                .penalize(LESSON_BLOCK_SIZE_EFFICIENCY_SCORE)
                 .asConstraint("Lesson block size efficiency");
     }
 
