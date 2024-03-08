@@ -1,31 +1,21 @@
 package ipb.pt.timetableapi.controller;
 
 import ipb.pt.timetableapi.dto.LessonDto;
-import ipb.pt.timetableapi.model.Lesson;
 import ipb.pt.timetableapi.service.LessonService;
-import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 @Controller
 @CrossOrigin
 @RequestMapping("/lessons")
 public class LessonController {
+    private final LessonService lessonService;
 
     @Autowired
-    private LessonService lessonService;
-
-    @GetMapping("/hello")
-    public ResponseEntity<String> hello() {
-        return ResponseEntity.ok().body("hello lessons!");
+    public LessonController(LessonService lessonService) {
+        this.lessonService = lessonService;
     }
 
     @GetMapping
@@ -35,64 +25,22 @@ public class LessonController {
 
     @GetMapping("{id}")
     public ResponseEntity<Object> getById(@PathVariable Long id) {
-        Optional<Lesson> optional = lessonService.findById(id);
-        return optional.isPresent() ? ResponseEntity.ok(optional.get()) : ResponseEntity.notFound().build();
-
+        return ResponseEntity.ok().body(lessonService.findById(id));
     }
 
     @PostMapping()
-    public ResponseEntity<Object> create(@Valid @RequestBody LessonDto lessonDto) {
-        Lesson lesson = new Lesson();
-        BeanUtils.copyProperties(lessonDto, lesson);
-        return ResponseEntity.ok().body(lessonService.create(lesson));
-    }
-
-    @Transactional
-    @PostMapping("/many")
-    public ResponseEntity<List<Object>> createMany(@Valid @RequestBody List<LessonDto> lessonDtoList) {
-
-        List<Object> created = new ArrayList<>();
-        for (LessonDto lessonDto : lessonDtoList) {
-            Lesson lesson = new Lesson();
-            BeanUtils.copyProperties(lessonDto, lesson);
-            created.add(lessonService.create(lesson));
-        }
-
-        return ResponseEntity.ok().body(created);
+    public ResponseEntity<Object> create(@RequestBody LessonDto lessonDto) {
+        return ResponseEntity.ok().body(lessonService.create(lessonDto));
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Object> update(@Valid @RequestBody LessonDto lessonDto, @PathVariable Long id) {
-        Optional<Lesson> optional = lessonService.findById(id);
-        if (optional.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        Lesson lesson = optional.get();
-        BeanUtils.copyProperties(lessonDto, lesson);
-        return ResponseEntity.ok().body(lessonService.update(lesson));
+    public ResponseEntity<Object> update(@RequestBody LessonDto lessonDto, @PathVariable Long id) {
+        return ResponseEntity.ok().body(lessonService.update(lessonDto, id));
     }
 
     @DeleteMapping("{id}")
     public ResponseEntity<Object> delete(@PathVariable Long id) {
-        Optional<Lesson> areaOptional = lessonService.findById(id);
-        if (areaOptional.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        lessonService.delete(areaOptional.get());
+        lessonService.findById(id);
         return ResponseEntity.ok().build();
-    }
-
-    @PutMapping("/reset")
-    public ResponseEntity<List<Lesson>> reset() {
-        List<Lesson> lessons = lessonService.findAll();
-        List<Lesson> updated = new ArrayList<>();
-        for(Lesson lesson: lessons) {
-            lesson.setTimeslot(null);
-            lesson.setClassroom(null);
-            updated.add(lessonService.update(lesson));
-        }
-        return ResponseEntity.ok().body(updated);
     }
 }

@@ -1,7 +1,10 @@
 package ipb.pt.timetableapi.model;
 
+import ipb.pt.timetableapi.solver.TimetableConstraintConfiguration;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.optaplanner.core.api.domain.constraintweight.ConstraintConfigurationProvider;
 import org.optaplanner.core.api.domain.solution.PlanningEntityCollectionProperty;
 import org.optaplanner.core.api.domain.solution.PlanningScore;
 import org.optaplanner.core.api.domain.solution.PlanningSolution;
@@ -11,9 +14,9 @@ import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
 
 import java.util.List;
 
-
 @Getter
 @Setter
+@NoArgsConstructor
 @PlanningSolution
 public class Timetable {
     @ProblemFactCollectionProperty
@@ -23,13 +26,9 @@ public class Timetable {
     @ValueRangeProvider(id = "classroomRange")
     private List<Classroom> classrooms;
     @PlanningEntityCollectionProperty
-    private List<Lesson> lessons;
+    private List<LessonUnit> lessonUnits;
+    @ConstraintConfigurationProvider
+    private TimetableConstraintConfiguration timetableConfiguration;
     @PlanningScore
     private HardSoftScore score;
-
-    public Timetable(List<Timeslot> timeslots, List<Classroom> classrooms, List<Lesson> lessons) {
-        this.timeslots = timeslots;
-        this.classrooms = classrooms;
-        this.lessons = lessons;
-    }
 }

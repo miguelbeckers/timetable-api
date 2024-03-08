@@ -1,12 +1,11 @@
 package ipb.pt.timetableapi.model;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.optaplanner.core.api.domain.lookup.PlanningId;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
@@ -17,14 +16,9 @@ import java.time.LocalTime;
 @NoArgsConstructor
 public class Timeslot {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @PlanningId
     private Long id;
     private DayOfWeek dayOfWeek;
     private LocalTime startTime;
     private LocalTime endTime;
-
-    @Override
-    public String toString() {
-        return dayOfWeek + " - " + startTime;
-    }
 }

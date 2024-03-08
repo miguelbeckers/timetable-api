@@ -4,35 +4,32 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.optaplanner.core.api.domain.entity.PlanningEntity;
-import org.optaplanner.core.api.domain.variable.PlanningVariable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-@PlanningEntity
 public class Lesson {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private String subject;
-    private String teacher;
-    private String studentGroup;
+    private String name;
+//    private int groupNumber;
+//    private int groupCount;
     private String color;
-    private Integer groupSize;
-
-    // Initialized/Changed during planning
+    private Double hoursPerWeek;
+    private Integer blocks;
     @ManyToOne
-    @PlanningVariable(valueRangeProviderRefs = "timeslotRange")
-    private Timeslot timeslot;
-
+    private SubjectCourse subjectCourse;
     @ManyToOne
-    @PlanningVariable(valueRangeProviderRefs = "classroomRange")
-    private Classroom classroom;
+    private SubjectType subjectType;
 
-    @Override
-    public String toString() {
-        return subject + " [" + id + "]";
-    }
+    @ManyToMany(fetch = FetchType.EAGER)
+    private List<LessonResource> lessonResources = new ArrayList<>();
+    @ManyToMany(fetch = FetchType.EAGER)
+    private List<Professor> professors = new ArrayList<>();
+    @ManyToMany(fetch = FetchType.EAGER)
+    private List<Student> students = new ArrayList<>();
 }

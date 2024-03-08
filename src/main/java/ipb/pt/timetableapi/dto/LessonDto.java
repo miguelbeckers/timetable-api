@@ -1,19 +1,22 @@
 package ipb.pt.timetableapi.dto;
 
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 public class LessonDto {
-    @NotEmpty(message = "Empty name")
-    private String subject;
-    @NotEmpty(message = "Empty teacher")
-    private String teacher;
-    @NotEmpty(message = "Empty student group")
-    private String studentGroup;
-    @NotEmpty(message = "Empty color")
+    private Long id;
+    private String name;
+//    private int groupNumber;
+//    private int groupCount;
     private String color;
-    @NotNull(message = "Empty group size")
-    private Integer groupSize;
+    private Double hoursPerWeek;
+    private Integer blocks;
+    private Long subjectCourseId;
+    private Long subjectTypeId;
+    private List<Long> professorIds = new ArrayList<>();
+    private List<Long> lessonResourceIds = new ArrayList<>();
+    private List<Long> studentIds = new ArrayList<>();
 }

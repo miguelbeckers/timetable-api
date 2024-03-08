@@ -1,12 +1,13 @@
 package ipb.pt.timetableapi.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.optaplanner.core.api.domain.lookup.PlanningId;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -14,13 +15,15 @@ import lombok.Setter;
 @NoArgsConstructor
 public class Classroom {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    public Long id;
+    @PlanningId
+    private Long id;
     private String name;
-    private Integer capacity;
+    private String abbreviation;
+    @ManyToOne
+    private ClassroomType classroomType;
+    @OneToMany
+    private List<ClassroomResource> classroomResources = new ArrayList<>();
 
-    @Override
-    public String toString() {
-        return name;
-    }
+    @ManyToMany(fetch = FetchType.EAGER)
+    private List<Timeslot> unavailability = new ArrayList<>();
 }
