@@ -60,4 +60,3 @@ public class TimeslotService {
         return timeslotConverter.toDto(timeslotRepository.saveAll(timeslots));
     }
 }
-

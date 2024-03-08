@@ -1,20 +1,11 @@
-package ipb.pt.timetableapi.model;
+package ipb.pt.timetableapi.dto;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
-@Entity
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-public class Score {
-    @Id
+@Data
+public class ConstraintScoreDto {
     private Long id;
+    private String name;
     private int roomConflict;
     private int professorConflict;
     private int courseLessonsConflict;

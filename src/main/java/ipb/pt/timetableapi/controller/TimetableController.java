@@ -1,11 +1,11 @@
 package ipb.pt.timetableapi.controller;
 
+import ipb.pt.timetableapi.dto.StatusDto;
 import ipb.pt.timetableapi.model.Timetable;
 import ipb.pt.timetableapi.repository.ClassroomRepository;
 import ipb.pt.timetableapi.repository.LessonUnitRepository;
 import ipb.pt.timetableapi.repository.TimeslotRepository;
 import ipb.pt.timetableapi.solver.TimetableConstraintConfiguration;
-import lombok.Data;
 import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
 import org.optaplanner.core.api.solver.SolverJob;
 import org.optaplanner.core.api.solver.SolverManager;
@@ -71,7 +71,7 @@ public class TimetableController {
     @GetMapping("/status")
     public ResponseEntity<Object> status() {
         HardSoftScore initialScore = computeScore(createProblem());
-        ProcessStatus status = new ProcessStatus();
+        StatusDto status = new StatusDto();
         status.setInitialScore(initialScore.toString());
 
         if (startTime == null) {
@@ -136,12 +136,4 @@ public class TimetableController {
         scoreManager.updateScore(currentProblem);
         return currentProblem.getScore();
     }
-}
-
-@Data
-class ProcessStatus {
-    private String status;
-    private String initialScore;
-    private String startTime;
-    private long seconds;
 }

@@ -27,10 +27,8 @@ public class Timetable {
     private List<Classroom> classrooms;
     @PlanningEntityCollectionProperty
     private List<LessonUnit> lessonUnits;
-
-    @PlanningScore
-    private HardSoftScore score;
-
     @ConstraintConfigurationProvider
     private TimetableConstraintConfiguration timetableConfiguration;
+    @PlanningScore
+    private HardSoftScore score;
 }
