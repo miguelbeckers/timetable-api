@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalTime;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -15,6 +16,7 @@ import java.time.LocalTime;
 public class Checkpoint {
     @Id
     private Long id;
+    private UUID problemId;
     private LocalTime startTime;
     private LocalTime endTime;
     private int hardScore;
