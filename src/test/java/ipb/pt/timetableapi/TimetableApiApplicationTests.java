@@ -9,7 +9,7 @@ import org.springframework.util.Assert;
 
 import java.time.LocalTime;
 
-import static ipb.pt.timetableapi.solver.TimeTableConstraintProvider.checkIfTheLessonsAreOutOfTheBlock;
+import static ipb.pt.timetableapi.solver.TimetableConstraintProvider.checkIfTheLessonsAreOutOfTheBlock;
 
 @SpringBootTest
 class TimetableApiApplicationTests {

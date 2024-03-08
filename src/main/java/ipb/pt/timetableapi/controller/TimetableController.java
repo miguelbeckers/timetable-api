@@ -124,7 +124,9 @@ public class TimetableController {
         problem.setTimeslots(timeslotRepository.findAll());
         problem.setLessonUnits(lessonUnitRepository.findAll());
         TimetableConstraintConfiguration timetableConfiguration = new TimetableConstraintConfiguration();
+
         timetableConfiguration.setRoomConflict(HardSoftScore.ofHard(10));
+
         problem.setTimetableConfiguration(timetableConfiguration);
         return problem;
     }

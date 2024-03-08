@@ -1,7 +1,6 @@
 package ipb.pt.timetableapi.solver;
 
 import ipb.pt.timetableapi.model.*;
-import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
 import org.optaplanner.core.api.score.stream.Constraint;
 import org.optaplanner.core.api.score.stream.ConstraintFactory;
 import org.optaplanner.core.api.score.stream.ConstraintProvider;
@@ -13,11 +12,11 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.optaplanner.core.api.score.stream.ConstraintCollectors.count;
+//import static org.optaplanner.core.api.score.stream.ConstraintCollectors.toList;
 
-public class TimeTableConstraintProvider implements ConstraintProvider {
-    private static final int TIMESLOT = 30;
+public class TimetableConstraintProvider implements ConstraintProvider {
+    private static final int UNIT = 30;
     private static final int HOUR = 60;
-    private static final int UNITS_PER_HOUR = HOUR / TIMESLOT;
 
     @Override
     public Constraint[] defineConstraints(ConstraintFactory constraintFactory) {
@@ -25,15 +24,15 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
                 // Hard constraints
                 roomConflict(constraintFactory),
                 professorConflict(constraintFactory),
-                courseLessonsConflict(constraintFactory),
-                studentGroupConflict(constraintFactory),
+                courseLessonsConflict(constraintFactory), // TODO: Look for the year -> solve first
+                studentGroupConflict(constraintFactory), // TODO: check the groups
 
                 resourceAvailability(constraintFactory),
                 classroomAvailability(constraintFactory),
                 professorAvailability(constraintFactory),
                 courseAvailability(constraintFactory),
 
-                lessonBlockSizeEfficiency(constraintFactory),
+                lessonBlockSizeEfficiency(constraintFactory), // TODO: check blocks with different sizes
                 lessonTimeEfficiency(constraintFactory),
                 lessonClassroomEfficiency(constraintFactory),
 
@@ -43,20 +42,6 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
         };
     }
 
-    private static final HardSoftScore PROFESSOR_CONFLICT_SCORE = HardSoftScore.ofHard(1);
-    private static final HardSoftScore COURSE_LESSONS_CONFLICT_SCORE = HardSoftScore.ofHard(1);
-    private static final HardSoftScore STUDENT_GROUP_CONFLICT_SCORE = HardSoftScore.ofHard(1);
-    private static final HardSoftScore RESOURCE_AVAILABILITY_SCORE = HardSoftScore.ofHard(1);
-    private static final HardSoftScore CLASSROOM_AVAILABILITY_SCORE = HardSoftScore.ofHard(1);
-    private static final HardSoftScore PROFESSOR_AVAILABILITY_SCORE = HardSoftScore.ofHard(1);
-    private static final HardSoftScore COURSE_AVAILABILITY_SCORE = HardSoftScore.ofHard(1);
-    private static final HardSoftScore LESSON_BLOCK_SIZE_EFFICIENCY_SCORE = HardSoftScore.ofHard(1);
-    private static final HardSoftScore LESSON_TIME_EFFICIENCY_SCORE = HardSoftScore.ofHard(1);
-    private static final HardSoftScore LESSON_CLASSROOM_EFFICIENCY_SCORE = HardSoftScore.ofHard(1);
-    private static final HardSoftScore PROFESSOR_TIME_EFFICIENCY_SCORE = HardSoftScore.ofSoft(1);
-    private static final HardSoftScore START_TIME_BETWEEN_TEN_AND_TWO_SCORE = HardSoftScore.ofSoft(1);
-
-
     private Constraint roomConflict(ConstraintFactory constraintFactory) {
         return constraintFactory
                 .forEach(LessonUnit.class)
@@ -64,7 +49,7 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
                         Joiners.equal(LessonUnit::getTimeslot),
                         Joiners.equal(LessonUnit::getClassroom),
                         Joiners.lessThan(LessonUnit::getId))
-                .penalizeConfigurable("Room conflict");
+                .penalizeConfigurable(TimetableConstraintConstants.ROOM_CONFLICT);
     }
 
     private Constraint professorConflict(ConstraintFactory constraintFactory) {
@@ -78,8 +63,7 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
                                         lessonUnit.getLesson().getProfessors(),
                                         otherLessonUnit.getLesson().getProfessors()
                                 )))
-                .penalize(PROFESSOR_CONFLICT_SCORE)
-                .asConstraint("Teacher conflict");
+                .penalizeConfigurable(TimetableConstraintConstants.PROFESSOR_CONFLICT);
     }
 
     private Constraint courseLessonsConflict(ConstraintFactory constraintFactory) {
@@ -91,8 +75,7 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
                                 .equals(lessonUnit2.getLesson().getSubjectCourse().getCourse())
                                 && !lessonUnit1.getLesson().equals(lessonUnit2.getLesson())
                 ))
-                .penalize(COURSE_LESSONS_CONFLICT_SCORE)
-                .asConstraint("Course lessons conflict");
+                .penalizeConfigurable(TimetableConstraintConstants.COURSE_LESSONS_CONFLICT);
     }
 
     private Constraint studentGroupConflict(ConstraintFactory constraintFactory) {
@@ -109,8 +92,7 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
                                 && lessonUnit1.getLesson().getName().equals(lessonUnit2.getLesson().getName())
                                 && lessonUnit1.getTimeslot().equals(lessonUnit2.getTimeslot())
                 ))
-                .penalize(STUDENT_GROUP_CONFLICT_SCORE)
-                .asConstraint("Student group conflict");
+                .penalizeConfigurable(TimetableConstraintConstants.STUDENT_GROUP_CONFLICT);
     }
 
     private Constraint resourceAvailability(ConstraintFactory constraintFactory) {
@@ -119,8 +101,7 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
                 .filter(lessonUnit -> lessonUnit.getClassroom() != null)
                 .filter(lessonUnit -> !lessonUnit.getLesson().getLessonResources().isEmpty())
                 .filter(this::checkResourceAvailability)
-                .penalize(RESOURCE_AVAILABILITY_SCORE)
-                .asConstraint("Resource availability conflict");
+                .penalizeConfigurable(TimetableConstraintConstants.RESOURCE_AVAILABILITY);
     }
 
     private boolean checkResourceAvailability(LessonUnit conflictingLesson) {
@@ -144,8 +125,7 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
                         Joiners.equal(LessonUnit::getTimeslot),
                         Joiners.lessThan(LessonUnit::getId))
                 .filter(this::hasClassroomUnavailabilityConflict)
-                .penalize(CLASSROOM_AVAILABILITY_SCORE)
-                .asConstraint("Classroom unavailability conflict");
+                .penalizeConfigurable(TimetableConstraintConstants.CLASSROOM_AVAILABILITY);
     }
 
     private boolean hasClassroomUnavailabilityConflict(LessonUnit conflictingLesson) {
@@ -176,8 +156,7 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
                         Joiners.equal(LessonUnit::getTimeslot),
                         Joiners.lessThan(LessonUnit::getId))
                 .filter(this::hasProfessorUnavailabilityConflict)
-                .penalize(PROFESSOR_AVAILABILITY_SCORE)
-                .asConstraint("Professor unavailability conflict");
+                .penalizeConfigurable(TimetableConstraintConstants.PROFESSOR_AVAILABILITY);
     }
 
     private boolean hasProfessorUnavailabilityConflict(LessonUnit conflictingLessonUnit) {
@@ -201,8 +180,7 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
                         Joiners.equal(LessonUnit::getTimeslot),
                         Joiners.lessThan(LessonUnit::getId))
                 .filter(this::hasCourseUnavailabilityConflict)
-                .penalize(COURSE_AVAILABILITY_SCORE)
-                .asConstraint("Course unavailability conflict");
+                .penalizeConfigurable(TimetableConstraintConstants.COURSE_AVAILABILITY);
     }
 
     private boolean hasCourseUnavailabilityConflict(LessonUnit conflictingLessonUnit) {
@@ -217,18 +195,32 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
                 .forEach(LessonUnit.class)
                 .groupBy(LessonUnit::getLesson, lessonUnit -> lessonUnit.getTimeslot().getDayOfWeek(), count())
                 .filter((lesson, dayOfWeek, count) -> (
-                        count != lesson.getHoursPerWeek() * UNITS_PER_HOUR / lesson.getBlocks()))
-                .penalize(LESSON_BLOCK_SIZE_EFFICIENCY_SCORE)
-                .asConstraint("Lesson block size efficiency");
+                        count != lesson.getHoursPerWeek() * HOUR / UNIT / lesson.getBlocks()))
+                .penalizeConfigurable(TimetableConstraintConstants.LESSON_BLOCK_SIZE_EFFICIENCY);
     }
 
     private Constraint lessonTimeEfficiency(ConstraintFactory constraintFactory) {
         return constraintFactory
                 .forEach(LessonUnit.class)
                 .join(LessonUnit.class, Joiners.equal(LessonUnit::getLesson))
-                .filter(TimeTableConstraintProvider::checkIfTheLessonsAreOutOfTheBlock)
-                .penalize(LESSON_TIME_EFFICIENCY_SCORE)
-                .asConstraint("Lesson time efficiency");
+                .filter(TimetableConstraintProvider::checkIfTheLessonsAreOutOfTheBlock)
+                .penalizeConfigurable(TimetableConstraintConstants.LESSON_TIME_EFFICIENCY);
+    }
+
+    public static boolean checkIfTheLessonsAreOutOfTheBlock(LessonUnit lessonUnit1, LessonUnit lessonUnit2) {
+        if (lessonUnit1.getTimeslot().getDayOfWeek() != lessonUnit2.getTimeslot().getDayOfWeek())
+            return false;
+
+        int blocks = lessonUnit1.getLesson().getBlocks();
+        double hoursPerWeek = lessonUnit1.getLesson().getHoursPerWeek();
+        double unitsPerDay = hoursPerWeek * HOUR / UNIT / blocks;
+
+        long minutesBetween = Duration.between(
+                lessonUnit1.getTimeslot().getStartTime(),
+                lessonUnit2.getTimeslot().getStartTime()
+        ).abs().toMinutes();
+
+        return minutesBetween > unitsPerDay * UNIT;
     }
 
     private Constraint lessonClassroomEfficiency(ConstraintFactory constraintFactory) {
@@ -237,8 +229,7 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
                 .join(LessonUnit.class, Joiners.equal(LessonUnit::getLesson))
                 .filter((lessonUnit1, lessonUnit2) -> !lessonUnit1.getClassroom().equals(lessonUnit2.getClassroom())
                         && lessonUnit1.getTimeslot().getDayOfWeek().equals(lessonUnit2.getTimeslot().getDayOfWeek()))
-                .penalize(LESSON_CLASSROOM_EFFICIENCY_SCORE)
-                .asConstraint("Lesson classroom efficiency");
+                .penalizeConfigurable(TimetableConstraintConstants.LESSON_CLASSROOM_EFFICIENCY);
     }
 
     private Constraint professorTimeEfficiency(ConstraintFactory constraintFactory) {
@@ -253,38 +244,19 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
 
                     return !between.isNegative() && between.compareTo(Duration.ofMinutes(30)) <= 0;
                 })
-
-                .reward(PROFESSOR_TIME_EFFICIENCY_SCORE)
-                .asConstraint("Teacher time efficiency");
+                .rewardConfigurable(TimetableConstraintConstants.PROFESSOR_TIME_EFFICIENCY);
     }
 
     private Constraint startTimeBetweenTenAndTwo(ConstraintFactory constraintFactory) {
         return constraintFactory
                 .forEach(LessonUnit.class)
                 .filter(lessonUnit -> isStartTimeBetweenTenAndTwo(lessonUnit.getTimeslot().getStartTime()))
-                .reward(START_TIME_BETWEEN_TEN_AND_TWO_SCORE)
-                .asConstraint("Start time between 10 and 14");
+                .rewardConfigurable(TimetableConstraintConstants.START_TIME_BETWEEN_TEN_AND_TWO);
     }
 
     private boolean isStartTimeBetweenTenAndTwo(LocalTime startTime) {
         return startTime != null
                 && startTime.isAfter(LocalTime.of(10, 0))
                 && startTime.isBefore(LocalTime.of(14, 0));
-    }
-
-    public static boolean checkIfTheLessonsAreOutOfTheBlock(LessonUnit lessonUnit1, LessonUnit lessonUnit2) {
-        if (lessonUnit1.getTimeslot().getDayOfWeek() != lessonUnit2.getTimeslot().getDayOfWeek())
-            return false;
-
-        int blocks = lessonUnit1.getLesson().getBlocks();
-        double hoursPerWeek = lessonUnit1.getLesson().getHoursPerWeek();
-        double unitsPerDay = hoursPerWeek * UNITS_PER_HOUR / blocks;
-
-        long minutesBetween = Duration.between(
-                lessonUnit1.getTimeslot().getStartTime(),
-                lessonUnit2.getTimeslot().getStartTime()
-        ).abs().toMinutes();
-
-        return minutesBetween > unitsPerDay * TIMESLOT;
     }
 }
