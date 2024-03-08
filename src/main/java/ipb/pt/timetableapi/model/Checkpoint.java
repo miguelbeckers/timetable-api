@@ -19,8 +19,4 @@ public class Checkpoint {
     private LocalTime endTime;
     private int hardScore;
     private int softScore;
-
-    public long getDuration() {
-        return endTime.toSecondOfDay() - startTime.toSecondOfDay();
-    }
 }
