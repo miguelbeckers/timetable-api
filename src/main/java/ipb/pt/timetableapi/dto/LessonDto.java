@@ -9,6 +9,8 @@ import java.util.List;
 public class LessonDto {
     private Long id;
     private String name;
+//    private int groupNumber;
+//    private int groupCount;
     private String color;
     private Double hoursPerWeek;
     private Integer blocks;

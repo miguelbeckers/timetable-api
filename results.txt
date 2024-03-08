@@ -1,0 +1,33 @@
+{
+    "initialScore": "-9311hard/2645soft",
+    "startTime": "19:16:31.844141800",
+    "seconds": 4
+}
+
+{
+    "status": "Not started",
+    "initialScore": "-8813hard/2630soft",
+    "startTime": null,
+    "seconds": 0
+}
+
+{
+    "status": "Not started",
+    "initialScore": "-8529hard/2666soft",
+    "startTime": null,
+    "seconds": 0
+}
+
+{
+    "status": "Completed",
+    "initialScore": "-8452hard/2729soft",
+    "startTime": "19:40:31.812384500",
+    "seconds": 18
+}
+
+{
+    "status": "Not started",
+    "initialScore": "-136init/-10951hard/7644soft",
+    "startTime": null,
+    "seconds": 0
+}

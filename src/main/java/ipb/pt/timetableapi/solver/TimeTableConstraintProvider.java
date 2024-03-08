@@ -15,6 +15,10 @@ import java.util.List;
 import static org.optaplanner.core.api.score.stream.ConstraintCollectors.count;
 
 public class TimeTableConstraintProvider implements ConstraintProvider {
+    private static final int TIMESLOT = 30;
+    private static final int HOUR = 60;
+    private static final int UNITS_PER_HOUR = HOUR / TIMESLOT;
+
     @Override
     public Constraint[] defineConstraints(ConstraintFactory constraintFactory) {
         return new Constraint[]{
@@ -39,7 +43,6 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
         };
     }
 
-    private static final HardSoftScore ROOM_CONFLICT_SCORE = HardSoftScore.ofHard(1);
     private static final HardSoftScore PROFESSOR_CONFLICT_SCORE = HardSoftScore.ofHard(1);
     private static final HardSoftScore COURSE_LESSONS_CONFLICT_SCORE = HardSoftScore.ofHard(1);
     private static final HardSoftScore STUDENT_GROUP_CONFLICT_SCORE = HardSoftScore.ofHard(1);
@@ -61,8 +64,7 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
                         Joiners.equal(LessonUnit::getTimeslot),
                         Joiners.equal(LessonUnit::getClassroom),
                         Joiners.lessThan(LessonUnit::getId))
-                .penalize(ROOM_CONFLICT_SCORE)
-                .asConstraint("Room conflict");
+                .penalizeConfigurable("Room conflict");
     }
 
     private Constraint professorConflict(ConstraintFactory constraintFactory) {
@@ -96,6 +98,7 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
     private Constraint studentGroupConflict(ConstraintFactory constraintFactory) {
         return constraintFactory
                 .forEach(LessonUnit.class)
+//                .filter(lessonUnit -> lessonUnit.getLesson().getGroupCount() > 0)
                 .join(LessonUnit.class,
                         Joiners.equal(lessonUnit -> lessonUnit.getLesson().getSubjectCourse().getCourse()),
                         Joiners.equal(lessonUnit -> lessonUnit.getLesson().getSubjectCourse().getPeriod()),
@@ -103,7 +106,6 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
                         Joiners.equal(lessonUnit -> lessonUnit.getLesson().getSubjectType()))
                 .filter((lessonUnit1, lessonUnit2) -> (
                         !lessonUnit1.getLesson().equals(lessonUnit2.getLesson())
-                                && lessonUnit1.getLesson().getName() != null
                                 && lessonUnit1.getLesson().getName().equals(lessonUnit2.getLesson().getName())
                                 && lessonUnit1.getTimeslot().equals(lessonUnit2.getTimeslot())
                 ))
@@ -211,41 +213,31 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
     }
 
     private Constraint lessonBlockSizeEfficiency(ConstraintFactory constraintFactory) {
-        int UNITS_PER_HOUR = 2;
-
         return constraintFactory
                 .forEach(LessonUnit.class)
                 .groupBy(LessonUnit::getLesson, lessonUnit -> lessonUnit.getTimeslot().getDayOfWeek(), count())
-                .filter((lesson, dayOfWeek, count) -> count != lesson.getHoursPerWeek() * UNITS_PER_HOUR / lesson.getBlocks())
+                .filter((lesson, dayOfWeek, count) -> (
+                        count != lesson.getHoursPerWeek() * UNITS_PER_HOUR / lesson.getBlocks()))
                 .penalize(LESSON_BLOCK_SIZE_EFFICIENCY_SCORE)
                 .asConstraint("Lesson block size efficiency");
     }
 
-    //FIXME: change to hard constraint
     private Constraint lessonTimeEfficiency(ConstraintFactory constraintFactory) {
         return constraintFactory
                 .forEach(LessonUnit.class)
                 .join(LessonUnit.class, Joiners.equal(LessonUnit::getLesson))
-                .filter((lessonUnit1, lessonUnit2) -> {
-                    Duration between = Duration.between(
-                            lessonUnit1.getTimeslot().getEndTime(),
-                            lessonUnit2.getTimeslot().getStartTime()
-                    );
-
-                    return !between.isNegative() && between.compareTo(Duration.ofMinutes(30)) <= 0;
-                })
-                .reward(LESSON_TIME_EFFICIENCY_SCORE)
+                .filter(TimeTableConstraintProvider::checkIfTheLessonsAreOutOfTheBlock)
+                .penalize(LESSON_TIME_EFFICIENCY_SCORE)
                 .asConstraint("Lesson time efficiency");
     }
 
-    //FIXME: change to hard constraint
     private Constraint lessonClassroomEfficiency(ConstraintFactory constraintFactory) {
         return constraintFactory
                 .forEach(LessonUnit.class)
                 .join(LessonUnit.class, Joiners.equal(LessonUnit::getLesson))
-                .filter((lessonUnit1, lessonUnit2) -> lessonUnit1.getClassroom().equals(lessonUnit2.getClassroom())
-                        && !lessonUnit1.getTimeslot().equals(lessonUnit2.getTimeslot()))
-                .reward(LESSON_CLASSROOM_EFFICIENCY_SCORE)
+                .filter((lessonUnit1, lessonUnit2) -> !lessonUnit1.getClassroom().equals(lessonUnit2.getClassroom())
+                        && lessonUnit1.getTimeslot().getDayOfWeek().equals(lessonUnit2.getTimeslot().getDayOfWeek()))
+                .penalize(LESSON_CLASSROOM_EFFICIENCY_SCORE)
                 .asConstraint("Lesson classroom efficiency");
     }
 
@@ -278,5 +270,21 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
         return startTime != null
                 && startTime.isAfter(LocalTime.of(10, 0))
                 && startTime.isBefore(LocalTime.of(14, 0));
+    }
+
+    public static boolean checkIfTheLessonsAreOutOfTheBlock(LessonUnit lessonUnit1, LessonUnit lessonUnit2) {
+        if (lessonUnit1.getTimeslot().getDayOfWeek() != lessonUnit2.getTimeslot().getDayOfWeek())
+            return false;
+
+        int blocks = lessonUnit1.getLesson().getBlocks();
+        double hoursPerWeek = lessonUnit1.getLesson().getHoursPerWeek();
+        double unitsPerDay = hoursPerWeek * UNITS_PER_HOUR / blocks;
+
+        long minutesBetween = Duration.between(
+                lessonUnit1.getTimeslot().getStartTime(),
+                lessonUnit2.getTimeslot().getStartTime()
+        ).abs().toMinutes();
+
+        return minutesBetween > unitsPerDay * TIMESLOT;
     }
 }
