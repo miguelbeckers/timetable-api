@@ -1,9 +1,6 @@
 package ipb.pt.timetableapi.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,6 +19,7 @@ public class Professor {
     private String abbreviation;
     @ManyToOne
     private Department department;
-    @ManyToMany
+
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<Timeslot> unavailability = new ArrayList<>();
 }

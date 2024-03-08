@@ -16,6 +16,8 @@ public class Lesson {
     @Id
     private Long id;
     private String name;
+//    private int groupNumber;
+//    private int groupCount;
     private String color;
     private Double hoursPerWeek;
     private Integer blocks;
@@ -23,10 +25,11 @@ public class Lesson {
     private SubjectCourse subjectCourse;
     @ManyToOne
     private SubjectType subjectType;
-    @ManyToMany
+
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<LessonResource> lessonResources = new ArrayList<>();
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<Professor> professors = new ArrayList<>();
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<Student> students = new ArrayList<>();
 }
