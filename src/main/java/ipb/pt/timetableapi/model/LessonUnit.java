@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.optaplanner.core.api.domain.entity.PlanningEntity;
+import org.optaplanner.core.api.domain.entity.PlanningPin;
 import org.optaplanner.core.api.domain.lookup.PlanningId;
 import org.optaplanner.core.api.domain.variable.PlanningVariable;
 
@@ -21,6 +22,9 @@ public class LessonUnit {
     private Long id;
     @ManyToOne
     private Lesson lesson;
+    private Double blockSize;
+//    @PlanningPin
+//    private Boolean isPinned;
 
     // Initialized/Changed during planning
     @ManyToOne

@@ -2,24 +2,35 @@ package ipb.pt.timetableapi.service;
 
 import ipb.pt.timetableapi.converter.LessonUnitConverter;
 import ipb.pt.timetableapi.dto.LessonUnitDto;
+import ipb.pt.timetableapi.model.Lesson;
 import ipb.pt.timetableapi.model.LessonUnit;
+import ipb.pt.timetableapi.model.Timeslot;
+import ipb.pt.timetableapi.repository.LessonRepository;
 import ipb.pt.timetableapi.repository.LessonUnitRepository;
+import ipb.pt.timetableapi.solver.TimetableConstraintConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Duration;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class LessonUnitService {
     private final LessonUnitRepository lessonUnitRepository;
     private final LessonUnitConverter lessonUnitConverter;
+    private final LessonRepository lessonRepository;
 
     @Autowired
-    public LessonUnitService(LessonUnitRepository lessonUnitRepository, LessonUnitConverter lessonUnitConverter) {
+    public LessonUnitService(LessonUnitRepository lessonUnitRepository,
+                             LessonUnitConverter lessonUnitConverter,
+                             LessonRepository lessonRepository) {
         this.lessonUnitRepository = lessonUnitRepository;
         this.lessonUnitConverter = lessonUnitConverter;
+        this.lessonRepository = lessonRepository;
     }
 
     public List<LessonUnitDto> findAll() {
@@ -77,6 +88,61 @@ public class LessonUnitService {
         });
 
         return lessonUnitConverter.toDto(lessonUnitRepository.saveAll(lessonUnits));
+    }
+
+    public List<LessonUnit> splitBlocks() {
+        List<Lesson> lessons = lessonRepository.findAll();
+
+        List<LessonUnit> lessonUnits = new ArrayList<>();
+        long id = 1L;
+
+        for (Lesson lesson : lessons) {
+            double blockSize = Math.round(lesson.getHoursPerWeek() / lesson.getBlocks() * 100) / 100.0;
+
+            for (int i = 0; i < lesson.getBlocks(); i++) {
+                LessonUnit lessonUnit = new LessonUnit();
+                lessonUnit.setId(id++);
+                lessonUnit.setLesson(lesson);
+                lessonUnit.setBlockSize(blockSize);
+                lessonUnits.add(lessonUnit);
+            }
+        }
+
+        return lessonUnits;
+    }
+
+    public static List<LessonUnit> splitBlocks(List<LessonUnit> lessonUnits, double blockSize) {
+        List<LessonUnit> splitLessonUnits = new ArrayList<>();
+        long id = 1L;
+
+        for (LessonUnit lessonUnit : lessonUnits) {
+            double remainingSize = lessonUnit.getBlockSize();
+            Timeslot timeslot = lessonUnit.getTimeslot();
+
+            for (int i = 0; i < blockSize; i++) {
+                remainingSize -= blockSize;
+
+                LocalTime startTime = timeslot.getStartTime();
+                LocalTime endTime = startTime.plus(Duration.ofMinutes(
+                        (long) blockSize * TimetableConstraintConstants.UNIT));
+
+                Timeslot blockTimeslot = new Timeslot();
+                blockTimeslot.setStartTime(startTime);
+                blockTimeslot.setEndTime(endTime);
+
+                LessonUnit splitLessonUnit = new LessonUnit();
+                splitLessonUnit.setId(id++);
+                splitLessonUnit.setLesson(lessonUnit.getLesson());
+                splitLessonUnit.setBlockSize(Math.min(remainingSize, blockSize));
+                splitLessonUnit.setTimeslot(blockTimeslot);
+                splitLessonUnit.setClassroom(lessonUnit.getClassroom());
+                splitLessonUnits.add(splitLessonUnit);
+
+                timeslot.setStartTime(endTime);
+            }
+        }
+
+        return splitLessonUnits;
     }
 }
 

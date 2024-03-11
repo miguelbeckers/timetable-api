@@ -68,6 +68,19 @@ public class TimetableController {
         return runAndAnswer(true);
     }
 
+    @PostMapping("/solve-new")
+    public ResponseEntity<Object> solveNew() {
+        if (startTime != null) {
+            return ResponseEntity.status(409).body("Solver is already running.");
+        }
+
+        Timetable problem = createProblem();
+        solverJob = solverManager.solve(problemId, problem);
+        startTime = LocalTime.now();
+
+        return runAndAnswer(true);
+    }
+
     @GetMapping("/status")
     public ResponseEntity<Object> status() {
         HardSoftScore initialScore = computeScore(createProblem());

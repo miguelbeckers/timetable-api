@@ -15,8 +15,6 @@ import static org.optaplanner.core.api.score.stream.ConstraintCollectors.count;
 //import static org.optaplanner.core.api.score.stream.ConstraintCollectors.toList;
 
 public class TimetableConstraintProvider implements ConstraintProvider {
-    private static final int UNIT = 30;
-    private static final int HOUR = 60;
 
     @Override
     public Constraint[] defineConstraints(ConstraintFactory constraintFactory) {
@@ -195,7 +193,8 @@ public class TimetableConstraintProvider implements ConstraintProvider {
                 .forEach(LessonUnit.class)
                 .groupBy(LessonUnit::getLesson, lessonUnit -> lessonUnit.getTimeslot().getDayOfWeek(), count())
                 .filter((lesson, dayOfWeek, count) -> (
-                        count != lesson.getHoursPerWeek() * HOUR / UNIT / lesson.getBlocks()))
+                        count != lesson.getHoursPerWeek()
+                                * TimetableConstraintConstants.HOUR / TimetableConstraintConstants.UNIT / lesson.getBlocks()))
                 .penalizeConfigurable(TimetableConstraintConstants.LESSON_BLOCK_SIZE_EFFICIENCY);
     }
 
@@ -213,14 +212,14 @@ public class TimetableConstraintProvider implements ConstraintProvider {
 
         int blocks = lessonUnit1.getLesson().getBlocks();
         double hoursPerWeek = lessonUnit1.getLesson().getHoursPerWeek();
-        double unitsPerDay = hoursPerWeek * HOUR / UNIT / blocks;
+        double unitsPerDay = hoursPerWeek * TimetableConstraintConstants.HOUR / TimetableConstraintConstants.UNIT / blocks;
 
         long minutesBetween = Duration.between(
                 lessonUnit1.getTimeslot().getStartTime(),
                 lessonUnit2.getTimeslot().getStartTime()
         ).abs().toMinutes();
 
-        return minutesBetween > unitsPerDay * UNIT;
+        return minutesBetween > unitsPerDay * TimetableConstraintConstants.UNIT;
     }
 
     private Constraint lessonClassroomEfficiency(ConstraintFactory constraintFactory) {

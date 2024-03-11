@@ -7,8 +7,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.util.Assert;
 
+import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
+import static ipb.pt.timetableapi.service.LessonUnitService.splitBlocks;
 import static ipb.pt.timetableapi.solver.TimetableConstraintProvider.checkIfTheLessonsAreOutOfTheBlock;
 
 @SpringBootTest
@@ -50,5 +54,62 @@ class TimetableApiApplicationTests {
 	void testCheckIfTheLessonsAreOutOfTheBlock() {
 		createTestCheckIfTheLessonsAreOutOfTheBlock("08:00", "10:00", true);
 		createTestCheckIfTheLessonsAreOutOfTheBlock("08:00", "09:00", false);
+	}
+
+	@Test
+	void testCheckBlockSizeDivision() {
+		Timeslot timeslot = new Timeslot();
+		timeslot.setStartTime(LocalTime.parse("08:00"));
+		timeslot.setEndTime(LocalTime.parse("13:00"));
+		timeslot.setDayOfWeek(DayOfWeek.of(1));
+
+		LessonUnit lessonUnit = new LessonUnit();
+
+		lessonUnit.setId(1L);
+		lessonUnit.setTimeslot(timeslot);
+		lessonUnit.setBlockSize(5.0);
+
+		List<LessonUnit> lessonUnits = splitBlocks(List.of(lessonUnit), 2.5);
+
+//		08:00->08:30 ┌─────────┐ ┌─────────┐
+//		08:30->09:00 │         │ │         │
+//		09:00->09:30 │         │ │   2.5   │
+//		09:30->10:00 │         │ │         │
+//		10:00->10:30 │    5    │ └─────────┘
+//		10:30->11:00 │         │ ┌─────────┐
+//		11:00->11:30 │         │ │         │
+//		11:30->12:00 │         │ │   2.5   │
+//		12:00->12:30 │         │ │         │
+//		12:30->13:00 └─────────┘ └─────────┘
+
+		Assert.isTrue(lessonUnits.size() == 2,
+				"The lesson unit was split into 2 lesson units");
+
+//		Assert.isTrue(lessonUnits.get(0).getBlockSize() == 2.5,
+//				"The first lesson unit has a block size of 2.5");
+//
+//		Assert.isTrue(lessonUnits.get(0).getTimeslot().getStartTime().equals(LocalTime.parse("08:00")),
+//				"The first lesson unit starts at 08:00");
+//
+//		Assert.isTrue(lessonUnits.get(0).getTimeslot().getEndTime().equals(LocalTime.parse("10:30")),
+//				"The first lesson unit ends at 10:30");
+//
+//		Assert.isTrue(lessonUnits.get(0).getTimeslot().getDayOfWeek().equals(timeslot.getDayOfWeek()),
+//				"The first lesson unit has the same day of the week as the timeslot");
+//
+//		Assert.isTrue(lessonUnits.get(1).getBlockSize() == 2.5,
+//				"The second lesson unit has a block size of 2.5");
+//
+//		Assert.isTrue(lessonUnits.get(1).getTimeslot().getStartTime().equals(LocalTime.parse("10:30")),
+//				"The second lesson unit starts at 10:30");
+//
+//		Assert.isTrue(lessonUnits.get(1).getTimeslot().getEndTime().equals(LocalTime.parse("13:00")),
+//				"The second lesson unit ends at 13:00");
+//
+//		Assert.isTrue(lessonUnits.get(1).getTimeslot().getDayOfWeek().equals(timeslot.getDayOfWeek()),
+//				"The second lesson unit has the same day of the week as the timeslot");
+//
+//		Assert.isTrue(lessonUnits.get(0).getTimeslot().getDayOfWeek().equals(timeslot.getDayOfWeek()),
+//				"The second lesson unit has the same day of the week as the timeslot");
 	}
 }

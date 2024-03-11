@@ -8,4 +8,5 @@ public class LessonUnitDto {
     private Long lessonId;
     private Long timeslotId;
     private Long classroomId;
+    private Double blockSize;
 }
