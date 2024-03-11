@@ -1,9 +1,11 @@
 package ipb.pt.timetableapi.controller;
 
+import ipb.pt.timetableapi.model.LessonUnit;
 import ipb.pt.timetableapi.model.Timetable;
 import ipb.pt.timetableapi.repository.ClassroomRepository;
 import ipb.pt.timetableapi.repository.LessonUnitRepository;
 import ipb.pt.timetableapi.repository.TimeslotRepository;
+import ipb.pt.timetableapi.service.LessonUnitService;
 import ipb.pt.timetableapi.solver.TimetableConstraintConfiguration;
 import org.optaplanner.core.api.solver.SolverJob;
 import org.optaplanner.core.api.solver.SolverManager;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
@@ -27,18 +30,21 @@ public class TimetableController {
     private final ClassroomRepository classroomRepository;
     private final LessonUnitRepository lessonUnitRepository;
     private final TimeslotRepository timeslotRepository;
+    private final LessonUnitService lessonUnitService;
 
     @Autowired
     public TimetableController(
             SolverManager<Timetable, UUID> solverManager,
             ClassroomRepository classroomRepository,
             LessonUnitRepository lessonUnitRepository,
-            TimeslotRepository timeslotRepository
+            TimeslotRepository timeslotRepository,
+            LessonUnitService lessonUnitService
     ) {
         this.solverManager = solverManager;
         this.classroomRepository = classroomRepository;
         this.lessonUnitRepository = lessonUnitRepository;
         this.timeslotRepository = timeslotRepository;
+        this.lessonUnitService = lessonUnitService;
     }
 
     @PostMapping("/solve")
@@ -61,6 +67,23 @@ public class TimetableController {
         } catch (InterruptedException | ExecutionException e) {
             throw new IllegalStateException("Solving failed.", e);
         }
+    }
+
+    @PostMapping("solve-new")
+    public ResponseEntity<Object> solveNew() {
+        List<LessonUnit> lessonUnitsAsBlocks = lessonUnitService.getLessonUnitsAsBlocks();
+
+        // solve with blocks in size of 5
+        // solve with blocks in size of 2.5
+        // solve with blocks in size of 1
+        // solve with blocks in size of 0.5
+
+        return ResponseEntity.ok().body(lessonUnitsAsBlocks.size());
+    }
+
+    private void solveWithBlocksOfSize(List<LessonUnit> lessonUnits, double blockSize) {
+
+        // filter the lessonUnits by the block size
     }
 
     @PostMapping("/stop")
