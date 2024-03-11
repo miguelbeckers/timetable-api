@@ -1,15 +1,17 @@
 package ipb.pt.timetableapi;
 
-import ipb.pt.timetableapi.model.Lesson;
-import ipb.pt.timetableapi.model.LessonUnit;
-import ipb.pt.timetableapi.model.Timeslot;
+import ipb.pt.timetableapi.model.*;
+import ipb.pt.timetableapi.repository.SubjectCourseRepository;
+import ipb.pt.timetableapi.repository.SubjectRepository;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.util.Assert;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static ipb.pt.timetableapi.service.LessonUnitService.splitBlocks;
@@ -17,6 +19,17 @@ import static ipb.pt.timetableapi.solver.TimetableConstraintProvider.checkIfTheL
 
 @SpringBootTest
 class TimetableApiApplicationTests {
+	private final SubjectRepository subjectRepository;
+	private final SubjectCourseRepository subjectCourseRepository;
+
+
+	@Autowired
+	public TimetableApiApplicationTests(SubjectRepository subjectRepository,
+										SubjectCourseRepository subjectCourseRepository){
+		this.subjectRepository = subjectRepository;
+		this.subjectCourseRepository = subjectCourseRepository;
+	}
+
 	void createTestCheckIfTheLessonsAreOutOfTheBlock(String lesson1StartTime, String lesson2StartTime, boolean expected) {
 		LessonUnit lessonUnit1 = new LessonUnit();
 		LessonUnit lessonUnit2 = new LessonUnit();
@@ -111,5 +124,29 @@ class TimetableApiApplicationTests {
 //
 //		Assert.isTrue(lessonUnits.get(0).getTimeslot().getDayOfWeek().equals(timeslot.getDayOfWeek()),
 //				"The second lesson unit has the same day of the week as the timeslot");
+	}
+
+	@Test
+	void testCheckBlockSizeDivision2() {
+
+		List<Subject> subjects = subjectRepository.findAll();
+
+		//create a hasMap
+		HashMap<Long, Subject> subjectHashMap = new HashMap<>();
+		for (Subject subject : subjects) {
+			subjectHashMap.put(subject.getId(), subject);
+		}
+
+		Subject subject = subjectHashMap.get(742L);
+
+		System.out.println(subject.getName());
+
+		List<SubjectCourse> subjectCourses = subjectCourseRepository.findAll();
+		HashMap<Long, SubjectCourse> subjectCourseHashMap = new HashMap<>();
+		for (SubjectCourse subjectCourse : subjectCourses) {
+			subjectCourseHashMap.put(subjectCourse.getId(), subjectCourse);
+		}
+
+		SubjectCourse subjectCourse = subjectCourseHashMap.get(1L);
 	}
 }

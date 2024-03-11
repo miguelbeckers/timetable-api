@@ -16,8 +16,8 @@ public class Lesson {
     @Id
     private Long id;
     private String name;
-//    private int groupNumber;
-//    private int groupCount;
+    private Integer groupNumber;
+    private Integer groupCount;
     private String color;
     private Double hoursPerWeek;
     private Integer blocks;
