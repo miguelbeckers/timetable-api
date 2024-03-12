@@ -131,7 +131,7 @@ class TimetableApiApplicationTests {
 //	}
 
 	@Test
-	void testCheckBlockSizeDivision2() {
+	void testGetLessonUnitsAsBlocks() {
 		Lesson lesson1 = new Lesson();
 		lesson1.setId(1L);
 		lesson1.setBlocks(2);
@@ -230,5 +230,115 @@ class TimetableApiApplicationTests {
 
 		Assert.isTrue(newLessonUnits.get(2).getBlockSize() == 2,
 				"The third object has the blockSize of 2");
+	}
+
+	@Test
+	void testSplitBlocks() {
+		Lesson lesson1 = new Lesson();
+		lesson1.setId(1L);
+		lesson1.setBlocks(2);
+		lesson1.setHoursPerWeek(3D);
+
+		LessonUnit lessonUnit1 = new LessonUnit();
+		LessonUnit lessonUnit2 = new LessonUnit();
+		LessonUnit lessonUnit3 = new LessonUnit();
+		LessonUnit lessonUnit4 = new LessonUnit();
+		LessonUnit lessonUnit5 = new LessonUnit();
+		LessonUnit lessonUnit6 = new LessonUnit();
+
+		lessonUnit1.setId(1L);
+		lessonUnit1.setLesson(lesson1);
+
+		lessonUnit2.setId(2L);
+		lessonUnit2.setLesson(lesson1);
+
+		lessonUnit3.setId(3L);
+		lessonUnit3.setLesson(lesson1);
+
+		lessonUnit4.setId(4L);
+		lessonUnit4.setLesson(lesson1);
+
+		lessonUnit5.setId(5L);
+		lessonUnit5.setLesson(lesson1);
+
+		lessonUnit6.setId(6L);
+		lessonUnit6.setLesson(lesson1);
+
+		Lesson lesson2 = new Lesson();
+		lesson2.setId(2L);
+		lesson2.setBlocks(1);
+		lesson2.setHoursPerWeek(2D);
+
+		LessonUnit lessonUnit7 = new LessonUnit();
+		LessonUnit lessonUnit8 = new LessonUnit();
+		LessonUnit lessonUnit9 = new LessonUnit();
+		LessonUnit lessonUnit10 = new LessonUnit();
+
+		lessonUnit7.setId(7L);
+		lessonUnit7.setLesson(lesson2);
+
+		lessonUnit8.setId(8L);
+		lessonUnit8.setLesson(lesson2);
+
+		lessonUnit9.setId(9L);
+		lessonUnit9.setLesson(lesson2);
+
+		lessonUnit10.setId(10L);
+		lessonUnit10.setLesson(lesson2);
+
+		List<LessonUnit> lessonUnits = new ArrayList<>();
+		lessonUnits.add(lessonUnit1);
+		lessonUnits.add(lessonUnit2);
+		lessonUnits.add(lessonUnit3);
+		lessonUnits.add(lessonUnit4);
+		lessonUnits.add(lessonUnit5);
+		lessonUnits.add(lessonUnit6);
+		lessonUnits.add(lessonUnit7);
+		lessonUnits.add(lessonUnit8);
+		lessonUnits.add(lessonUnit9);
+		lessonUnits.add(lessonUnit10);
+
+		List<LessonUnit> lessonUnitsAsBlocks = lessonUnitService.getLessonUnitsAsBlocks(lessonUnits);
+		List<LessonUnit> blocksOf1 = lessonUnitService.splitBlocks(lessonUnitsAsBlocks, 1);
+
+		Assert.isTrue(blocksOf1.size() == 6,
+				"The size of the blocksOf1 list should be 6");
+
+		Assert.isTrue(blocksOf1.get(0).getBlockSize() == 1,
+				"The size of the first block should be 1");
+
+		Assert.isTrue(blocksOf1.get(0).getId() == 1L,
+				"The id of the first block should be 1");
+
+		Assert.isTrue(blocksOf1.get(1).getBlockSize() == 0.5,
+				"The size of the second block should be 1");
+
+		Assert.isTrue(blocksOf1.get(1).getId() == 3L,
+				"The id of the second block should be 3");
+
+		Assert.isTrue(blocksOf1.get(2).getBlockSize() == 1,
+				"The size of the third block should be 1");
+
+		Assert.isTrue(blocksOf1.get(2).getId() == 4L,
+				"The id of the third block should be 4");
+
+		Assert.isTrue(blocksOf1.get(3).getBlockSize() == 0.5,
+				"The size of the fourth block should be 1");
+
+		Assert.isTrue(blocksOf1.get(3).getId() == 6L,
+				"The id of the fourth block should be 6");
+
+		Assert.isTrue(blocksOf1.get(4).getBlockSize() == 1,
+				"The size of the fifth block should be 1");
+
+		Assert.isTrue(blocksOf1.get(4).getId() == 7L,
+				"The id of the fifth block should be 7");
+
+		Assert.isTrue(blocksOf1.get(5).getBlockSize() == 1,
+				"The size of the sixth block should be 1");
+
+		Assert.isTrue(blocksOf1.get(5).getId() == 9L,
+				"The id of the sixth block should be 9");
+
 	}
 }

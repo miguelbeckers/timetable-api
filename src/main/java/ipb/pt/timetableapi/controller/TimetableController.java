@@ -73,6 +73,12 @@ public class TimetableController {
     public ResponseEntity<Object> solveNew() {
         List<LessonUnit> lessonUnitsAsBlocks = lessonUnitService.getLessonUnitsAsBlocks();
 
+        List<LessonUnit> blocksGreaterThen5 = lessonUnitsAsBlocks.stream()
+                .filter(lessonUnit -> lessonUnit.getBlockSize() > 5).toList();
+
+        // TODO: convert the timeslot
+        List<LessonUnit> blocksOf5 = lessonUnitService.splitBlocks(blocksGreaterThen5, 5);
+
         // solve with blocks in size of 5
         // solve with blocks in size of 2.5
         // solve with blocks in size of 1
