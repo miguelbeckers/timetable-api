@@ -22,21 +22,21 @@ public class TimetableConstraintProvider implements ConstraintProvider {
                 // Hard constraints
                 roomConflict(constraintFactory),
                 professorConflict(constraintFactory),
-                courseLessonsConflict(constraintFactory), // TODO: Look for the year -> solve first
-                studentGroupConflict(constraintFactory), // TODO: check the groups
-
-                resourceAvailability(constraintFactory),
-                classroomAvailability(constraintFactory),
-                professorAvailability(constraintFactory),
-                courseAvailability(constraintFactory),
-
-                lessonBlockSizeEfficiency(constraintFactory), // TODO: check blocks with different sizes
-                lessonTimeEfficiency(constraintFactory),
-                lessonClassroomEfficiency(constraintFactory),
-
-                // Soft constraints
-                professorTimeEfficiency(constraintFactory),
-                startTimeBetweenTenAndTwo(constraintFactory),
+//                courseLessonsConflict(constraintFactory), // TODO: Look for the year -> solve first
+//                studentGroupConflict(constraintFactory), // TODO: check the groups
+//
+//                resourceAvailability(constraintFactory),
+//                classroomAvailability(constraintFactory),
+//                professorAvailability(constraintFactory),
+//                courseAvailability(constraintFactory),
+//
+//                lessonBlockSizeEfficiency(constraintFactory), // TODO: check blocks with different sizes
+//                lessonTimeEfficiency(constraintFactory),
+//                lessonClassroomEfficiency(constraintFactory),
+//
+//                // Soft constraints
+//                professorTimeEfficiency(constraintFactory),
+//                startTimeBetweenTenAndTwo(constraintFactory),
         };
     }
 

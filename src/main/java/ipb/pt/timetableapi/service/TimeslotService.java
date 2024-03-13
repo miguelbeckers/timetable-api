@@ -2,6 +2,7 @@ package ipb.pt.timetableapi.service;
 
 import ipb.pt.timetableapi.converter.TimeslotConverter;
 import ipb.pt.timetableapi.dto.TimeslotDto;
+import ipb.pt.timetableapi.model.TimeConstant;
 import ipb.pt.timetableapi.model.Timeslot;
 import ipb.pt.timetableapi.repository.TimeslotRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -58,5 +61,37 @@ public class TimeslotService {
     public List<TimeslotDto> saveAll(List<TimeslotDto> timeslotDtos) {
         List<Timeslot> timeslots = timeslotConverter.toModel(timeslotDtos);
         return timeslotConverter.toDto(timeslotRepository.saveAll(timeslots));
+    }
+
+    public List<Timeslot> combineTimeslotsIntoBlocks(double blockSize) {
+        return combineTimeslotsIntoBlocks(timeslotRepository.findAll(), blockSize);
+    }
+
+    public List<Timeslot> combineTimeslotsIntoBlocks(List<Timeslot> timeslots, double blockSize) {
+        if(timeslots.size() % blockSize != 0) {
+            throw new IllegalArgumentException("Cannot combine timeslots because they are not multiple of blockSize.");
+        }
+
+        List<Timeslot> newTimeslots = new ArrayList<>();
+
+        while (!timeslots.isEmpty()) {
+            Timeslot timeslot = timeslots.get(0);
+            int remainingUnits = (int) (blockSize / TimeConstant.SLOT);
+
+            Timeslot newTimeslot = new Timeslot();
+            newTimeslot.setId(timeslot.getId());
+            newTimeslot.setDayOfWeek(timeslot.getDayOfWeek());
+            newTimeslot.setStartTime(timeslot.getStartTime());
+
+            while (remainingUnits > 0) {
+                timeslot = timeslots.remove(0);
+                remainingUnits--;
+            }
+
+            newTimeslot.setEndTime(timeslot.getEndTime());
+            newTimeslots.add(newTimeslot);
+        }
+
+        return newTimeslots;
     }
 }

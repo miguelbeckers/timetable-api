@@ -1,11 +1,14 @@
 package ipb.pt.timetableapi.controller;
 
+import ipb.pt.timetableapi.model.Classroom;
 import ipb.pt.timetableapi.model.LessonUnit;
+import ipb.pt.timetableapi.model.Timeslot;
 import ipb.pt.timetableapi.model.Timetable;
 import ipb.pt.timetableapi.repository.ClassroomRepository;
 import ipb.pt.timetableapi.repository.LessonUnitRepository;
 import ipb.pt.timetableapi.repository.TimeslotRepository;
 import ipb.pt.timetableapi.service.LessonUnitService;
+import ipb.pt.timetableapi.service.TimeslotService;
 import ipb.pt.timetableapi.solver.TimetableConstraintConfiguration;
 import org.optaplanner.core.api.solver.SolverJob;
 import org.optaplanner.core.api.solver.SolverManager;
@@ -20,7 +23,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
-
 @Controller
 @CrossOrigin
 @RequestMapping("/timetables")
@@ -31,6 +33,7 @@ public class TimetableController {
     private final LessonUnitRepository lessonUnitRepository;
     private final TimeslotRepository timeslotRepository;
     private final LessonUnitService lessonUnitService;
+    private final TimeslotService timeslotService;
 
     @Autowired
     public TimetableController(
@@ -38,58 +41,57 @@ public class TimetableController {
             ClassroomRepository classroomRepository,
             LessonUnitRepository lessonUnitRepository,
             TimeslotRepository timeslotRepository,
-            LessonUnitService lessonUnitService
+            LessonUnitService lessonUnitService,
+            TimeslotService timeslotService
     ) {
         this.solverManager = solverManager;
         this.classroomRepository = classroomRepository;
         this.lessonUnitRepository = lessonUnitRepository;
         this.timeslotRepository = timeslotRepository;
         this.lessonUnitService = lessonUnitService;
+        this.timeslotService = timeslotService;
     }
 
     @PostMapping("/solve")
-    public ResponseEntity<Object> solve() {
+    public ResponseEntity<Object> solve() throws ExecutionException, InterruptedException {
+        SolverJob<Timetable, UUID> solverJob = solve(
+                lessonUnitRepository.findAll(),
+                timeslotRepository.findAll(),
+                classroomRepository.findAll());
+
+        Timetable solution = solverJob.getFinalBestSolution();
+        lessonUnitRepository.saveAll(solution.getLessonUnits());
+        return ResponseEntity.ok().body("Solving completed with score: " + solution.getScore());
+    }
+
+    @PostMapping("solve-blocks")
+    public ResponseEntity<Object> solveAsBlocks() throws ExecutionException, InterruptedException {
+        List<LessonUnit> original = lessonUnitRepository.findAll();
+
+        List<Classroom> classrooms = classroomRepository.findAll();
+        List<LessonUnit> blocks = lessonUnitService.getLessonUnitsAsBlocks();
+
+        List<Timeslot> timeslotsOf5 = timeslotService.combineTimeslotsIntoBlocks(5);
+        List<LessonUnit> blocksOf5 = blocks.stream().filter(b -> b.getBlockSize() > 2.5 && b.getBlockSize() <= 5).toList();
+
+        SolverJob<Timetable, UUID> solverJobOf5 = solve(blocksOf5, timeslotsOf5, classrooms);
+        List<LessonUnit> solvedBlocksOf5 = solverJobOf5.getFinalBestSolution().getLessonUnits();
+
+        List<LessonUnit> splitedBlocks = lessonUnitService.splitInTwoBlocks(solvedBlocksOf5, 0.5);
+
+        return ResponseEntity.ok().body(original.size());
+    }
+
+    private SolverJob<Timetable, UUID> solve(List<LessonUnit> lessonUnits, List<Timeslot> timeslots, List<Classroom> classrooms) {
         TimetableConstraintConfiguration timetableConfiguration = new TimetableConstraintConfiguration();
 
         Timetable problem = new Timetable();
-        problem.setClassrooms(classroomRepository.findAll());
-        problem.setTimeslots(timeslotRepository.findAll());
-        problem.setLessonUnits(lessonUnitRepository.findAll());
+        problem.setClassrooms(classrooms);
+        problem.setTimeslots(timeslots);
+        problem.setLessonUnits(lessonUnits);
         problem.setTimetableConfiguration(timetableConfiguration);
 
-        SolverJob<Timetable, UUID> solverJob = solverManager.solve(problemId, problem);
-        Timetable solution;
-
-        try {
-            solution = solverJob.getFinalBestSolution();
-            lessonUnitRepository.saveAll(solution.getLessonUnits());
-            return ResponseEntity.ok().body("Solving completed with score: " + solution.getScore());
-        } catch (InterruptedException | ExecutionException e) {
-            throw new IllegalStateException("Solving failed.", e);
-        }
-    }
-
-    @PostMapping("solve-new")
-    public ResponseEntity<Object> solveNew() {
-        List<LessonUnit> lessonUnitsAsBlocks = lessonUnitService.getLessonUnitsAsBlocks();
-
-        List<LessonUnit> blocksGreaterThen5 = lessonUnitsAsBlocks.stream()
-                .filter(lessonUnit -> lessonUnit.getBlockSize() > 5).toList();
-
-        // TODO: convert the timeslot
-        List<LessonUnit> blocksOf5 = lessonUnitService.splitBlocks(blocksGreaterThen5, 5);
-
-        // solve with blocks in size of 5
-        // solve with blocks in size of 2.5
-        // solve with blocks in size of 1
-        // solve with blocks in size of 0.5
-
-        return ResponseEntity.ok().body(lessonUnitsAsBlocks.size());
-    }
-
-    private void solveWithBlocksOfSize(List<LessonUnit> lessonUnits, double blockSize) {
-
-        // filter the lessonUnits by the block size
+        return solverManager.solve(problemId, problem);
     }
 
     @PostMapping("/stop")

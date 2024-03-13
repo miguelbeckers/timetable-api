@@ -88,12 +88,13 @@ public class LessonUnitService {
         return lessonUnitConverter.toDto(lessonUnitRepository.saveAll(lessonUnits));
     }
 
-    public List<LessonUnit> splitBlocks(List<LessonUnit> lessonUnits, double blockSize) {
+    public List<LessonUnit> splitInTwoBlocks(List<LessonUnit> lessonUnits, double blockSize) {
         List<LessonUnit> splitLessonUnits = new ArrayList<>();
 
         for (LessonUnit lessonUnit : lessonUnits) {
             Lesson lesson = lessonUnit.getLesson();
             double remaining = lessonUnit.getBlockSize() - blockSize;
+
             if(remaining > blockSize){
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                         "Block size is too big to be split into blocks of size " + blockSize);

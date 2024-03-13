@@ -4,6 +4,7 @@ import ipb.pt.timetableapi.model.*;
 import ipb.pt.timetableapi.repository.SubjectCourseRepository;
 import ipb.pt.timetableapi.repository.SubjectRepository;
 import ipb.pt.timetableapi.service.LessonUnitService;
+import ipb.pt.timetableapi.service.TimeslotService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,7 +13,6 @@ import org.springframework.util.Assert;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 //import static ipb.pt.timetableapi.service.LessonUnitService.splitBlocks;
@@ -23,15 +23,18 @@ class TimetableApiApplicationTests {
 	private final SubjectRepository subjectRepository;
 	private final SubjectCourseRepository subjectCourseRepository;
 	private final LessonUnitService lessonUnitService;
+	private final TimeslotService timeslotService;
 
 
 	@Autowired
 	public TimetableApiApplicationTests(SubjectRepository subjectRepository,
 										SubjectCourseRepository subjectCourseRepository,
-										LessonUnitService lessonUnitService){
+										LessonUnitService lessonUnitService,
+										TimeslotService timeslotService){
 		this.subjectRepository = subjectRepository;
 		this.subjectCourseRepository = subjectCourseRepository;
 		this.lessonUnitService = lessonUnitService;
+		this.timeslotService = timeslotService;
 	}
 
 	void createTestCheckIfTheLessonsAreOutOfTheBlock(String lesson1StartTime, String lesson2StartTime, boolean expected) {
@@ -233,7 +236,7 @@ class TimetableApiApplicationTests {
 	}
 
 	@Test
-	void testSplitBlocks() {
+	void testSplitBlocksOfLessonUnits() {
 		Lesson lesson1 = new Lesson();
 		lesson1.setId(1L);
 		lesson1.setBlocks(2);
@@ -299,7 +302,7 @@ class TimetableApiApplicationTests {
 		lessonUnits.add(lessonUnit10);
 
 		List<LessonUnit> lessonUnitsAsBlocks = lessonUnitService.getLessonUnitsAsBlocks(lessonUnits);
-		List<LessonUnit> blocksOf1 = lessonUnitService.splitBlocks(lessonUnitsAsBlocks, 1);
+		List<LessonUnit> blocksOf1 = lessonUnitService.splitInTwoBlocks(lessonUnitsAsBlocks, 1);
 
 		Assert.isTrue(blocksOf1.size() == 6,
 				"The size of the blocksOf1 list should be 6");
@@ -339,6 +342,140 @@ class TimetableApiApplicationTests {
 
 		Assert.isTrue(blocksOf1.get(5).getId() == 9L,
 				"The id of the sixth block should be 9");
+	}
 
+	@Test
+	void testSplitTimeslots() {
+		Timeslot timeslot1 = new Timeslot();
+		Timeslot timeslot2 = new Timeslot();
+		Timeslot timeslot3 = new Timeslot();
+		Timeslot timeslot4 = new Timeslot();
+		Timeslot timeslot5 = new Timeslot();
+		Timeslot timeslot6 = new Timeslot();
+		Timeslot timeslot7 = new Timeslot();
+		Timeslot timeslot8 = new Timeslot();
+		Timeslot timeslot9 = new Timeslot();
+		Timeslot timeslot10 = new Timeslot();
+
+		timeslot1.setStartTime(LocalTime.parse("08:00"));
+		timeslot1.setEndTime(LocalTime.parse("08:30"));
+
+		timeslot2.setStartTime(LocalTime.parse("08:30"));
+		timeslot2.setEndTime(LocalTime.parse("09:00"));
+
+		timeslot3.setStartTime(LocalTime.parse("09:00"));
+		timeslot3.setEndTime(LocalTime.parse("09:30"));
+
+		timeslot4.setStartTime(LocalTime.parse("09:30"));
+		timeslot4.setEndTime(LocalTime.parse("10:00"));
+
+		timeslot5.setStartTime(LocalTime.parse("10:00"));
+		timeslot5.setEndTime(LocalTime.parse("10:30"));
+
+		timeslot6.setStartTime(LocalTime.parse("10:30"));
+		timeslot6.setEndTime(LocalTime.parse("11:00"));
+
+		timeslot7.setStartTime(LocalTime.parse("11:00"));
+		timeslot7.setEndTime(LocalTime.parse("11:30"));
+
+		timeslot8.setStartTime(LocalTime.parse("11:30"));
+		timeslot8.setEndTime(LocalTime.parse("12:00"));
+
+		timeslot9.setStartTime(LocalTime.parse("12:00"));
+		timeslot9.setEndTime(LocalTime.parse("12:30"));
+
+		timeslot10.setStartTime(LocalTime.parse("12:30"));
+		timeslot10.setEndTime(LocalTime.parse("13:00"));
+
+		timeslot1.setDayOfWeek(DayOfWeek.MONDAY);
+		timeslot2.setDayOfWeek(DayOfWeek.MONDAY);
+		timeslot3.setDayOfWeek(DayOfWeek.MONDAY);
+		timeslot4.setDayOfWeek(DayOfWeek.MONDAY);
+		timeslot5.setDayOfWeek(DayOfWeek.MONDAY);
+		timeslot6.setDayOfWeek(DayOfWeek.MONDAY);
+		timeslot7.setDayOfWeek(DayOfWeek.MONDAY);
+		timeslot8.setDayOfWeek(DayOfWeek.MONDAY);
+		timeslot9.setDayOfWeek(DayOfWeek.MONDAY);
+		timeslot10.setDayOfWeek(DayOfWeek.MONDAY);
+
+		timeslot1.setId(1L);
+		timeslot2.setId(2L);
+		timeslot3.setId(3L);
+		timeslot4.setId(4L);
+		timeslot5.setId(5L);
+		timeslot6.setId(6L);
+		timeslot7.setId(7L);
+		timeslot8.setId(8L);
+		timeslot9.setId(9L);
+		timeslot10.setId(10L);
+
+		List<Timeslot> timeslots = new ArrayList<>();
+		timeslots.add(timeslot1);
+		timeslots.add(timeslot2);
+		timeslots.add(timeslot3);
+		timeslots.add(timeslot4);
+		timeslots.add(timeslot5);
+		timeslots.add(timeslot6);
+		timeslots.add(timeslot7);
+		timeslots.add(timeslot8);
+		timeslots.add(timeslot9);
+		timeslots.add(timeslot10);
+
+		List<Timeslot> newTimeslots = timeslotService.combineTimeslotsIntoBlocks(timeslots, 5);
+
+		Assert.isTrue(newTimeslots.size() == 1,
+				"The size of the new timeslots should be 1");
+
+		Assert.isTrue(newTimeslots.get(0).getStartTime().equals(LocalTime.parse("08:00")),
+				"The start time of the new timeslot should be 08:00");
+
+		Assert.isTrue(newTimeslots.get(0).getEndTime().equals(LocalTime.parse("13:00")),
+				"The end time of the new timeslot should be 13:00");
+
+		Assert.isTrue(newTimeslots.get(0).getDayOfWeek().equals(DayOfWeek.MONDAY),
+				"The day of the week of the new timeslot should be MONDAY");
+
+		Assert.isTrue(newTimeslots.get(0).getId() == 1L,
+				"The id of the new timeslot should be 1");
+
+		timeslots.add(timeslot1);
+		timeslots.add(timeslot2);
+		timeslots.add(timeslot3);
+		timeslots.add(timeslot4);
+		timeslots.add(timeslot5);
+		timeslots.add(timeslot6);
+		timeslots.add(timeslot7);
+		timeslots.add(timeslot8);
+		timeslots.add(timeslot9);
+		timeslots.add(timeslot10);
+
+		newTimeslots = timeslotService.combineTimeslotsIntoBlocks(timeslots, 2.5);
+
+		Assert.isTrue(newTimeslots.size() == 2,
+				"The size of the new timeslots should be 2");
+
+		Assert.isTrue(newTimeslots.get(0).getId() == 1L,
+				"The id of the first timeslot should be 1");
+
+		Assert.isTrue(newTimeslots.get(0).getStartTime().equals(LocalTime.parse("08:00")),
+				"The start time of the first timeslot should be 08:00");
+
+		Assert.isTrue(newTimeslots.get(0).getEndTime().equals(LocalTime.parse("10:30")),
+				"The end time of the first timeslot should be 10:30");
+
+		Assert.isTrue(newTimeslots.get(0).getDayOfWeek().equals(DayOfWeek.MONDAY),
+				"The day of the week of the first timeslot should be MONDAY");
+
+		Assert.isTrue(newTimeslots.get(1).getId() == 6L,
+				"The id of the second timeslot should be 6");
+
+		Assert.isTrue(newTimeslots.get(1).getStartTime().equals(LocalTime.parse("10:30")),
+				"The start time of the second timeslot should be 10:30");
+
+		Assert.isTrue(newTimeslots.get(1).getEndTime().equals(LocalTime.parse("13:00")),
+				"The end time of the second timeslot should be 13:00");
+
+		Assert.isTrue(newTimeslots.get(1).getDayOfWeek().equals(DayOfWeek.MONDAY),
+				"The day of the week of the second timeslot should be MONDAY");
 	}
 }
