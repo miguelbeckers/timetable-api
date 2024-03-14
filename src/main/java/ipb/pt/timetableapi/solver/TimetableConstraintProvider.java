@@ -97,6 +97,7 @@ public class TimetableConstraintProvider implements ConstraintProvider {
             return constraintFactory
                     .forEach(LessonUnit.class)
 //                .filter(lessonUnit -> lessonUnit.getLesson().getGroupCount() > 0)
+                    .filter(lessonUnit -> lessonUnit.getLesson().getName() != null)
                     .join(LessonUnit.class,
                             Joiners.equal(lessonUnit -> lessonUnit.getLesson().getSubjectCourse().getCourse()),
                             Joiners.equal(lessonUnit -> lessonUnit.getLesson().getSubjectCourse().getPeriod()),
