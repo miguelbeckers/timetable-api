@@ -71,13 +71,17 @@ public class TimetableController {
         List<Classroom> classrooms = classroomRepository.findAll();
         List<LessonUnit> blocks = lessonUnitService.getLessonUnitsAsBlocks();
 
-        List<Timeslot> timeslotsOf5 = timeslotService.combineTimeslotsIntoBlocks(5);
+        List<Timeslot> timeslotsOf5 = timeslotService.getBlockTimeslots(5);
         List<LessonUnit> blocksOf5 = blocks.stream().filter(b -> b.getBlockSize() > 2.5 && b.getBlockSize() <= 5).toList();
 
         SolverJob<Timetable, UUID> solverJobOf5 = solve(blocksOf5, timeslotsOf5, classrooms);
         List<LessonUnit> solvedBlocksOf5 = solverJobOf5.getFinalBestSolution().getLessonUnits();
 
-        List<LessonUnit> splitedBlocks = lessonUnitService.splitInTwoBlocks(solvedBlocksOf5, 0.5);
+        List<LessonUnit> splitBlocksOf5 = lessonUnitService.splitBlocks(solvedBlocksOf5, 2.5);
+
+        System.out.println(splitBlocksOf5.size());
+
+
 
         return ResponseEntity.ok().body(original.size());
     }

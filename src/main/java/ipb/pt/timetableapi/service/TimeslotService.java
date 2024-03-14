@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Duration;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,13 +64,14 @@ public class TimeslotService {
         return timeslotConverter.toDto(timeslotRepository.saveAll(timeslots));
     }
 
-    public List<Timeslot> combineTimeslotsIntoBlocks(double blockSize) {
-        return combineTimeslotsIntoBlocks(timeslotRepository.findAll(), blockSize);
+    public List<Timeslot> getBlockTimeslots(double blockSize) {
+        return getBlockTimeslots(timeslotRepository.findAll(), blockSize);
     }
 
-    public List<Timeslot> combineTimeslotsIntoBlocks(List<Timeslot> timeslots, double blockSize) {
+    public List<Timeslot> getBlockTimeslots(List<Timeslot> timeslots, double blockSize) {
         if(timeslots.size() % blockSize != 0) {
-            throw new IllegalArgumentException("Cannot combine timeslots because they are not multiple of blockSize.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "The timeslots size is not multiple of " + blockSize);
         }
 
         List<Timeslot> newTimeslots = new ArrayList<>();
@@ -93,5 +95,30 @@ public class TimeslotService {
         }
 
         return newTimeslots;
+    }
+
+    public List<Timeslot> splitTimeslot(Timeslot timeslot) {
+        List<Timeslot> splitTimeslots = new ArrayList<>();
+
+        Duration duration = Duration.between(timeslot.getStartTime(), timeslot.getEndTime());
+        double halfDurationDouble = (double) duration.toHours() / 2;
+        int units = (int) (halfDurationDouble / TimeConstant.SLOT);
+
+        Timeslot firstTimeslot = new Timeslot();
+        firstTimeslot.setId(timeslot.getId());
+        firstTimeslot.setDayOfWeek(timeslot.getDayOfWeek());
+        firstTimeslot.setStartTime(timeslot.getStartTime());
+        firstTimeslot.setEndTime(timeslot.getStartTime().plus(duration.dividedBy(2)));
+
+        Timeslot secondTimeslot = new Timeslot();
+        secondTimeslot.setId(timeslot.getId() + units);
+        secondTimeslot.setDayOfWeek(timeslot.getDayOfWeek());
+        secondTimeslot.setStartTime(timeslot.getStartTime().plus(duration.dividedBy(2)));
+        secondTimeslot.setEndTime(timeslot.getEndTime());
+
+        splitTimeslots.add(firstTimeslot);
+        splitTimeslots.add(secondTimeslot);
+
+        return splitTimeslots;
     }
 }
