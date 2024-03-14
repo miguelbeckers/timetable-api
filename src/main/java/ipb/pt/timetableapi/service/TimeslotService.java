@@ -109,14 +109,13 @@ public class TimeslotService {
         firstTimeslot.setDayOfWeek(timeslot.getDayOfWeek());
         firstTimeslot.setStartTime(timeslot.getStartTime());
         firstTimeslot.setEndTime(timeslot.getStartTime().plus(duration.dividedBy(2)));
+        splitTimeslots.add(firstTimeslot);
 
         Timeslot secondTimeslot = new Timeslot();
         secondTimeslot.setId(timeslot.getId() + units);
         secondTimeslot.setDayOfWeek(timeslot.getDayOfWeek());
         secondTimeslot.setStartTime(timeslot.getStartTime().plus(duration.dividedBy(2)));
         secondTimeslot.setEndTime(timeslot.getEndTime());
-
-        splitTimeslots.add(firstTimeslot);
         splitTimeslots.add(secondTimeslot);
 
         return splitTimeslots;

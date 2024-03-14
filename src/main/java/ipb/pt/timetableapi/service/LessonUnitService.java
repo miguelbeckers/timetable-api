@@ -5,6 +5,7 @@ import ipb.pt.timetableapi.dto.LessonUnitDto;
 import ipb.pt.timetableapi.model.Lesson;
 import ipb.pt.timetableapi.model.LessonUnit;
 import ipb.pt.timetableapi.model.TimeConstant;
+import ipb.pt.timetableapi.model.Timeslot;
 import ipb.pt.timetableapi.repository.LessonRepository;
 import ipb.pt.timetableapi.repository.LessonUnitRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,15 +21,15 @@ import java.util.Objects;
 public class LessonUnitService {
     private final LessonUnitRepository lessonUnitRepository;
     private final LessonUnitConverter lessonUnitConverter;
-    private final LessonRepository lessonRepository;
+    private final TimeslotService timeslotService;
 
     @Autowired
     public LessonUnitService(LessonUnitRepository lessonUnitRepository,
                              LessonUnitConverter lessonUnitConverter,
-                             LessonRepository lessonRepository) {
+                             TimeslotService timeslotService) {
         this.lessonUnitRepository = lessonUnitRepository;
         this.lessonUnitConverter = lessonUnitConverter;
-        this.lessonRepository = lessonRepository;
+        this.timeslotService = timeslotService;
     }
 
     public List<LessonUnitDto> findAll() {
@@ -100,16 +101,20 @@ public class LessonUnitService {
                         "Block size is too big to be split into blocks of size " + blockSize);
             }
 
+            List<Timeslot> timeslots = timeslotService.splitTimeslot(lessonUnit.getTimeslot());
+
             LessonUnit firstBlock = new LessonUnit();
             firstBlock.setId(lessonUnit.getId());
             firstBlock.setLesson(lesson);
             firstBlock.setBlockSize(blockSize);
+            firstBlock.setTimeslot(timeslots.get(0));
             splitLessonUnits.add(firstBlock);
 
             LessonUnit secondBlock = new LessonUnit();
             secondBlock.setId((long) (lessonUnit.getId() + blockSize / TimeConstant.SLOT));
             secondBlock.setLesson(lesson);
             secondBlock.setBlockSize(remaining);
+            secondBlock.setTimeslot(timeslots.get(1));
             splitLessonUnits.add(secondBlock);
         }
 
