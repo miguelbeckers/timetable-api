@@ -1,5 +1,6 @@
 package ipb.pt.timetableapi.controller;
 
+import ipb.pt.timetableapi.constant.TimeslotConstant;
 import ipb.pt.timetableapi.model.Classroom;
 import ipb.pt.timetableapi.model.LessonUnit;
 import ipb.pt.timetableapi.model.Timeslot;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -54,36 +56,44 @@ public class TimetableController {
 
     @PostMapping("/solve")
     public ResponseEntity<Object> solve() throws ExecutionException, InterruptedException {
-        SolverJob<Timetable, UUID> solverJob = solve(
-                lessonUnitRepository.findAll(),
-                timeslotRepository.findAll(),
-                classroomRepository.findAll());
+        List<Classroom> classrooms = classroomRepository.findAll();
+        List<Timeslot> timeslots = timeslotRepository.findAll();
+        List<LessonUnit> lessonUnits = lessonUnitRepository.findAll();
 
+        lessonUnits.forEach(lessonUnit -> lessonUnit.setIsPinned(false));
+        SolverJob<Timetable, UUID> solverJob = solve(lessonUnits, timeslots, classrooms);
         Timetable solution = solverJob.getFinalBestSolution();
+
         lessonUnitRepository.saveAll(solution.getLessonUnits());
         return ResponseEntity.ok().body("Solving completed with score: " + solution.getScore());
     }
 
     @PostMapping("solve-blocks")
     public ResponseEntity<Object> solveAsBlocks() throws ExecutionException, InterruptedException {
-        List<LessonUnit> original = lessonUnitRepository.findAll();
+        List<Double> timeslotSizes = List.of(
+                TimeslotConstant.SIZE_5,
+                TimeslotConstant.SIZE_2_5,
+                TimeslotConstant.SIZE_1,
+                TimeslotConstant.SIZE_0_5);
 
+        List<String> solutionScores = new ArrayList<>();
         List<Classroom> classrooms = classroomRepository.findAll();
-        List<LessonUnit> blocks = lessonUnitService.getLessonUnitsAsBlocks();
 
-        List<Timeslot> timeslotsOf5 = timeslotService.getBlockTimeslots(5);
-        List<LessonUnit> blocksOf5 = blocks.stream().filter(b -> b.getBlockSize() > 2.5 && b.getBlockSize() <= 5).toList();
+        for (Double timeslotSize : timeslotSizes) {
+            List<Timeslot> timeslots = timeslotService.getTimeslots(timeslotSize);
+            List<LessonUnit> lessonBlocks = lessonUnitService.getLessonBlocks(timeslotSize);
 
-        SolverJob<Timetable, UUID> solverJobOf5 = solve(blocksOf5, timeslotsOf5, classrooms);
-        List<LessonUnit> solvedBlocksOf5 = solverJobOf5.getFinalBestSolution().getLessonUnits();
+            SolverJob<Timetable, UUID> solverJob = solve(lessonBlocks, timeslots, classrooms);
+            Timetable solution = solverJob.getFinalBestSolution();
 
-        List<LessonUnit> splitBlocksOf5 = lessonUnitService.splitBlocks(solvedBlocksOf5, 2.5);
+            List<LessonUnit> lessonUnits = lessonUnitService.divideLessonBlocks(solution.getLessonUnits());
+            lessonUnits.forEach(lessonUnit -> lessonUnit.setIsPinned(true));
+            lessonUnitRepository.saveAll(lessonUnits);
 
-        System.out.println(splitBlocksOf5.size());
+            solutionScores.add("Solving with size " + timeslotSize +" completed with score: " + solution.getScore());
+        }
 
-
-
-        return ResponseEntity.ok().body(original.size());
+        return ResponseEntity.ok().body(solutionScores);
     }
 
     private SolverJob<Timetable, UUID> solve(List<LessonUnit> lessonUnits, List<Timeslot> timeslots, List<Classroom> classrooms) {

@@ -2,7 +2,7 @@ package ipb.pt.timetableapi.service;
 
 import ipb.pt.timetableapi.converter.TimeslotConverter;
 import ipb.pt.timetableapi.dto.TimeslotDto;
-import ipb.pt.timetableapi.model.TimeConstant;
+import ipb.pt.timetableapi.constant.TimeslotConstant;
 import ipb.pt.timetableapi.model.Timeslot;
 import ipb.pt.timetableapi.repository.TimeslotRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Duration;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,11 +63,11 @@ public class TimeslotService {
         return timeslotConverter.toDto(timeslotRepository.saveAll(timeslots));
     }
 
-    public List<Timeslot> getBlockTimeslots(double blockSize) {
-        return getBlockTimeslots(timeslotRepository.findAll(), blockSize);
+    public List<Timeslot> getTimeslots(double blockSize) {
+        return getTimeslots(timeslotRepository.findAll(), blockSize);
     }
 
-    public List<Timeslot> getBlockTimeslots(List<Timeslot> timeslots, double blockSize) {
+    public List<Timeslot> getTimeslots(List<Timeslot> timeslots, double blockSize) {
         if(timeslots.size() % blockSize != 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "The timeslots size is not multiple of " + blockSize);
@@ -78,7 +77,7 @@ public class TimeslotService {
 
         while (!timeslots.isEmpty()) {
             Timeslot timeslot = timeslots.get(0);
-            int remainingUnits = (int) (blockSize / TimeConstant.SLOT);
+            int remainingUnits = (int) (blockSize / TimeslotConstant.SIZE_0_5);
 
             Timeslot newTimeslot = new Timeslot();
             newTimeslot.setId(timeslot.getId());
@@ -97,12 +96,12 @@ public class TimeslotService {
         return newTimeslots;
     }
 
-    public List<Timeslot> splitTimeslot(Timeslot timeslot) {
+    public List<Timeslot> splitTimeslot(Timeslot timeslot, double blockSize) {
         List<Timeslot> splitTimeslots = new ArrayList<>();
 
         Duration duration = Duration.between(timeslot.getStartTime(), timeslot.getEndTime());
         double halfDurationDouble = (double) duration.toHours() / 2;
-        int units = (int) (halfDurationDouble / TimeConstant.SLOT);
+        int units = (int) (halfDurationDouble / TimeslotConstant.SIZE_0_5);
 
         Timeslot firstTimeslot = new Timeslot();
         firstTimeslot.setId(timeslot.getId());

@@ -23,8 +23,8 @@ public class LessonUnit {
     @ManyToOne
     private Lesson lesson;
     private Double blockSize;
-//    @PlanningPin
-//    private Boolean isPinned;
+    @PlanningPin
+    private Boolean isPinned = false;
 
     // Initialized/Changed during planning
     @ManyToOne
