@@ -43,8 +43,8 @@ public class TimetableController {
             ClassroomRepository classroomRepository,
             LessonUnitRepository lessonUnitRepository,
             TimeslotRepository timeslotRepository,
-            LessonUnitService lessonUnitService,
-            TimeslotService timeslotService
+            TimeslotService timeslotService,
+            LessonUnitService lessonUnitService
     ) {
         this.solverManager = solverManager;
         this.classroomRepository = classroomRepository;
@@ -72,12 +72,10 @@ public class TimetableController {
     public ResponseEntity<Object> solveAsBlocks() throws ExecutionException, InterruptedException {
         List<Double> timeslotSizes = List.of(
                 TimeslotConstant.SIZE_5,
-                TimeslotConstant.SIZE_2_5,
-                TimeslotConstant.SIZE_1,
-                TimeslotConstant.SIZE_0_5);
+                TimeslotConstant.SIZE_2_5);
 
-        List<String> solutionScores = new ArrayList<>();
         List<Classroom> classrooms = classroomRepository.findAll();
+        List<String> solutionScores = new ArrayList<>();
 
         for (Double timeslotSize : timeslotSizes) {
             List<Timeslot> timeslots = timeslotService.getTimeslots(timeslotSize);

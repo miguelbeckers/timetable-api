@@ -173,7 +173,7 @@ class TimetableApiApplicationTests {
 		lessonUnits.add(lessonUnit5);
 		lessonUnits.add(lessonUnit6);
 
-		List<LessonUnit> newLessonUnits = lessonUnitService.getLessonUnitsAsBlocks(lessonUnits);
+		List<LessonUnit> newLessonUnits = lessonUnitService.getLessonBlocks(lessonUnits);
 
 		Assert.isTrue(newLessonUnits.size() == 2,
 				"The new lesson1 units has the size of 2");
@@ -223,7 +223,7 @@ class TimetableApiApplicationTests {
 		lessonUnits.add(lessonUnit9);
 		lessonUnits.add(lessonUnit10);
 
-		newLessonUnits = lessonUnitService.getLessonUnitsAsBlocks(lessonUnits);
+		newLessonUnits = lessonUnitService.getLessonBlocks(lessonUnits);
 
 		Assert.isTrue(newLessonUnits.size() == 3,
 				"The new lessons units has the size of 3");
@@ -301,7 +301,7 @@ class TimetableApiApplicationTests {
 		lessonUnits.add(lessonUnit9);
 		lessonUnits.add(lessonUnit10);
 
-		List<LessonUnit> lessonUnitsAsBlocks = lessonUnitService.getLessonUnitsAsBlocks(lessonUnits);
+		List<LessonUnit> lessonUnitsAsBlocks = lessonUnitService.getLessonBlocks(lessonUnits);
 //		List<LessonUnit> blocksOf1 = lessonUnitService.splitBlocks(lessonUnitsAsBlocks, 1);
 //
 //		Assert.isTrue(blocksOf1.size() == 6,

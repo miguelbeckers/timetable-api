@@ -1,8 +1,8 @@
 package ipb.pt.timetableapi.service;
 
+import ipb.pt.timetableapi.constant.TimeslotConstant;
 import ipb.pt.timetableapi.converter.TimeslotConverter;
 import ipb.pt.timetableapi.dto.TimeslotDto;
-import ipb.pt.timetableapi.constant.TimeslotConstant;
 import ipb.pt.timetableapi.model.Timeslot;
 import ipb.pt.timetableapi.repository.TimeslotRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +68,7 @@ public class TimeslotService {
     }
 
     public List<Timeslot> getTimeslots(List<Timeslot> timeslots, double blockSize) {
-        if(timeslots.size() % blockSize != 0) {
+        if (timeslots.size() % blockSize != 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "The timeslots size is not multiple of " + blockSize);
         }
@@ -118,5 +118,24 @@ public class TimeslotService {
         splitTimeslots.add(secondTimeslot);
 
         return splitTimeslots;
+    }
+
+    public Timeslot map(Timeslot timeslot, double blockSize) {
+        if (blockSize > TimeslotConstant.SIZE_2_5 && blockSize <= TimeslotConstant.SIZE_5) {
+            timeslot.setEndTime(timeslot.getStartTime().plusHours((long) TimeslotConstant.SIZE_5));
+            return timeslot;
+        }
+
+        if (blockSize > TimeslotConstant.SIZE_1 && blockSize <= TimeslotConstant.SIZE_2_5) {
+            timeslot.setEndTime(timeslot.getStartTime().plusHours((long) TimeslotConstant.SIZE_2_5));
+            return timeslot;
+        }
+
+        if (blockSize > TimeslotConstant.SIZE_0_5 && blockSize <= TimeslotConstant.SIZE_1) {
+            timeslot.setEndTime(timeslot.getStartTime().plusHours((long) TimeslotConstant.SIZE_1));
+            return timeslot;
+        }
+
+        return timeslot;
     }
 }

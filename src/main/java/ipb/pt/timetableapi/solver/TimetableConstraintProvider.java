@@ -23,96 +23,76 @@ public class TimetableConstraintProvider implements ConstraintProvider {
                 // Hard constraints
                 roomConflict(constraintFactory),
                 professorConflict(constraintFactory),
-                courseLessonsConflict(constraintFactory), // TODO: Look for the year -> solve first
-                studentGroupConflict(constraintFactory), // TODO: check the groups
+//                courseLessonsConflict(constraintFactory),
+//                studentGroupConflict(constraintFactory),
+//
+//                resourceAvailability(constraintFactory),
+//                classroomAvailability(constraintFactory),
+//                professorAvailability(constraintFactory),
+//                courseAvailability(constraintFactory),
 
-                resourceAvailability(constraintFactory),
-                classroomAvailability(constraintFactory),
-                professorAvailability(constraintFactory),
-                courseAvailability(constraintFactory),
-
-//                lessonBlockSizeEfficiency(constraintFactory), // TODO: check blocks with different sizes
+//                lessonBlockSizeEfficiency(constraintFactory),
 //                lessonTimeEfficiency(constraintFactory),
 //                lessonClassroomEfficiency(constraintFactory),
 
                 // Soft constraints
-                professorTimeEfficiency(constraintFactory),
+//                professorTimeEfficiency(constraintFactory),
 //                startTimeBetweenTenAndTwo(constraintFactory),
         };
     }
 
     private Constraint roomConflict(ConstraintFactory constraintFactory) {
-        try {
-            return constraintFactory
-                    .forEach(LessonUnit.class)
-                    .join(LessonUnit.class,
-                            Joiners.equal(LessonUnit::getTimeslot),
-                            Joiners.equal(LessonUnit::getClassroom),
-                            Joiners.lessThan(LessonUnit::getId))
-                    .penalizeConfigurable(TimetableConstraintConstants.ROOM_CONFLICT);
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-            return null;
-        }
+        return constraintFactory
+                .forEach(LessonUnit.class)
+                .join(LessonUnit.class,
+                        Joiners.equal(LessonUnit::getTimeslot),
+                        Joiners.equal(LessonUnit::getClassroom),
+                        Joiners.lessThan(LessonUnit::getId))
+                .penalizeConfigurable(TimetableConstraintConstants.ROOM_CONFLICT);
     }
 
     private Constraint professorConflict(ConstraintFactory constraintFactory) {
-        try {
-            return constraintFactory
-                    .forEach(LessonUnit.class)
-                    .join(LessonUnit.class,
-                            Joiners.equal(LessonUnit::getTimeslot),
-                            Joiners.lessThan(LessonUnit::getId),
-                            Joiners.filtering((lessonUnit, otherLessonUnit) ->
-                                    !Collections.disjoint(
-                                            lessonUnit.getLesson().getProfessors(),
-                                            otherLessonUnit.getLesson().getProfessors()
-                                    )))
-                    .penalizeConfigurable(TimetableConstraintConstants.PROFESSOR_CONFLICT);
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-            return null;
-        }
+        return constraintFactory
+                .forEach(LessonUnit.class)
+                .join(LessonUnit.class,
+                        Joiners.equal(LessonUnit::getTimeslot),
+                        Joiners.lessThan(LessonUnit::getId),
+                        Joiners.filtering((lessonUnit, otherLessonUnit) ->
+                                !Collections.disjoint(
+                                        lessonUnit.getLesson().getProfessors(),
+                                        otherLessonUnit.getLesson().getProfessors()
+                                )))
+                .penalizeConfigurable(TimetableConstraintConstants.PROFESSOR_CONFLICT);
     }
 
     private Constraint courseLessonsConflict(ConstraintFactory constraintFactory) {
-        try {
-            return constraintFactory
-                    .forEach(LessonUnit.class)
-                    .join(LessonUnit.class, Joiners.equal(LessonUnit::getTimeslot))
-                    .filter((lessonUnit1, lessonUnit2) -> (
-                            lessonUnit1.getLesson().getSubjectCourse().getCourse()
-                                    .equals(lessonUnit2.getLesson().getSubjectCourse().getCourse())
-                                    && !lessonUnit1.getLesson().equals(lessonUnit2.getLesson())
-                    ))
-                    .penalizeConfigurable(TimetableConstraintConstants.COURSE_LESSONS_CONFLICT);
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-            return null;
-        }
+        return constraintFactory
+                .forEach(LessonUnit.class)
+                .join(LessonUnit.class, Joiners.equal(LessonUnit::getTimeslot))
+                .filter((lessonUnit1, lessonUnit2) -> (
+                        lessonUnit1.getLesson().getSubjectCourse().getCourse()
+                                .equals(lessonUnit2.getLesson().getSubjectCourse().getCourse())
+                                && !lessonUnit1.getLesson().equals(lessonUnit2.getLesson())
+                ))
+                .penalizeConfigurable(TimetableConstraintConstants.COURSE_LESSONS_CONFLICT);
     }
 
     private Constraint studentGroupConflict(ConstraintFactory constraintFactory) {
-        try {
-            return constraintFactory
-                    .forEach(LessonUnit.class)
+        return constraintFactory
+                .forEach(LessonUnit.class)
 //                .filter(lessonUnit -> lessonUnit.getLesson().getGroupCount() > 0)
-                    .filter(lessonUnit -> lessonUnit.getLesson().getName() != null)
-                    .join(LessonUnit.class,
-                            Joiners.equal(lessonUnit -> lessonUnit.getLesson().getSubjectCourse().getCourse()),
-                            Joiners.equal(lessonUnit -> lessonUnit.getLesson().getSubjectCourse().getPeriod()),
-                            Joiners.equal(lessonUnit -> lessonUnit.getLesson().getSubjectCourse().getSubject()),
-                            Joiners.equal(lessonUnit -> lessonUnit.getLesson().getSubjectType()))
-                    .filter((lessonUnit1, lessonUnit2) -> (
-                            !lessonUnit1.getLesson().equals(lessonUnit2.getLesson())
-                                    && lessonUnit1.getLesson().getName().equals(lessonUnit2.getLesson().getName())
-                                    && lessonUnit1.getTimeslot().equals(lessonUnit2.getTimeslot())
-                    ))
-                    .penalizeConfigurable(TimetableConstraintConstants.STUDENT_GROUP_CONFLICT);
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-            return null;
-        }
+                .filter(lessonUnit -> lessonUnit.getLesson().getName() != null)
+                .join(LessonUnit.class,
+                        Joiners.equal(lessonUnit -> lessonUnit.getLesson().getSubjectCourse().getCourse()),
+                        Joiners.equal(lessonUnit -> lessonUnit.getLesson().getSubjectCourse().getPeriod()),
+                        Joiners.equal(lessonUnit -> lessonUnit.getLesson().getSubjectCourse().getSubject()),
+                        Joiners.equal(lessonUnit -> lessonUnit.getLesson().getSubjectType()))
+                .filter((lessonUnit1, lessonUnit2) -> (
+                        !lessonUnit1.getLesson().equals(lessonUnit2.getLesson())
+                                && lessonUnit1.getLesson().getName().equals(lessonUnit2.getLesson().getName())
+                                && lessonUnit1.getTimeslot().equals(lessonUnit2.getTimeslot())
+                ))
+                .penalizeConfigurable(TimetableConstraintConstants.STUDENT_GROUP_CONFLICT);
     }
 
     private Constraint resourceAvailability(ConstraintFactory constraintFactory) {
@@ -125,134 +105,89 @@ public class TimetableConstraintProvider implements ConstraintProvider {
     }
 
     private boolean checkResourceAvailability(LessonUnit conflictingLesson) {
-        try {
-            List<LessonResource> lessonResources = conflictingLesson.getLesson().getLessonResources();
-            List<ClassroomResource> classroomResources = conflictingLesson.getClassroom().getClassroomResources();
+        List<LessonResource> lessonResources = conflictingLesson.getLesson().getLessonResources();
+        List<ClassroomResource> classroomResources = conflictingLesson.getClassroom().getClassroomResources();
 
-            return lessonResources.stream().anyMatch(lessonResource -> classroomResources.stream()
-                    .anyMatch(classroomResource -> isResourceAvailable(lessonResource, classroomResource)));
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-            return false;
-        }
+        return lessonResources.stream().anyMatch(lessonResource -> classroomResources.stream()
+                .anyMatch(classroomResource -> isResourceAvailable(lessonResource, classroomResource)));
     }
 
     private boolean isResourceAvailable(LessonResource lessonResource, ClassroomResource classroomResource) {
-        try {
-            return lessonResource.getResource().getId().equals(classroomResource.getResource().getId())
-                    && lessonResource.getQuantity() <= classroomResource.getQuantity();
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-            return false;
-        }
+        return lessonResource.getResource().getId().equals(classroomResource.getResource().getId())
+                && lessonResource.getQuantity() <= classroomResource.getQuantity();
     }
 
     private Constraint classroomAvailability(ConstraintFactory constraintFactory) {
-        try {
-            return constraintFactory
-                    .forEach(LessonUnit.class)
-                    .filter(lessonUnit -> lessonUnit.getClassroom() != null)
-                    .ifExists(LessonUnit.class,
-                            Joiners.equal(LessonUnit::getTimeslot),
-                            Joiners.lessThan(LessonUnit::getId))
-                    .filter(this::hasClassroomUnavailabilityConflict)
-                    .penalizeConfigurable(TimetableConstraintConstants.CLASSROOM_AVAILABILITY);
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-            return null;
-        }
+        return constraintFactory
+                .forEach(LessonUnit.class)
+                .filter(lessonUnit -> lessonUnit.getClassroom() != null)
+                .ifExists(LessonUnit.class,
+                        Joiners.equal(LessonUnit::getTimeslot),
+                        Joiners.lessThan(LessonUnit::getId))
+                .filter(this::hasClassroomUnavailabilityConflict)
+                .penalizeConfigurable(TimetableConstraintConstants.CLASSROOM_AVAILABILITY);
     }
 
     private boolean hasClassroomUnavailabilityConflict(LessonUnit conflictingLesson) {
-        try {
-            Classroom classroom = conflictingLesson.getClassroom();
-            List<Timeslot> lessonUnavailability = classroom.getUnavailability();
+        Classroom classroom = conflictingLesson.getClassroom();
+        List<Timeslot> lessonUnavailability = classroom.getUnavailability();
 
-            return hasUnavailabilityConflict(conflictingLesson, lessonUnavailability);
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-            return false;
-        }
+        return hasUnavailabilityConflict(conflictingLesson, lessonUnavailability);
     }
 
     private boolean hasUnavailabilityConflict(LessonUnit conflictingLesson, List<Timeslot> unavailability) {
-        try {
-            if (unavailability != null && !unavailability.isEmpty()) {
-                Timeslot lessonTimeslot = conflictingLesson.getTimeslot();
-                for (Timeslot unavailabilityTimeslot : unavailability) {
-                    if (unavailabilityTimeslot.equals(lessonTimeslot)) {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-            return false;
-        }
-    }
-
-    private Constraint professorAvailability(ConstraintFactory constraintFactory) {
-        try {
-            return constraintFactory
-                    .forEach(LessonUnit.class)
-                    .filter(lessonUnit -> !lessonUnit.getLesson().getProfessors().isEmpty())
-                    .ifExists(LessonUnit.class,
-                            Joiners.equal(LessonUnit::getTimeslot),
-                            Joiners.lessThan(LessonUnit::getId))
-                    .filter(this::hasProfessorUnavailabilityConflict)
-                    .penalizeConfigurable(TimetableConstraintConstants.PROFESSOR_AVAILABILITY);
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-            return null;
-        }
-    }
-
-    private boolean hasProfessorUnavailabilityConflict(LessonUnit conflictingLessonUnit) {
-        try {
-            List<Professor> professors = conflictingLessonUnit.getLesson().getProfessors();
-
-            for (Professor professor : professors) {
-                List<Timeslot> professorUnavailability = professor.getUnavailability();
-                if (!professorUnavailability.isEmpty() && hasUnavailabilityConflict(conflictingLessonUnit, professorUnavailability)) {
+        if (unavailability != null && !unavailability.isEmpty()) {
+            Timeslot lessonTimeslot = conflictingLesson.getTimeslot();
+            for (Timeslot unavailabilityTimeslot : unavailability) {
+                if (unavailabilityTimeslot.equals(lessonTimeslot)) {
                     return true;
                 }
             }
-
-            return false;
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-            return false;
         }
+
+        return false;
+    }
+
+    private Constraint professorAvailability(ConstraintFactory constraintFactory) {
+        return constraintFactory
+                .forEach(LessonUnit.class)
+                .filter(lessonUnit -> !lessonUnit.getLesson().getProfessors().isEmpty())
+                .ifExists(LessonUnit.class,
+                        Joiners.equal(LessonUnit::getTimeslot),
+                        Joiners.lessThan(LessonUnit::getId))
+                .filter(this::hasProfessorUnavailabilityConflict)
+                .penalizeConfigurable(TimetableConstraintConstants.PROFESSOR_AVAILABILITY);
+    }
+
+    private boolean hasProfessorUnavailabilityConflict(LessonUnit conflictingLessonUnit) {
+        List<Professor> professors = conflictingLessonUnit.getLesson().getProfessors();
+
+        for (Professor professor : professors) {
+            List<Timeslot> professorUnavailability = professor.getUnavailability();
+            if (!professorUnavailability.isEmpty() && hasUnavailabilityConflict(conflictingLessonUnit, professorUnavailability)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private Constraint courseAvailability(ConstraintFactory constraintFactory) {
-        try {
-            return constraintFactory
-                    .forEach(LessonUnit.class)
-                    .filter(lessonUnit -> lessonUnit.getLesson().getSubjectCourse() != null)
-                    .ifExists(LessonUnit.class,
-                            Joiners.equal(LessonUnit::getTimeslot),
-                            Joiners.lessThan(LessonUnit::getId))
-                    .filter(this::hasCourseUnavailabilityConflict)
-                    .penalizeConfigurable(TimetableConstraintConstants.COURSE_AVAILABILITY);
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-            return null;
-        }
+        return constraintFactory
+                .forEach(LessonUnit.class)
+                .filter(lessonUnit -> lessonUnit.getLesson().getSubjectCourse() != null)
+                .ifExists(LessonUnit.class,
+                        Joiners.equal(LessonUnit::getTimeslot),
+                        Joiners.lessThan(LessonUnit::getId))
+                .filter(this::hasCourseUnavailabilityConflict)
+                .penalizeConfigurable(TimetableConstraintConstants.COURSE_AVAILABILITY);
     }
 
     private boolean hasCourseUnavailabilityConflict(LessonUnit conflictingLessonUnit) {
-        try {
-            SubjectCourse subjectCourse = conflictingLessonUnit.getLesson().getSubjectCourse();
-            Course course = subjectCourse.getCourse();
-            List<Timeslot> courseUnavailability = course.getUnavailability();
-            return hasUnavailabilityConflict(conflictingLessonUnit, courseUnavailability);
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-            return false;
-        }
+        SubjectCourse subjectCourse = conflictingLessonUnit.getLesson().getSubjectCourse();
+        Course course = subjectCourse.getCourse();
+        List<Timeslot> courseUnavailability = course.getUnavailability();
+        return hasUnavailabilityConflict(conflictingLessonUnit, courseUnavailability);
     }
 
     private Constraint lessonBlockSizeEfficiency(ConstraintFactory constraintFactory) {
@@ -299,23 +234,18 @@ public class TimetableConstraintProvider implements ConstraintProvider {
     }
 
     private Constraint professorTimeEfficiency(ConstraintFactory constraintFactory) {
-        try {
-            return constraintFactory
-                    .forEach(LessonUnit.class)
-                    .join(LessonUnit.class, Joiners.equal((lessonUnit) -> lessonUnit.getLesson().getProfessors()))
-                    .filter((lessonUnit1, lessonUnit2) -> {
-                        Duration between = Duration.between(
-                                lessonUnit1.getTimeslot().getEndTime(),
-                                lessonUnit2.getTimeslot().getStartTime()
-                        );
+        return constraintFactory
+                .forEach(LessonUnit.class)
+                .join(LessonUnit.class, Joiners.equal((lessonUnit) -> lessonUnit.getLesson().getProfessors()))
+                .filter((lessonUnit1, lessonUnit2) -> {
+                    Duration between = Duration.between(
+                            lessonUnit1.getTimeslot().getEndTime(),
+                            lessonUnit2.getTimeslot().getStartTime()
+                    );
 
-                        return !between.isNegative() && between.compareTo(Duration.ofMinutes(30)) <= 0;
-                    })
-                    .rewardConfigurable(TimetableConstraintConstants.PROFESSOR_TIME_EFFICIENCY);
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-            return null;
-        }
+                    return !between.isNegative() && between.compareTo(Duration.ofMinutes(30)) <= 0;
+                })
+                .rewardConfigurable(TimetableConstraintConstants.PROFESSOR_TIME_EFFICIENCY);
     }
 
     private Constraint startTimeBetweenTenAndTwo(ConstraintFactory constraintFactory) {

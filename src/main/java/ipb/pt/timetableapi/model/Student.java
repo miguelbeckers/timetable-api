@@ -1,6 +1,7 @@
 package ipb.pt.timetableapi.model;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import lombok.Getter;
@@ -17,6 +18,6 @@ import java.util.List;
 public class Student {
     @Id
     private Long id;
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     private List<SubjectCourse> subjectCourses = new ArrayList<>();
 }

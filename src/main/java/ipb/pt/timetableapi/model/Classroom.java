@@ -21,7 +21,7 @@ public class Classroom {
     private String abbreviation;
     @ManyToOne
     private ClassroomType classroomType;
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     private List<ClassroomResource> classroomResources = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.EAGER)
