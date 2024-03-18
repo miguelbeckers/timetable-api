@@ -1,6 +1,6 @@
 package ipb.pt.timetableapi.solver;
 
-public class TimetableConstraintConstants {
+public class TimetableConstraintConstant {
     public static final String ROOM_CONFLICT = "Room conflict";
     public static final String PROFESSOR_CONFLICT = "Professor conflict";
     public static final String COURSE_LESSONS_CONFLICT = "Course lessons conflict";

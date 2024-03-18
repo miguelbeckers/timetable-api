@@ -1,8 +1,8 @@
 package ipb.pt.timetableapi.service;
 
-import ipb.pt.timetableapi.constant.TimeslotConstant;
 import ipb.pt.timetableapi.converter.TimeslotConverter;
 import ipb.pt.timetableapi.dto.TimeslotDto;
+import ipb.pt.timetableapi.mapper.TimeslotMapper;
 import ipb.pt.timetableapi.model.Timeslot;
 import ipb.pt.timetableapi.repository.TimeslotRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,19 +10,22 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.Duration;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class TimeslotService {
     private final TimeslotRepository timeslotRepository;
     private final TimeslotConverter timeslotConverter;
+    private final TimeslotMapper timeslotMapper;
 
     @Autowired
-    public TimeslotService(TimeslotRepository timeslotRepository, TimeslotConverter timeslotConverter) {
+    public TimeslotService(TimeslotRepository timeslotRepository,
+                           TimeslotConverter timeslotConverter,
+                           TimeslotMapper timeslotMapper
+    ) {
         this.timeslotRepository = timeslotRepository;
         this.timeslotConverter = timeslotConverter;
+        this.timeslotMapper = timeslotMapper;
     }
 
     public List<TimeslotDto> findAll() {
@@ -63,79 +66,8 @@ public class TimeslotService {
         return timeslotConverter.toDto(timeslotRepository.saveAll(timeslots));
     }
 
-    public List<Timeslot> getTimeslots(double blockSize) {
-        return getTimeslots(timeslotRepository.findAll(), blockSize);
-    }
-
-    public List<Timeslot> getTimeslots(List<Timeslot> timeslots, double blockSize) {
-        if (timeslots.size() % blockSize != 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "The timeslots size is not multiple of " + blockSize);
-        }
-
-        List<Timeslot> newTimeslots = new ArrayList<>();
-
-        while (!timeslots.isEmpty()) {
-            Timeslot timeslot = timeslots.get(0);
-            int remainingUnits = (int) (blockSize / TimeslotConstant.SIZE_0_5);
-
-            Timeslot newTimeslot = new Timeslot();
-            newTimeslot.setId(timeslot.getId());
-            newTimeslot.setDayOfWeek(timeslot.getDayOfWeek());
-            newTimeslot.setStartTime(timeslot.getStartTime());
-
-            while (remainingUnits > 0) {
-                timeslot = timeslots.remove(0);
-                remainingUnits--;
-            }
-
-            newTimeslot.setEndTime(timeslot.getEndTime());
-            newTimeslots.add(newTimeslot);
-        }
-
-        return newTimeslots;
-    }
-
-    public List<Timeslot> splitTimeslot(Timeslot timeslot, double blockSize) {
-        List<Timeslot> splitTimeslots = new ArrayList<>();
-
-        Duration duration = Duration.between(timeslot.getStartTime(), timeslot.getEndTime());
-        double halfDurationDouble = (double) duration.toHours() / 2;
-        int units = (int) (halfDurationDouble / TimeslotConstant.SIZE_0_5);
-
-        Timeslot firstTimeslot = new Timeslot();
-        firstTimeslot.setId(timeslot.getId());
-        firstTimeslot.setDayOfWeek(timeslot.getDayOfWeek());
-        firstTimeslot.setStartTime(timeslot.getStartTime());
-        firstTimeslot.setEndTime(timeslot.getStartTime().plus(duration.dividedBy(2)));
-        splitTimeslots.add(firstTimeslot);
-
-        Timeslot secondTimeslot = new Timeslot();
-        secondTimeslot.setId(timeslot.getId() + units);
-        secondTimeslot.setDayOfWeek(timeslot.getDayOfWeek());
-        secondTimeslot.setStartTime(timeslot.getStartTime().plus(duration.dividedBy(2)));
-        secondTimeslot.setEndTime(timeslot.getEndTime());
-        splitTimeslots.add(secondTimeslot);
-
-        return splitTimeslots;
-    }
-
-    public Timeslot map(Timeslot timeslot, double blockSize) {
-        if (blockSize > TimeslotConstant.SIZE_2_5 && blockSize <= TimeslotConstant.SIZE_5) {
-            timeslot.setEndTime(timeslot.getStartTime().plusHours((long) TimeslotConstant.SIZE_5));
-            return timeslot;
-        }
-
-        if (blockSize > TimeslotConstant.SIZE_1 && blockSize <= TimeslotConstant.SIZE_2_5) {
-            timeslot.setEndTime(timeslot.getStartTime().plusHours((long) TimeslotConstant.SIZE_2_5));
-            return timeslot;
-        }
-
-        if (blockSize > TimeslotConstant.SIZE_0_5 && blockSize <= TimeslotConstant.SIZE_1) {
-            timeslot.setEndTime(timeslot.getStartTime().plusHours((long) TimeslotConstant.SIZE_1));
-            return timeslot;
-        }
-
-        return timeslot;
+    public List<Timeslot> getTimeslotsBySize(double blockSize) {
+        List<Timeslot> timeslots = timeslotRepository.findAll();
+        return timeslotMapper.mapTimeslotsOfUnitsToTimeslotsOfBlocks(timeslots, blockSize);
     }
 }
