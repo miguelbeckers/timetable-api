@@ -1,5 +1,6 @@
 package ipb.pt.timetableapi.service;
 
+import ipb.pt.timetableapi.solver.BlockSizeConstant;
 import ipb.pt.timetableapi.model.*;
 import ipb.pt.timetableapi.repository.ClassroomRepository;
 import ipb.pt.timetableapi.repository.LessonUnitRepository;
@@ -78,10 +79,10 @@ public class TimetableService {
 
     public String solveAsBlocks() throws ExecutionException, InterruptedException {
         List<Double> sizes = List.of(
-                TimeslotConstant.SIZE_5,
-                TimeslotConstant.SIZE_2_5,
-                TimeslotConstant.SIZE_1,
-                TimeslotConstant.SIZE_0_5);
+                BlockSizeConstant.SIZE_5,
+                BlockSizeConstant.SIZE_2_5,
+                BlockSizeConstant.SIZE_1,
+                BlockSizeConstant.SIZE_0_5);
 
         List<String> solutionScores = new ArrayList<>();
         List<Classroom> classrooms = classroomRepository.findAll();

@@ -26,7 +26,7 @@ public class TimetableController {
         return ResponseEntity.ok().body(timetableService.solve());
     }
 
-    @PostMapping("solve-blocks")
+    @PostMapping("/solve-blocks")
     public ResponseEntity<Object> solveAsBlocks() throws ExecutionException, InterruptedException {
         return ResponseEntity.ok().body(timetableService.solveAsBlocks());
     }

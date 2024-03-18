@@ -1,5 +1,6 @@
 package ipb.pt.timetableapi.mapper;
 
+import ipb.pt.timetableapi.solver.BlockSizeConstant;
 import ipb.pt.timetableapi.model.*;
 import org.springframework.stereotype.Component;
 
@@ -19,12 +20,12 @@ public class LessonUnitMapper {
         List<LessonUnit> lessonUnits = new ArrayList<>();
 
         double blockSize = lessonBlock.getBlockSize();
-        int units = (int) (blockSize / TimeslotConstant.SIZE_0_5);
+        int units = (int) (blockSize / BlockSizeConstant.SIZE_0_5);
 
         for (int i = 0; i < units; i++) {
             LessonUnit lessonUnit = new LessonUnit();
             lessonUnit.setId(lessonBlock.getId() + i);
-            lessonUnit.setBlockSize(TimeslotConstant.SIZE_0_5);
+            lessonUnit.setBlockSize(BlockSizeConstant.SIZE_0_5);
             lessonUnit.setLesson(lessonBlock.getLesson());
             lessonUnit.setIsPinned(lessonBlock.getIsPinned());
             lessonUnit.setClassroom(lessonBlock.getClassroom());
@@ -70,7 +71,7 @@ public class LessonUnitMapper {
 
     private List<LessonUnit> getBlocks(List<LessonUnit> lessonUnits, Lesson lesson, double blockSize) {
         List<LessonUnit> lessonBlocksForLesson = new ArrayList<>();
-        int unitsPerBlock = (int) (blockSize / TimeslotConstant.SIZE_0_5);
+        int unitsPerBlock = (int) (blockSize / BlockSizeConstant.SIZE_0_5);
 
         for (int i = 0; i < lesson.getBlocks(); i++) {
             LessonUnit currentLessonBlock = lessonUnits.get(0);
@@ -101,5 +102,28 @@ public class LessonUnitMapper {
         }
 
         return newLessonBlocks;
+    }
+
+    public List<LessonUnit> getLessonBlocksBySize(
+            List<LessonUnit> lessonUnits, double currentSize, Double nextSize, Double firstSize) {
+        List<LessonUnit> lessonBlocks = mapUnitsToBlocks(lessonUnits);
+        List<LessonUnit> lessonBlocksOfTheCurrentSize = getLessonBlocksBySize(lessonBlocks, currentSize, nextSize);
+
+        if (firstSize == currentSize) {
+            return lessonBlocksOfTheCurrentSize;
+        }
+
+        List<LessonUnit> lessonBlocksOfThePreviousSize = getLessonBlocksBySize(lessonBlocks, firstSize, currentSize);
+        List<LessonUnit> previousLessonBlocksSplitIntoTheCurrentSize = mapBlocksIntoBlocks(lessonBlocksOfThePreviousSize, currentSize);
+
+        return new ArrayList<>() {{
+            addAll(lessonBlocksOfTheCurrentSize);
+            addAll(previousLessonBlocksSplitIntoTheCurrentSize);
+        }};
+    }
+
+    private List<LessonUnit> getLessonBlocksBySize(List<LessonUnit> lessonBlocks, double currentSize, Double nextSize) {
+        return lessonBlocks.stream().filter(lessonUnit -> lessonUnit.getBlockSize() <= currentSize
+                && (nextSize == null || lessonUnit.getBlockSize() > nextSize)).toList();
     }
 }

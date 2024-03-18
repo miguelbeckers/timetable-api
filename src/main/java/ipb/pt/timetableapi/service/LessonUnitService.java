@@ -87,30 +87,11 @@ public class LessonUnitService {
     }
 
     public List<LessonUnit> getLessonBlocksBySize(double currentSize, Double nextSize, Double firstSize) {
-        List<LessonUnit> lessonBlocks = lessonUnitMapper.mapUnitsToBlocks(lessonUnitRepository.findAll());
-        List<LessonUnit> lessonBlocksOfTheCurrentSize = getLessonBlocksBySize(lessonBlocks, currentSize, nextSize);
-
-        if (firstSize == currentSize) {
-            return lessonBlocksOfTheCurrentSize;
-        }
-
-        List<LessonUnit> lessonBlocksOfThePreviousSize = getLessonBlocksBySize(lessonBlocks, firstSize, currentSize);
-        List<LessonUnit> previousLessonBlocksSplitIntoTheCurrentSize = lessonUnitMapper
-                .mapBlocksIntoBlocks(lessonBlocksOfThePreviousSize, currentSize);
-
-        return new ArrayList<>() {{
-            addAll(lessonBlocksOfTheCurrentSize);
-            addAll(previousLessonBlocksSplitIntoTheCurrentSize);
-        }};
-    }
-
-    private List<LessonUnit> getLessonBlocksBySize(List<LessonUnit> lessonBlocks, double currentSize, Double nextSize) {
-        return lessonBlocks.stream().filter(lessonUnit -> lessonUnit.getBlockSize() <= currentSize
-                && (nextSize == null || lessonUnit.getBlockSize() > nextSize)).toList();
+        List<LessonUnit> lessonUnits = lessonUnitRepository.findAll();
+        return lessonUnitMapper.getLessonBlocksBySize(lessonUnits, currentSize, nextSize, firstSize);
     }
 
     public List<LessonUnit> divideLessonBlocksIntoUnits(List<LessonUnit> lessonBlocks) {
         return lessonUnitMapper.mapBlocksToUnits(lessonBlocks);
     }
 }
-

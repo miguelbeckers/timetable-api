@@ -195,33 +195,33 @@ public class TimetableConstraintProvider implements ConstraintProvider {
                 .groupBy(LessonUnit::getLesson, lessonUnit -> lessonUnit.getTimeslot().getDayOfWeek(), count())
                 .filter((lesson, dayOfWeek, count) -> (
                         count != lesson.getHoursPerWeek()
-                                * TimeslotConstant.SIZE_0_5 / lesson.getBlocks()))
+                                * BlockSizeConstant.SIZE_0_5 / lesson.getBlocks()))
                 .penalizeConfigurable(TimetableConstraintConstant.LESSON_BLOCK_SIZE_EFFICIENCY);
     }
 
-    private Constraint lessonTimeEfficiency(ConstraintFactory constraintFactory) {
-        return constraintFactory
-                .forEach(LessonUnit.class)
-                .join(LessonUnit.class, Joiners.equal(LessonUnit::getLesson))
-                .filter(TimetableConstraintProvider::checkIfTheLessonsAreOutOfTheBlock)
-                .penalizeConfigurable(TimetableConstraintConstant.LESSON_TIME_EFFICIENCY);
-    }
-
-    public static boolean checkIfTheLessonsAreOutOfTheBlock(LessonUnit lessonUnit1, LessonUnit lessonUnit2) {
-        if (lessonUnit1.getTimeslot().getDayOfWeek() != lessonUnit2.getTimeslot().getDayOfWeek())
-            return false;
-
-        int blocks = lessonUnit1.getLesson().getBlocks();
-        double hoursPerWeek = lessonUnit1.getLesson().getHoursPerWeek();
-        double unitsPerDay = hoursPerWeek * TimeslotConstant.SIZE_0_5 / blocks;
-
-        long minutesBetween = Duration.between(
-                lessonUnit1.getTimeslot().getStartTime(),
-                lessonUnit2.getTimeslot().getStartTime()
-        ).abs().toMinutes();
-
-        return minutesBetween > unitsPerDay * TimeslotConstant.UNIT;
-    }
+//    private Constraint lessonTimeEfficiency(ConstraintFactory constraintFactory) {
+//        return constraintFactory
+//                .forEach(LessonUnit.class)
+//                .join(LessonUnit.class, Joiners.equal(LessonUnit::getLesson))
+//                .filter(TimetableConstraintProvider::checkIfTheLessonsAreOutOfTheBlock)
+//                .penalizeConfigurable(TimetableConstraintConstant.LESSON_TIME_EFFICIENCY);
+//    }
+//
+//    public static boolean checkIfTheLessonsAreOutOfTheBlock(LessonUnit lessonUnit1, LessonUnit lessonUnit2) {
+//        if (lessonUnit1.getTimeslot().getDayOfWeek() != lessonUnit2.getTimeslot().getDayOfWeek())
+//            return false;
+//
+//        int blocks = lessonUnit1.getLesson().getBlocks();
+//        double hoursPerWeek = lessonUnit1.getLesson().getHoursPerWeek();
+//        double unitsPerDay = hoursPerWeek * TimeslotConstant.SIZE_0_5 / blocks;
+//
+//        long minutesBetween = Duration.between(
+//                lessonUnit1.getTimeslot().getStartTime(),
+//                lessonUnit2.getTimeslot().getStartTime()
+//        ).abs().toMinutes();
+//
+//        return minutesBetween > unitsPerDay * TimeslotConstant.UNIT;
+//    }
 
     private Constraint lessonClassroomEfficiency(ConstraintFactory constraintFactory) {
         return constraintFactory
