@@ -23,6 +23,11 @@ public class ClassroomController {
         return ResponseEntity.ok(classroomService.findAll());
     }
 
+    @GetMapping("/size")
+    public ResponseEntity<Object> getSize() {
+        return ResponseEntity.ok(classroomService.findAll().size());
+    }
+
     @GetMapping("{id}")
     public ResponseEntity<Object> getById(@PathVariable Long id) {
         return ResponseEntity.ok().body(classroomService.findById(id));

@@ -5,11 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-public class TimeslotMapperTest {
+public class MapTimeslotToTimeslotTest {
     private final TimeslotMapper timeslotMapper;
 
     @Autowired
-    public TimeslotMapperTest(TimeslotMapper timeslotMapper) {
+    public MapTimeslotToTimeslotTest(TimeslotMapper timeslotMapper) {
         this.timeslotMapper = timeslotMapper;
     }
 
