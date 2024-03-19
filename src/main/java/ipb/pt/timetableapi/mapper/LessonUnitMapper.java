@@ -89,7 +89,7 @@ public class LessonUnitMapper {
         return lessonBlocksForLesson;
     }
 
-    public List<LessonUnit> mapBlocksIntoBlocks(List<LessonUnit> lessonBlocks, double blocksSize) {
+    public List<LessonUnit> mapBlocksToBlocks(List<LessonUnit> lessonBlocks, double blocksSize) {
         List<LessonUnit> newLessonBlocks = new ArrayList<>();
 
         HashMap<Lesson, List<LessonUnit>> lessonBlocksMap = new HashMap<>();
@@ -104,8 +104,7 @@ public class LessonUnitMapper {
         return newLessonBlocks;
     }
 
-    public List<LessonUnit> getLessonBlocksBySize(
-            List<LessonUnit> lessonUnits, double currentSize, Double nextSize, Double firstSize) {
+    public List<LessonUnit> getLessonBlocksBySize(List<LessonUnit> lessonUnits, double currentSize, Double nextSize, Double firstSize) {
         List<LessonUnit> lessonBlocks = mapUnitsToBlocks(lessonUnits);
         List<LessonUnit> lessonBlocksOfTheCurrentSize = getLessonBlocksBySize(lessonBlocks, currentSize, nextSize);
 
@@ -114,7 +113,7 @@ public class LessonUnitMapper {
         }
 
         List<LessonUnit> lessonBlocksOfThePreviousSize = getLessonBlocksBySize(lessonBlocks, firstSize, currentSize);
-        List<LessonUnit> previousLessonBlocksSplitIntoTheCurrentSize = mapBlocksIntoBlocks(lessonBlocksOfThePreviousSize, currentSize);
+        List<LessonUnit> previousLessonBlocksSplitIntoTheCurrentSize = mapBlocksToBlocks(lessonBlocksOfThePreviousSize, currentSize);
 
         return new ArrayList<>() {{
             addAll(lessonBlocksOfTheCurrentSize);
