@@ -18,11 +18,9 @@ public class LessonUnitMapper {
 
     private List<LessonUnit> splitABlockIntoUnits(LessonUnit lessonBlock) {
         List<LessonUnit> lessonUnits = new ArrayList<>();
+        int unitsPerBlock = (int) (lessonBlock.getBlockSize() / SizeConstant.SIZE_0_5);
 
-        double blockSize = lessonBlock.getBlockSize();
-        int units = (int) (blockSize / SizeConstant.SIZE_0_5);
-
-        for (int i = 0; i < units; i++) {
+        for (int i = 0; i < unitsPerBlock; i++) {
             LessonUnit lessonUnit = new LessonUnit();
             lessonUnit.setId(lessonBlock.getId() + i);
             lessonUnit.setBlockSize(SizeConstant.SIZE_0_5);
@@ -66,10 +64,10 @@ public class LessonUnitMapper {
 
     private List<LessonUnit> mergeUnitsIntoBlocks(List<LessonUnit> lessonUnits, Lesson lesson) {
         double blockSize = (double) lesson.getHoursPerWeek() / lesson.getBlocks();
-        return new ArrayList<>(getBlocks(lessonUnits, lesson, blockSize));
+        return new ArrayList<>(createBlocks(lessonUnits, lesson, blockSize));
     }
 
-    private List<LessonUnit> getBlocks(List<LessonUnit> lessonUnits, Lesson lesson, double blockSize) {
+    private List<LessonUnit> createBlocks(List<LessonUnit> lessonUnits, Lesson lesson, double blockSize) {
         List<LessonUnit> lessonBlocksForLesson = new ArrayList<>();
         int unitsPerBlock = (int) (blockSize / SizeConstant.SIZE_0_5);
 
@@ -97,7 +95,7 @@ public class LessonUnitMapper {
 
         for (Lesson lesson : lessonBlocksMap.keySet()) {
             List<LessonUnit> lessonBlocksForLesson = lessonBlocksMap.get(lesson);
-            List<LessonUnit> lessonBlocksForLessonWithSize = getBlocks(lessonBlocksForLesson, lesson, blocksSize);
+            List<LessonUnit> lessonBlocksForLessonWithSize = createBlocks(lessonBlocksForLesson, lesson, blocksSize);
             newLessonBlocks.addAll(lessonBlocksForLessonWithSize);
         }
 
