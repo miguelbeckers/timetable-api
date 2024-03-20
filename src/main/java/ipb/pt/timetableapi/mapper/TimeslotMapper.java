@@ -1,7 +1,7 @@
 package ipb.pt.timetableapi.mapper;
 
 import ipb.pt.timetableapi.model.Timeslot;
-import ipb.pt.timetableapi.solver.BlockSizeConstant;
+import ipb.pt.timetableapi.solver.SizeConstant;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
@@ -21,7 +21,7 @@ public class TimeslotMapper {
 
         while (!timeslots.isEmpty()) {
             Timeslot timeslot = timeslots.get(0);
-            int remainingUnits = (int) (blockSize / BlockSizeConstant.SIZE_0_5);
+            int remainingUnits = (int) (blockSize / SizeConstant.SIZE_0_5);
 
             Timeslot newTimeslot = new Timeslot();
             newTimeslot.setId(timeslot.getId());

@@ -1,6 +1,6 @@
 package ipb.pt.timetableapi.mapper;
 
-import ipb.pt.timetableapi.solver.BlockSizeConstant;
+import ipb.pt.timetableapi.solver.SizeConstant;
 import ipb.pt.timetableapi.model.*;
 import org.springframework.stereotype.Component;
 
@@ -20,12 +20,12 @@ public class LessonUnitMapper {
         List<LessonUnit> lessonUnits = new ArrayList<>();
 
         double blockSize = lessonBlock.getBlockSize();
-        int units = (int) (blockSize / BlockSizeConstant.SIZE_0_5);
+        int units = (int) (blockSize / SizeConstant.SIZE_0_5);
 
         for (int i = 0; i < units; i++) {
             LessonUnit lessonUnit = new LessonUnit();
             lessonUnit.setId(lessonBlock.getId() + i);
-            lessonUnit.setBlockSize(BlockSizeConstant.SIZE_0_5);
+            lessonUnit.setBlockSize(SizeConstant.SIZE_0_5);
             lessonUnit.setLesson(lessonBlock.getLesson());
             lessonUnit.setIsPinned(lessonBlock.getIsPinned());
             lessonUnit.setClassroom(lessonBlock.getClassroom());
@@ -71,7 +71,7 @@ public class LessonUnitMapper {
 
     private List<LessonUnit> getBlocks(List<LessonUnit> lessonUnits, Lesson lesson, double blockSize) {
         List<LessonUnit> lessonBlocksForLesson = new ArrayList<>();
-        int unitsPerBlock = (int) (blockSize / BlockSizeConstant.SIZE_0_5);
+        int unitsPerBlock = (int) (blockSize / SizeConstant.SIZE_0_5);
 
         for (int i = 0; i < lesson.getBlocks(); i++) {
             LessonUnit currentLessonBlock = lessonUnits.get(0);
