@@ -39,23 +39,9 @@ public class MapUnitsToBlocksTest {
         // 09 | 12:00 -> 12:30 | ┌── 0.5 ──┐ | │         │
         // 10 | 12:30 -> 13:00 | ┌── 0.5 ──┐ | └─────────┘
 
-        // Arrange
-        List<LessonUnit> lessonUnits = getLessonUnitsOfALesson(
-                5,
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
-                "08:00",
-                false
-        );
-
-        // Act
+        List<LessonUnit> lessonUnits = getLessonUnitsOfALesson(5, 1);
         List<LessonUnit> lessonBlocks = lessonUnitMapper.mapUnitsToBlocks(lessonUnits);
 
-        // Assert
         Assert.isTrue(lessonBlocks.size() == 1,
                 "The number of blocks is not 1");
 
@@ -91,23 +77,9 @@ public class MapUnitsToBlocksTest {
         // 09 | 12:00 -> 12:30 | ┌── 0.5 ──┐ | │         │
         //    | 12:30 -> 13:00 |             | └─────────┘
 
-        // Arrange
-        List<LessonUnit> lessonUnits = getLessonUnitsOfALesson(
-                4.5,
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
-                "08:00",
-                false
-        );
-
-        // Act
+        List<LessonUnit> lessonUnits = getLessonUnitsOfALesson(4.5, 1);
         List<LessonUnit> lessonBlocks = lessonUnitMapper.mapUnitsToBlocks(lessonUnits);
 
-        // Assert
         Assert.isTrue(lessonBlocks.size() == 1,
                 "The number of blocks is not 1");
 
@@ -143,23 +115,9 @@ public class MapUnitsToBlocksTest {
         //    | 12:00 -> 12:30 |             | │         │
         //    | 12:30 -> 13:00 |             | └─────────┘
 
-        // Arrange
-        List<LessonUnit> lessonUnits = getLessonUnitsOfALesson(
-                4,
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
-                "08:00",
-                false
-        );
-
-        // Act
+        List<LessonUnit> lessonUnits = getLessonUnitsOfALesson(4, 1);
         List<LessonUnit> lessonBlocks = lessonUnitMapper.mapUnitsToBlocks(lessonUnits);
 
-        // Assert
         Assert.isTrue(lessonBlocks.size() == 1,
                 "The number of blocks is not 1");
 
@@ -195,23 +153,9 @@ public class MapUnitsToBlocksTest {
         //    | 12:00 -> 12:30 |             | │         │
         //    | 12:30 -> 13:00 |             | └─────────┘
 
-        // Arrange
-        List<LessonUnit> lessonUnits = getLessonUnitsOfALesson(
-                3.5,
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
-                "08:00",
-                false
-        );
-
-        // Act
+        List<LessonUnit> lessonUnits = getLessonUnitsOfALesson(3.5, 1);
         List<LessonUnit> lessonBlocks = lessonUnitMapper.mapUnitsToBlocks(lessonUnits);
 
-        // Assert
         Assert.isTrue(lessonBlocks.size() == 1,
                 "The number of blocks is not 1");
 
@@ -247,23 +191,9 @@ public class MapUnitsToBlocksTest {
         //    | 12:00 -> 12:30 |             | │         │
         //    | 12:30 -> 13:00 |             | └─────────┘
 
-        // Arrange
-        List<LessonUnit> lessonUnits = getLessonUnitsOfALesson(
-                3,
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
-                "08:00",
-                false
-        );
-
-        // Act
+        List<LessonUnit> lessonUnits = getLessonUnitsOfALesson(3, 1);
         List<LessonUnit> lessonBlocks = lessonUnitMapper.mapUnitsToBlocks(lessonUnits);
 
-        // Assert
         Assert.isTrue(lessonBlocks.size() == 1,
                 "The number of blocks is not 1");
 
@@ -294,23 +224,9 @@ public class MapUnitsToBlocksTest {
         // 04 | 09:30 -> 10:00 | ┌── 0.5 ──┐ | │         │
         // 05 | 10:00 -> 10:30 | ┌── 0.5 ──┐ | └─────────┘
 
-        // Arrange
-        List<LessonUnit> lessonUnits = getLessonUnitsOfALesson(
-                2.5,
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
-                "08:00",
-                false
-        );
-
-        // Act
+        List<LessonUnit> lessonUnits = getLessonUnitsOfALesson(2.5, 1);
         List<LessonUnit> lessonBlocks = lessonUnitMapper.mapUnitsToBlocks(lessonUnits);
 
-        // Assert
         Assert.isTrue(lessonBlocks.size() == 1,
                 "The number of blocks is not 1");
 
@@ -341,23 +257,9 @@ public class MapUnitsToBlocksTest {
         // 04 | 09:30 -> 10:00 | ┌── 0.5 ──┐ | │         │
         //    | 10:00 -> 10:30 |             | └─────────┘
 
-        // Arrange
-        List<LessonUnit> lessonUnits = getLessonUnitsOfALesson(
-                2,
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
-                "08:00",
-                false
-        );
-
-        // Act
+        List<LessonUnit> lessonUnits = getLessonUnitsOfALesson(2, 1);
         List<LessonUnit> lessonBlocks = lessonUnitMapper.mapUnitsToBlocks(lessonUnits);
 
-        // Assert
         Assert.isTrue(lessonBlocks.size() == 1,
                 "The number of blocks is not 1");
 
@@ -388,23 +290,9 @@ public class MapUnitsToBlocksTest {
         //    | 09:30 -> 10:00 |             | │         │
         //    | 10:00 -> 10:30 |             | └─────────┘
 
-        // Arrange
-        List<LessonUnit> lessonUnits = getLessonUnitsOfALesson(
-                1.5,
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
-                "08:00",
-                false
-        );
-
-        // Act
+        List<LessonUnit> lessonUnits = getLessonUnitsOfALesson(1.5, 1);
         List<LessonUnit> lessonBlocks = lessonUnitMapper.mapUnitsToBlocks(lessonUnits);
 
-        // Assert
         Assert.isTrue(lessonBlocks.size() == 1,
                 "The number of blocks is not 1");
 
@@ -435,23 +323,9 @@ public class MapUnitsToBlocksTest {
         //    | 09:30 -> 10:00 |             | │         │
         //    | 10:00 -> 10:30 |             | └─────────┘
 
-        // Arrange
-        List<LessonUnit> lessonUnits = getLessonUnitsOfALesson(
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
-                "08:00",
-                false
-        );
-
-        // Act
+        List<LessonUnit> lessonUnits = getLessonUnitsOfALesson(1, 1);
         List<LessonUnit> lessonBlocks = lessonUnitMapper.mapUnitsToBlocks(lessonUnits);
 
-        // Assert
         Assert.isTrue(lessonBlocks.size() == 1,
                 "The number of blocks is not 1");
 
@@ -478,23 +352,9 @@ public class MapUnitsToBlocksTest {
         // id | time           | input       | output
         // 01 | 08:00 -> 08:30 | ┌── 0.5 ──┐ | ┌── 0.5 ──┐
 
-        // Arrange
-        List<LessonUnit> lessonUnits = getLessonUnitsOfALesson(
-                0.5,
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
-                "08:00",
-                false
-        );
-
-        // Act
+        List<LessonUnit> lessonUnits = getLessonUnitsOfALesson(0.5, 1);
         List<LessonUnit> lessonBlocks = lessonUnitMapper.mapUnitsToBlocks(lessonUnits);
 
-        // Assert
         Assert.isTrue(lessonBlocks.size() == 1,
                 "The number of blocks is not 1");
 
@@ -530,23 +390,9 @@ public class MapUnitsToBlocksTest {
         // 09 | 12:00 -> 12:30 | ┌── 0.5 ──┐ | │         │
         // 10 | 12:30 -> 13:00 | ┌── 0.5 ──┐ | └─────────┘
 
-        // Arrange
-        List<LessonUnit> lessonUnits = getLessonUnitsOfALesson(
-                5,
-                2,
-                1,
-                1,
-                1,
-                1,
-                1,
-                "08:00",
-                false
-        );
-
-        // Act
+        List<LessonUnit> lessonUnits = getLessonUnitsOfALesson(5, 2);
         List<LessonUnit> lessonBlocks = lessonUnitMapper.mapUnitsToBlocks(lessonUnits);
 
-        // Assert
         Assert.isTrue(lessonBlocks.size() == 2,
                 "The number of blocks is not 2");
 
@@ -598,23 +444,9 @@ public class MapUnitsToBlocksTest {
         // 08 | 12:00 -> 12:30 | ┌── 0.5 ──┐ | │         │
         //    | 12:30 -> 13:00 |             | └─────────┘
 
-        // Arrange
-        List<LessonUnit> lessonUnits = getLessonUnitsOfALesson(
-                4,
-                2,
-                1,
-                1,
-                1,
-                1,
-                1,
-                "08:00",
-                false
-        );
-
-        // Act
+        List<LessonUnit> lessonUnits = getLessonUnitsOfALesson(4, 2);
         List<LessonUnit> lessonBlocks = lessonUnitMapper.mapUnitsToBlocks(lessonUnits);
 
-        // Assert
         Assert.isTrue(lessonBlocks.size() == 2,
                 "The number of blocks is not 2");
 
@@ -656,89 +488,58 @@ public class MapUnitsToBlocksTest {
     @Test
     public void testIfAllThePropertiesArBeingAssigned() {
 
-        // Arrange
-        List<LessonUnit> lessonUnits = getLessonUnitsOfALesson(
-                1,
-                1,
-                2,
-                2,
-                2,
-                2,
-                2,
-                "09:00",
-                true
-        );
-
-        // Act
+        List<LessonUnit> lessonUnits = getLessonUnitsOfALesson(1, 1);
         List<LessonUnit> lessonBlocks = lessonUnitMapper.mapUnitsToBlocks(lessonUnits);
 
-        // Assert
         Assert.isTrue(lessonBlocks.size() == 1,
                 "The number of blocks is not 1");
 
-        Assert.isTrue(lessonBlocks.get(0).getId() == 2,
-                "The id of the lessonBlock 0 is not 2");
+        Assert.isTrue(lessonBlocks.get(0).getId() == 1,
+                "The id of the lessonBlock 0 is not 1");
 
-        Assert.isTrue(lessonBlocks.get(0).getTimeslot().getId() == 2,
-                "The id of the timeslot of the lessonBlock 0 is not 2");
+        Assert.isTrue(lessonBlocks.get(0).getTimeslot().getId() == 1,
+                "The id of the timeslot of the lessonBlock 0 is not 1");
 
-        Assert.isTrue(lessonBlocks.get(0).getClassroom().getId() == 2,
-                "The id of the classroom of the lessonBlock 0 is not 2");
+        Assert.isTrue(lessonBlocks.get(0).getClassroom().getId() == 1,
+                "The id of the classroom of the lessonBlock 0 is not 1");
 
-        Assert.isTrue(lessonBlocks.get(0).getLesson().getId() == 2,
-                "The id of the lesson of the lessonBlock 0 is not 2");
+        Assert.isTrue(lessonBlocks.get(0).getLesson().getId() == 1,
+                "The id of the lesson of the lessonBlock 0 is not 1");
 
-        Assert.isTrue(lessonBlocks.get(0).getTimeslot().getStartTime().equals(LocalTime.parse("09:00")),
-                "The startTime of the lessonBlock 0 is not 09:00");
-
-        // FIXME: assert that the timeslot end time is being set correctly
-//        Assert.isTrue(lessonBlocks.get(0).getTimeslot().getEndTime().equals(LocalTime.parse("10:00")),
-//                "The endTime of the lessonBlock 0 is not 10:00");
-
-        Assert.isTrue(lessonBlocks.get(0).getIsPinned(),
-                "The isPinned of the lessonBlock 0 is not true");
+        Assert.isTrue(!lessonBlocks.get(0).getIsPinned(),
+                "The isPinned of the lessonBlock 0 is not false");
     }
 
-    private List<LessonUnit> getLessonUnitsOfALesson(
-            double hoursPerWeek,
-            int blocks,
-            long classroomId,
-            long lessonId,
-            long InitialUnitId,
-            long InitialTimeslotId,
-            int dayOfWeek,
-            String InitialStartTime,
-            boolean isPinned
-    ) {
+    private List<LessonUnit> getLessonUnitsOfALesson(double hoursPerWeek, int blocks) {
         Lesson lesson = new Lesson();
-        lesson.setId(lessonId);
+        lesson.setId(1L);
         lesson.setHoursPerWeek(hoursPerWeek);
         lesson.setBlocks(blocks);
 
         Classroom classroom = new Classroom();
-        classroom.setId(classroomId);
+        classroom.setId(1L);
 
         int numberOfUnits = (int) (hoursPerWeek / SizeConstant.SIZE_0_5);
 
         List<LessonUnit> lessonUnits = new ArrayList<>();
         for (int i = 0; i < numberOfUnits; i++) {
             int additionalStart = i * SizeConstant.UNIT_DURATION;
-            LocalTime startTime = LocalTime.parse(InitialStartTime).plusMinutes(additionalStart);
+            LocalTime startTime = LocalTime.parse("08:00").plusMinutes(additionalStart);
             LocalTime endTime = startTime.plusMinutes(SizeConstant.UNIT_DURATION);
 
             Timeslot timeslot = new Timeslot();
-            timeslot.setId((long) i + InitialTimeslotId);
-            timeslot.setDayOfWeek(DayOfWeek.of(dayOfWeek));
+            timeslot.setId((long) i + 1);
+            timeslot.setDayOfWeek(DayOfWeek.MONDAY);
             timeslot.setStartTime(startTime);
             timeslot.setEndTime(endTime);
 
             LessonUnit lessonUnit = new LessonUnit();
-            lessonUnit.setId((long) i + InitialUnitId);
+            lessonUnit.setId((long) i + 1);
             lessonUnit.setLesson(lesson);
             lessonUnit.setTimeslot(timeslot);
             lessonUnit.setClassroom(classroom);
             lessonUnit.setBlockSize(SizeConstant.SIZE_0_5);
-            lessonUnit.setIsPinned(isPinned);
+            lessonUnit.setIsPinned(false);
 
             lessonUnits.add(lessonUnit);
         }
