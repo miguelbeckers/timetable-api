@@ -13,177 +13,9 @@ public class MapUnitsToBlocksTest {
         this.lessonUnitMapper = lessonUnitMapper;
     }
 
-    /*
-    The timetable has two dimensions: the timeslots and the classrooms.
-    Note that each timeslot have the size of 30 minutes, or 0.5 hour.
-
-    timeslots            c1    c2    c3    c4    c5    c6    c7    c8    c9    c10   ...
-    MON - 08:00 -> 08:30 ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌────
-    MON - 08:30 -> 09:00 ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌────
-    MON - 09:00 -> 09:30 ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌────
-    MON - 09:30 -> 10:00 ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌────
-    MON - 10:00 -> 10:30 ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌────
-    MON - 10:30 -> 11:00 ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌────
-    MON - 11:00 -> 11:30 ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌────
-    MON - 11:30 -> 12:00 ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌────
-    MON - 12:00 -> 12:30 ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌────
-    MON - 12:30 -> 13:00 ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌────
-    ...
-
-    We cannot place any lesson in the timetable because the lessons have different sizes.
-    That's because the lessons have different number of hours per week.
-    So, the solution is to divide the lessons into units of 0.5 hours, and place them.
-    Also, the lessons can be divided in a different number of blocks.
-    This means that the lesson units can be distributed in sequence forming blocks.
-
-    E.g.: A lesson with 5 hours per week will have 10 units of 0.5 hours each.
-    Assuming that this lesson has 2 blocks, those units will form two lesson blocks of 2.5 hour each.
-    So the units could be placed on the timetable like this:
-
-    timeslots            c1    c2    c3    c4    c5    c6    c7    c8    c9    c10   ...
-    MON - 08:00 -> 08:30 ▒▒▒▒▒ ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌────
-    MON - 08:30 -> 09:00 ▒▒▒▒▒ ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌────
-    MON - 09:00 -> 09:30 ▒▒▒▒▒ ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌────
-    MON - 09:30 -> 10:00 ▒▒▒▒▒ ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌────
-    MON - 10:00 -> 10:30 ▒▒▒▒▒ ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌────
-    MON - 10:30 -> 11:00 ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌────
-    MON - 11:00 -> 11:30 ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌────
-    MON - 11:30 -> 12:00 ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌────
-    MON - 12:00 -> 12:30 ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌────
-    MON - 12:30 -> 13:00 ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌────
-    ...
-    TUE - 08:00 -> 08:30 ┌──── ▒▒▒▒▒ ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌────
-    TUE - 08:30 -> 09:00 ┌──── ▒▒▒▒▒ ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌────
-    TUE - 09:00 -> 09:30 ┌──── ▒▒▒▒▒ ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌────
-    TUE - 09:30 -> 10:00 ┌──── ▒▒▒▒▒ ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌────
-    TUE - 10:00 -> 10:30 ┌──── ▒▒▒▒▒ ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌────
-    TUE - 10:30 -> 11:00 ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌────
-    TUE - 11:00 -> 11:30 ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌────
-    TUE - 11:30 -> 12:00 ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌────
-    TUE - 12:00 -> 12:30 ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌────
-    TUE - 12:30 -> 13:00 ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌────
-    ...
-
-    The problem is that the process to create blocks during the optimization is complex and time consuming.
-    So, we could have a way to optimize the blocks instead of optimize separated units.
-
-    One interesting functionality that has drawn attention is the possibility to pin the lesson units.
-    When a lesson unit is pinned, it does't move, and the others will be arranged around it.
-
-    That bring the idea to solve by blocks.
-    In this approach we could place the big blocks first, then we could divide and pin them to place the smaller ones.
-
-    E.g.: We could start with timeslots with the size of 5 hours:
-
-    timeslots            c1    c2    c3    c4    c5    c6    c7    c8    c9    c10   ...
-    MON - 08:00 ┐        ┌────┐┌────┐┌────┐┌────┐┌────┐┌────┐┌────┐┌────┐┌────┐┌────┐
-                │        │    ││    ││    ││    ││    ││    ││    ││    ││    ││    │
-                │        │    ││    ││    ││    ││    ││    ││    ││    ││    ││    │
-                │        │    ││    ││    ││    ││    ││    ││    ││    ││    ││    │
-                │        │    ││    ││    ││    ││    ││    ││    ││    ││    ││    │
-                │        │    ││    ││    ││    ││    ││    ││    ││    ││    ││    │
-                │        │    ││    ││    ││    ││    ││    ││    ││    ││    ││    │
-                │        │    ││    ││    ││    ││    ││    ││    ││    ││    ││    │
-                │        │    ││    ││    ││    ││    ││    ││    ││    ││    ││    │
-                └> 13:00 └────┘└────┘└────┘└────┘└────┘└────┘└────┘└────┘└────┘└────┘
-    MON - 13:00 ┐        ┌────┐┌────┐┌────┐┌────┐┌────┐┌────┐┌────┐┌────┐┌────┐┌────┐
-                │        │    ││    ││    ││    ││    ││    ││    ││    ││    ││    │
-                │        │    ││    ││    ││    ││    ││    ││    ││    ││    ││    │
-                │        │    ││    ││    ││    ││    ││    ││    ││    ││    ││    │
-                │        │    ││    ││    ││    ││    ││    ││    ││    ││    ││    │
-                │        │    ││    ││    ││    ││    ││    ││    ││    ││    ││    │
-                │        │    ││    ││    ││    ││    ││    ││    ││    ││    ││    │
-                │        │    ││    ││    ││    ││    ││    ││    ││    ││    ││    │
-                │        │    ││    ││    ││    ││    ││    ││    ││    ││    ││    │
-                └> 18:00 └────┘└────┘└────┘└────┘└────┘└────┘└────┘└────┘└────┘└────┘
-    ...
-
-    Then we could place the blocks of 5 hours.
-
-    timeslots            c1    c2    c3    c4    c5    c6    c7    c8    c9    c10   ...
-    MON - 08:00 ┐        ▒▒▒▒▒▒┌────┐┌────┐┌────┐┌────┐┌────┐┌────┐┌────┐┌────┐┌────┐
-                │        ▒▒▒▒▒▒│    ││    ││    ││    ││    ││    ││    ││    ││    │
-                │        ▒▒▒▒▒▒│    ││    ││    ││    ││    ││    ││    ││    ││    │
-                │        ▒▒▒▒▒▒│    ││    ││    ││    ││    ││    ││    ││    ││    │
-                │        ▒▒▒▒▒▒│    ││    ││    ││    ││    ││    ││    ││    ││    │
-                │        ▒▒▒▒▒▒│    ││    ││    ││    ││    ││    ││    ││    ││    │
-                │        ▒▒▒▒▒▒│    ││    ││    ││    ││    ││    ││    ││    ││    │
-                │        ▒▒▒▒▒▒│    ││    ││    ││    ││    ││    ││    ││    ││    │
-                │        ▒▒▒▒▒▒│    ││    ││    ││    ││    ││    ││    ││    ││    │
-                └> 13:00 ▒▒▒▒▒▒└────┘└────┘└────┘└────┘└────┘└────┘└────┘└────┘└────┘
-    MON - 13:00 ┐        ┌────┐┌────┐┌────┐┌────┐▒▒▒▒▒▒┌────┐┌────┐┌────┐┌────┐┌────┐
-                │        │    ││    ││    ││    │▒▒▒▒▒▒│    ││    ││    ││    ││    │
-                │        │    ││    ││    ││    │▒▒▒▒▒▒│    ││    ││    ││    ││    │
-                │        │    ││    ││    ││    │▒▒▒▒▒▒│    ││    ││    ││    ││    │
-                │        │    ││    ││    ││    │▒▒▒▒▒▒│    ││    ││    ││    ││    │
-                │        │    ││    ││    ││    │▒▒▒▒▒▒│    ││    ││    ││    ││    │
-                │        │    ││    ││    ││    │▒▒▒▒▒▒│    ││    ││    ││    ││    │
-                │        │    ││    ││    ││    │▒▒▒▒▒▒│    ││    ││    ││    ││    │
-                │        │    ││    ││    ││    │▒▒▒▒▒▒│    ││    ││    ││    ││    │
-                └> 18:00 └────┘└────┘└────┘└────┘▒▒▒▒▒▒└────┘└────┘└────┘└────┘└────┘
-    ...
-
-    After that, we could divide the big block into two blocks of 2.5 and pin them.
-
-    timeslots            c1    c2    c3    c4    c5    c6    c7    c8    c9    c10
-    MON - 08:00 ┐        ██████┌────┐┌────┐┌────┐┌────┐┌────┐┌────┐┌────┐┌────┐┌────┐
-                │        ██████│    ││    ││    ││    ││    ││    ││    ││    ││    │
-                │        ██████│    ││    ││    ││    ││    ││    ││    ││    ││    │
-                │        ██████│    ││    ││    ││    ││    ││    ││    ││    ││    │
-                └> 10:30 ██████└────┘└────┘└────┘└────┘└────┘└────┘└────┘└────┘└────┘
-    MON - 10:30 ┐        ██████┌────┐┌────┐┌────┐┌────┐┌────┐┌────┐┌────┐┌────┐┌────┐
-                │        ██████│    ││    ││    ││    ││    ││    ││    ││    ││    │
-                │        ██████│    ││    ││    ││    ││    ││    ││    ││    ││    │
-                │        ██████│    ││    ││    ││    ││    ││    ││    ││    ││    │
-                └> 13:00 ██████└────┘└────┘└────┘└────┘└────┘└────┘└────┘└────┘└────┘
-    MON - 08:00 ┐        ┌────┐┌────┐┌────┐┌────┐██████┌────┐┌────┐┌────┐┌────┐┌────┐
-                │        │    ││    ││    ││    │██████│    ││    ││    ││    ││    │
-                │        │    ││    ││    ││    │██████│    ││    ││    ││    ││    │
-                │        │    ││    ││    ││    │██████│    ││    ││    ││    ││    │
-                └> 10:30 │    ││    ││    ││    │██████└────┘└────┘└────┘└────┘└────┘
-    MON - 10:30 ┐        │    ││    ││    ││    │██████┌────┐┌────┐┌────┐┌────┐┌────┐
-                │        │    ││    ││    ││    │██████│    ││    ││    ││    ││    │
-                │        │    ││    ││    ││    │██████│    ││    ││    ││    ││    │
-                │        │    ││    ││    ││    │██████│    ││    ││    ││    ││    │
-                └> 13:00 └────┘└────┘└────┘└────┘██████└────┘└────┘└────┘└────┘└────┘
-
-    and pin the lesson units.
-
-    , after that it can be divided and pinned.
-
-
-    This possibility  allows us to solve the problem in parts.
-    So, could start by optimizing only the big blocks in a different timeslot dimension.
-
-
-    This possibility allows us to solve the problem by optimizing the blocks.
-
-    Once the timeslots unequal timeslots and pinning the lesson units, the idea of solving the problem in steps has emerged.
-
-
-
-    The solution for that is to change the scale of the timeslot and solve the problem in steps.
-    We could start with timeslots with the size of 5 hours, then we place the lesson blocs of this size.
-    After that,
-
-     */
-    // write a javadoc
-
-
-    // time           | sizes
-    // 08:00 -> 08:30 | ┌─── 5 ───┐┌── 2.5 ──┐┌─── 1 ───┐┌── 0.5 ──┐
-    // 08:30 -> 09:00 | │         ││         │└─────────┘
-    // 09:00 -> 09:30 | │         ││         │
-    // 09:30 -> 10:00 | │         ││         │
-    // 10:00 -> 10:30 | │         │└─────────┘
-    // 10:30 -> 11:00 | │         │
-    // 11:00 -> 11:30 | │         │
-    // 11:30 -> 12:00 | │         │
-    // 12:00 -> 12:30 | │         │
-    // 12:30 -> 13:00 | └─────────┘
-
     @Test
-    public void test_10_Units_To_1_Block_5(){
+    public void test_10_Units_To_1_Block_5() {
+
         // id | time           | input       | output
         // 01 | 08:00 -> 08:30 | ┌── 0.5 ──┐ | ┌─── 5 ───┐
         // 02 | 08:30 -> 09:00 | ┌── 0.5 ──┐ | │         │
@@ -200,8 +32,10 @@ public class MapUnitsToBlocksTest {
         // Act
         // Assert
     }
+
     @Test
-    public void test_9_Units_To_1_Block_4_5(){
+    public void test_9_Units_To_1_Block_4_5() {
+
         // id | time           | input       | output
         // 01 | 08:00 -> 08:30 | ┌── 0.5 ──┐ | ┌── 4.5 ──┐
         // 02 | 08:30 -> 09:00 | ┌── 0.5 ──┐ | │         │
@@ -218,8 +52,10 @@ public class MapUnitsToBlocksTest {
         // Act
         // Assert
     }
+
     @Test
-    public void test_8_Units_To_1_Block_4(){
+    public void test_8_Units_To_1_Block_4() {
+
         // id | time           | input       | output
         // 01 | 08:00 -> 08:30 | ┌── 0.5 ──┐ | ┌─── 4 ───┐
         // 02 | 08:30 -> 09:00 | ┌── 0.5 ──┐ | │         │
@@ -236,8 +72,10 @@ public class MapUnitsToBlocksTest {
         // Act
         // Assert
     }
+
     @Test
-    public void test_7_Units_To_1_Block_3_5(){
+    public void test_7_Units_To_1_Block_3_5() {
+
         // id | time           | input       | output
         // 01 | 08:00 -> 08:30 | ┌── 0.5 ──┐ | ┌── 3.5 ──┐
         // 02 | 08:30 -> 09:00 | ┌── 0.5 ──┐ | │         │
@@ -254,8 +92,30 @@ public class MapUnitsToBlocksTest {
         // Act
         // Assert
     }
+
+    @Test
+    public void test_6_Units_To_1_Block_3() {
+
+        // id | time           | input       | output
+        // 01 | 08:00 -> 08:30 | ┌── 0.5 ──┐ | ┌─── 3 ───┐
+        // 02 | 08:30 -> 09:00 | ┌── 0.5 ──┐ | │         │
+        // 03 | 09:00 -> 09:30 | ┌── 0.5 ──┐ | │         │
+        // 04 | 09:30 -> 10:00 | ┌── 0.5 ──┐ | │         │
+        // 05 | 10:00 -> 10:30 | ┌── 0.5 ──┐ | │         │
+        // 06 | 10:30 -> 11:00 | ┌── 0.5 ──┐ | │         │
+        //    | 11:00 -> 11:30 |             | │         │
+        //    | 11:30 -> 12:00 |             | │         │
+        //    | 12:00 -> 12:30 |             | │         │
+        //    | 12:30 -> 13:00 |             | └─────────┘
+
+        // Arrange
+        // Act
+        // Assert
+    }
+
     @Test
     public void test_5_Units_To_1_Block_2_5() {
+
         // id | time           | input       | output
         // 01 | 08:00 -> 08:30 | ┌── 0.5 ──┐ | ┌── 2.5 ──┐
         // 02 | 08:30 -> 09:00 | ┌── 0.5 ──┐ | │         │
@@ -267,8 +127,10 @@ public class MapUnitsToBlocksTest {
         // Act
         // Assert
     }
+
     @Test
     public void test_4_Units_To_1_Block_2() {
+
         // id | time           | input       | output
         // 01 | 08:00 -> 08:30 | ┌── 0.5 ──┐ | ┌─── 2 ───┐
         // 02 | 08:30 -> 09:00 | ┌── 0.5 ──┐ | │         │
@@ -280,8 +142,10 @@ public class MapUnitsToBlocksTest {
         // Act
         // Assert
     }
+
     @Test
     public void test_3_Units_To_1_Block_1_5() {
+
         // id | time           | input       | output
         // 01 | 08:00 -> 08:30 | ┌── 0.5 ──┐ | ┌── 1.5 ──┐
         // 02 | 08:30 -> 09:00 | ┌── 0.5 ──┐ | │         │
@@ -293,17 +157,25 @@ public class MapUnitsToBlocksTest {
         // Act
         // Assert
     }
+
     @Test
     public void test_2_Units_To_1_Block_1() {
+
         // id | time           | input       | output
         // 01 | 08:00 -> 08:30 | ┌── 0.5 ──┐ | ┌─── 1 ───┐
-        // 02 | 08:30 -> 09:00 | ┌── 0.5 ──┐ | └─────────┘
+        // 02 | 08:30 -> 09:00 | ┌── 0.5 ──┐ | │         │
+        //    | 09:00 -> 09:30 |             | │         │
+        //    | 09:30 -> 10:00 |             | │         │
+        //    | 10:00 -> 10:30 |             | └─────────┘
+
         // Arrange
         // Act
         // Assert
     }
+
     @Test
     public void test_1_Units_To_1_Block_0_5() {
+
         // id | time           | input       | output
         // 01 | 08:00 -> 08:30 | ┌── 0.5 ──┐ | ┌── 0.5 ──┐
 
@@ -311,8 +183,10 @@ public class MapUnitsToBlocksTest {
         // Act
         // Assert
     }
+
     @Test
-    public void test_10_Units_To_2_Blocks_2_5(){
+    public void test_10_Units_To_2_Blocks_2_5() {
+
         // id | time           | input       | output
         // 01 | 08:00 -> 08:30 | ┌── 0.5 ──┐ | ┌── 2.5 ──┐
         // 02 | 08:30 -> 09:00 | ┌── 0.5 ──┐ | │         │
@@ -329,8 +203,10 @@ public class MapUnitsToBlocksTest {
         // Act
         // Assert
     }
+
     @Test
-    public void test_8_Units_To_2_Blocks_2(){
+    public void test_8_Units_To_2_Blocks_2() {
+
         // id | time           | input       | output
         // 01 | 08:00 -> 08:30 | ┌── 0.5 ──┐ | ┌─── 2 ───┐
         // 02 | 08:30 -> 09:00 | ┌── 0.5 ──┐ | │         │
