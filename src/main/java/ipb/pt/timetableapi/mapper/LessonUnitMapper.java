@@ -5,6 +5,7 @@ import ipb.pt.timetableapi.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,8 +30,12 @@ public class LessonUnitMapper {
         List<LessonUnit> lessonUnits = new ArrayList<>();
         int unitsPerBlock = (int) (lessonBlock.getBlockSize() / SizeConstant.SIZE_0_5);
 
+        LocalTime startTime = lessonBlock.getTimeslot().getStartTime();
+        long timeslotId = lessonBlock.getTimeslot().getId();
+
         for (int i = 0; i < unitsPerBlock; i++) {
-            Timeslot timeslot = createTimeslot(lessonBlock, i);
+            LocalTime endTime = startTime.plusMinutes(SizeConstant.UNIT_DURATION);
+            Timeslot timeslot = getTimeslot(timeslotId++, startTime, endTime, lessonBlock.getTimeslot().getDayOfWeek());
 
             LessonUnit lessonUnit = new LessonUnit();
             lessonUnit.setId(lessonBlock.getId() + i);
@@ -39,24 +44,12 @@ public class LessonUnitMapper {
             lessonUnit.setIsPinned(lessonBlock.getIsPinned());
             lessonUnit.setClassroom(lessonBlock.getClassroom());
             lessonUnit.setTimeslot(timeslot);
-
             lessonUnits.add(lessonUnit);
+
+            startTime = endTime;
         }
 
         return lessonUnits;
-    }
-
-    private static Timeslot createTimeslot(LessonUnit lessonBlock, int i) {
-        long additionalStart = i * SizeConstant.UNIT_DURATION;
-        LocalTime startTime = lessonBlock.getTimeslot().getStartTime().plusMinutes(additionalStart);
-        LocalTime endTime = startTime.plusMinutes(SizeConstant.UNIT_DURATION);
-
-        Timeslot timeslot = new Timeslot();
-        timeslot.setId(lessonBlock.getTimeslot().getId() + i);
-        timeslot.setDayOfWeek(lessonBlock.getTimeslot().getDayOfWeek());
-        timeslot.setStartTime(startTime);
-        timeslot.setEndTime(endTime);
-        return timeslot;
     }
 
     public List<LessonUnit> mapUnitsToBlocks(List<LessonUnit> lessonUnits) {
@@ -101,26 +94,23 @@ public class LessonUnitMapper {
         long timeslotId = lessonUnits.get(0).getTimeslot().getId();
 
         for (int i = 0; i < lesson.getBlocks(); i++) {
-            LessonUnit currentLessonUnit = lessonUnits.get(0);
+            LessonUnit lessonUnit = lessonUnits.get(0);
 
             LocalTime endTime = startTime.plusMinutes(timeslotUnitsPerBlock * SizeConstant.UNIT_DURATION);
-
-            Timeslot timeslot = new Timeslot();
-            timeslot.setId(timeslotId);
-            timeslot.setDayOfWeek(currentLessonUnit.getTimeslot().getDayOfWeek());
-            timeslot.setStartTime(startTime);
-            timeslot.setEndTime(endTime);
+            Timeslot timeslot = getTimeslot(timeslotId, startTime, endTime, lessonUnit.getTimeslot().getDayOfWeek());
 
             LessonUnit lessonBlock = new LessonUnit();
             lessonBlock.setLesson(lesson);
             lessonBlock.setBlockSize(blockSize);
-            lessonBlock.setId(currentLessonUnit.getId());
-            lessonBlock.setIsPinned(currentLessonUnit.getIsPinned());
-            lessonBlock.setClassroom(currentLessonUnit.getClassroom());
+            lessonBlock.setId(lessonUnit.getId());
+            lessonBlock.setIsPinned(lessonUnit.getIsPinned());
+            lessonBlock.setClassroom(lessonUnit.getClassroom());
             lessonBlock.setTimeslot(timeslot);
             lessonBlocksForLesson.add(lessonBlock);
 
-            lessonUnits.subList(0, lessonUnitsPerBlock).clear();
+            if (lessonUnitsPerBlock > 0) {
+                lessonUnits.subList(0, lessonUnitsPerBlock).clear();
+            }
 
             timeslotId += timeslotUnitsPerBlock;
             startTime = endTime;
@@ -130,30 +120,66 @@ public class LessonUnitMapper {
     }
 
     public List<LessonUnit> mapBlocksToBlocks(List<LessonUnit> lessonBlocks, double blocksSize) {
-        List<LessonUnit> newLessonBlocks = new ArrayList<>();
+        List<LessonUnit> splitLessonBlocks = new ArrayList<>();
 
-        HashMap<Lesson, List<LessonUnit>> lessonBlocksMap = new HashMap<>();
-        lessonBlocks.forEach(lessonBlock -> groupLessonUnitsByLesson(lessonBlocksMap, lessonBlock));
-
-        for (Lesson lesson : lessonBlocksMap.keySet()) {
-            List<LessonUnit> lessonBlocksForLesson = lessonBlocksMap.get(lesson);
-            List<LessonUnit> lessonBlocksForLessonWithSize = createBlocks(lessonBlocksForLesson, lesson, blocksSize);
-            newLessonBlocks.addAll(lessonBlocksForLessonWithSize);
+        for (LessonUnit lessonBlock : lessonBlocks) {
+            splitLessonBlocks.addAll(splitBlock(lessonBlock, blocksSize));
         }
 
-        return newLessonBlocks;
+        return splitLessonBlocks;
     }
 
-    public List<LessonUnit> getLessonBlocksBySize(List<LessonUnit> lessonUnits, double currentSize, Double nextSize, Double firstSize) {
-        List<LessonUnit> lessonBlocks = mapUnitsToBlocks(lessonUnits);
-        List<LessonUnit> lessonBlocksOfTheCurrentSize = getLessonBlocksBySize(lessonBlocks, currentSize, nextSize);
+    private List<LessonUnit> splitBlock(LessonUnit lessonBlock, double blockSize) {
+        List<LessonUnit> splitLessonBlocks = new ArrayList<>();
 
-        if (firstSize == currentSize) {
+        int timeslotUnitsPerBlock = (int) (timeslotMapper.getTimeslotSize(blockSize) / SizeConstant.SIZE_0_5);
+        int numberOfBlocks = (int) Math.ceil(lessonBlock.getBlockSize() / blockSize);
+        double remainingSize = lessonBlock.getBlockSize();
+
+        LocalTime startTime = lessonBlock.getTimeslot().getStartTime();
+        long timeslotId = lessonBlock.getTimeslot().getId();
+
+        for (int i = 0; i < numberOfBlocks; i++) {
+            LocalTime endTime = startTime.plusMinutes(timeslotUnitsPerBlock * SizeConstant.UNIT_DURATION);
+            Timeslot timeslot = getTimeslot(timeslotId, startTime, endTime, lessonBlock.getTimeslot().getDayOfWeek());
+            long lessonBlockId = (long) (lessonBlock.getId() + (blockSize / SizeConstant.SIZE_0_5) * i);
+
+            LessonUnit newLessonBlock = new LessonUnit();
+            newLessonBlock.setId(lessonBlockId);
+            newLessonBlock.setLesson(lessonBlock.getLesson());
+            newLessonBlock.setBlockSize(Math.min(blockSize, remainingSize));
+            newLessonBlock.setIsPinned(lessonBlock.getIsPinned());
+            newLessonBlock.setClassroom(lessonBlock.getClassroom());
+            newLessonBlock.setTimeslot(timeslot);
+            splitLessonBlocks.add(newLessonBlock);
+
+            remainingSize -= blockSize;
+            timeslotId += timeslotUnitsPerBlock;
+            startTime = endTime;
+        }
+
+        return splitLessonBlocks;
+    }
+
+    private Timeslot getTimeslot(long timeslotId, LocalTime startTime, LocalTime endTime, DayOfWeek dayOfWeek) {
+        Timeslot timeslot = new Timeslot();
+        timeslot.setId(timeslotId);
+        timeslot.setDayOfWeek(dayOfWeek);
+        timeslot.setStartTime(startTime);
+        timeslot.setEndTime(endTime);
+        return timeslot;
+    }
+
+    public List<LessonUnit> getLessonBlocksBySize(List<LessonUnit> lessonUnits, double size, Double nextSize, Double firstSize) {
+        List<LessonUnit> lessonBlocks = mapUnitsToBlocks(lessonUnits);
+        List<LessonUnit> lessonBlocksOfTheCurrentSize = getLessonBlocksBySize(lessonBlocks, size, nextSize);
+
+        if (firstSize == size) {
             return lessonBlocksOfTheCurrentSize;
         }
 
-        List<LessonUnit> lessonBlocksOfThePreviousSize = getLessonBlocksBySize(lessonBlocks, firstSize, currentSize);
-        List<LessonUnit> previousLessonBlocksSplitIntoTheCurrentSize = mapBlocksToBlocks(lessonBlocksOfThePreviousSize, currentSize);
+        List<LessonUnit> lessonBlocksOfThePreviousSize = getLessonBlocksBySize(lessonBlocks, firstSize, size);
+        List<LessonUnit> previousLessonBlocksSplitIntoTheCurrentSize = mapBlocksToBlocks(lessonBlocksOfThePreviousSize, size);
 
         return new ArrayList<>() {{
             addAll(lessonBlocksOfTheCurrentSize);
@@ -161,8 +187,8 @@ public class LessonUnitMapper {
         }};
     }
 
-    private List<LessonUnit> getLessonBlocksBySize(List<LessonUnit> lessonBlocks, double currentSize, Double nextSize) {
-        return lessonBlocks.stream().filter(lessonUnit -> lessonUnit.getBlockSize() <= currentSize
+    private List<LessonUnit> getLessonBlocksBySize(List<LessonUnit> lessonBlocks, double size, Double nextSize) {
+        return lessonBlocks.stream().filter(lessonUnit -> lessonUnit.getBlockSize() <= size
                 && (nextSize == null || lessonUnit.getBlockSize() > nextSize)).toList();
     }
 }

@@ -65,6 +65,8 @@ public class LessonUnitMock {
 
         Lesson lesson = new Lesson();
         lesson.setId(1L);
+        lesson.setHoursPerWeek(blockSizes.stream().mapToDouble(Double::doubleValue).sum());
+        lesson.setBlocks(blockSizes.size());
 
         Classroom classroom = new Classroom();
         classroom.setId(1L);
