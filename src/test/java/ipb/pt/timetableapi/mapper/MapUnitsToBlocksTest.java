@@ -523,7 +523,7 @@ public class MapUnitsToBlocksTest {
 
         List<LessonUnit> lessonUnits = new ArrayList<>();
         for (int i = 0; i < numberOfUnits; i++) {
-            int additionalStart = i * SizeConstant.UNIT_DURATION;
+            long additionalStart = i * SizeConstant.UNIT_DURATION;
             LocalTime startTime = LocalTime.parse("08:00").plusMinutes(additionalStart);
             LocalTime endTime = startTime.plusMinutes(SizeConstant.UNIT_DURATION);
 

@@ -4,6 +4,7 @@ import ipb.pt.timetableapi.solver.SizeConstant;
 import ipb.pt.timetableapi.model.*;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,18 +22,33 @@ public class LessonUnitMapper {
         int unitsPerBlock = (int) (lessonBlock.getBlockSize() / SizeConstant.SIZE_0_5);
 
         for (int i = 0; i < unitsPerBlock; i++) {
+            Timeslot timeslot = createTimeslot(lessonBlock, i);
+
             LessonUnit lessonUnit = new LessonUnit();
             lessonUnit.setId(lessonBlock.getId() + i);
             lessonUnit.setBlockSize(SizeConstant.SIZE_0_5);
             lessonUnit.setLesson(lessonBlock.getLesson());
             lessonUnit.setIsPinned(lessonBlock.getIsPinned());
             lessonUnit.setClassroom(lessonBlock.getClassroom());
-            lessonUnit.setTimeslot(lessonBlock.getTimeslot());
+            lessonUnit.setTimeslot(timeslot);
 
             lessonUnits.add(lessonUnit);
         }
 
         return lessonUnits;
+    }
+
+    private static Timeslot createTimeslot(LessonUnit lessonBlock, int i) {
+        long additionalStart = i * SizeConstant.UNIT_DURATION;
+        LocalTime startTime = lessonBlock.getTimeslot().getStartTime().plusMinutes(additionalStart);
+        LocalTime endTime = startTime.plusMinutes(SizeConstant.UNIT_DURATION);
+
+        Timeslot timeslot = new Timeslot();
+        timeslot.setId(lessonBlock.getTimeslot().getId() + i);
+        timeslot.setDayOfWeek(lessonBlock.getTimeslot().getDayOfWeek());
+        timeslot.setStartTime(startTime);
+        timeslot.setEndTime(endTime);
+        return timeslot;
     }
 
     public List<LessonUnit> mapUnitsToBlocks(List<LessonUnit> lessonUnits) {
