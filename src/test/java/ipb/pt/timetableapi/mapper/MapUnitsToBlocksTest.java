@@ -1,27 +1,24 @@
 package ipb.pt.timetableapi.mapper;
 
-import ipb.pt.timetableapi.model.Classroom;
-import ipb.pt.timetableapi.model.Lesson;
+import ipb.pt.timetableapi.mock.LessonUnitMock;
 import ipb.pt.timetableapi.model.LessonUnit;
-import ipb.pt.timetableapi.model.Timeslot;
-import ipb.pt.timetableapi.solver.SizeConstant;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.util.Assert;
 
-import java.time.DayOfWeek;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootTest
 public class MapUnitsToBlocksTest {
     private final LessonUnitMapper lessonUnitMapper;
+    private final LessonUnitMock lessonUnitMock;
 
     @Autowired
-    public MapUnitsToBlocksTest(LessonUnitMapper lessonUnitMapper) {
+    public MapUnitsToBlocksTest(LessonUnitMapper lessonUnitMapper, LessonUnitMock lessonUnitMock) {
         this.lessonUnitMapper = lessonUnitMapper;
+        this.lessonUnitMock = lessonUnitMock;
     }
 
     @Test
@@ -39,7 +36,7 @@ public class MapUnitsToBlocksTest {
         // 09 | 12:00 -> 12:30 | ┌── 0.5 ──┐ | │         │
         // 10 | 12:30 -> 13:00 | ┌── 0.5 ──┐ | └─────────┘
 
-        List<LessonUnit> lessonUnits = getLessonUnitsOfALesson(5, 1);
+        List<LessonUnit> lessonUnits = lessonUnitMock.getLessonUnits(5, 1);
         List<LessonUnit> lessonBlocks = lessonUnitMapper.mapUnitsToBlocks(lessonUnits);
 
         Assert.isTrue(lessonBlocks.size() == 1,
@@ -76,7 +73,7 @@ public class MapUnitsToBlocksTest {
         // 09 | 12:00 -> 12:30 | ┌── 0.5 ──┐ | │         │
         //    | 12:30 -> 13:00 |             | └─────────┘
 
-        List<LessonUnit> lessonUnits = getLessonUnitsOfALesson(4.5, 1);
+        List<LessonUnit> lessonUnits = lessonUnitMock.getLessonUnits(4.5, 1);
         List<LessonUnit> lessonBlocks = lessonUnitMapper.mapUnitsToBlocks(lessonUnits);
 
         Assert.isTrue(lessonBlocks.size() == 1,
@@ -113,7 +110,7 @@ public class MapUnitsToBlocksTest {
         //    | 12:00 -> 12:30 |             | │         │
         //    | 12:30 -> 13:00 |             | └─────────┘
 
-        List<LessonUnit> lessonUnits = getLessonUnitsOfALesson(4, 1);
+        List<LessonUnit> lessonUnits = lessonUnitMock.getLessonUnits(4, 1);
         List<LessonUnit> lessonBlocks = lessonUnitMapper.mapUnitsToBlocks(lessonUnits);
 
         Assert.isTrue(lessonBlocks.size() == 1,
@@ -150,7 +147,7 @@ public class MapUnitsToBlocksTest {
         //    | 12:00 -> 12:30 |             | │         │
         //    | 12:30 -> 13:00 |             | └─────────┘
 
-        List<LessonUnit> lessonUnits = getLessonUnitsOfALesson(3.5, 1);
+        List<LessonUnit> lessonUnits = lessonUnitMock.getLessonUnits(3.5, 1);
         List<LessonUnit> lessonBlocks = lessonUnitMapper.mapUnitsToBlocks(lessonUnits);
 
         Assert.isTrue(lessonBlocks.size() == 1,
@@ -187,7 +184,7 @@ public class MapUnitsToBlocksTest {
         //    | 12:00 -> 12:30 |             | │         │
         //    | 12:30 -> 13:00 |             | └─────────┘
 
-        List<LessonUnit> lessonUnits = getLessonUnitsOfALesson(3, 1);
+        List<LessonUnit> lessonUnits = lessonUnitMock.getLessonUnits(3, 1);
         List<LessonUnit> lessonBlocks = lessonUnitMapper.mapUnitsToBlocks(lessonUnits);
 
         Assert.isTrue(lessonBlocks.size() == 1,
@@ -219,7 +216,7 @@ public class MapUnitsToBlocksTest {
         // 04 | 09:30 -> 10:00 | ┌── 0.5 ──┐ | │         │
         // 05 | 10:00 -> 10:30 | ┌── 0.5 ──┐ | └─────────┘
 
-        List<LessonUnit> lessonUnits = getLessonUnitsOfALesson(2.5, 1);
+        List<LessonUnit> lessonUnits = lessonUnitMock.getLessonUnits(2.5, 1);
         List<LessonUnit> lessonBlocks = lessonUnitMapper.mapUnitsToBlocks(lessonUnits);
 
         Assert.isTrue(lessonBlocks.size() == 1,
@@ -251,7 +248,7 @@ public class MapUnitsToBlocksTest {
         // 04 | 09:30 -> 10:00 | ┌── 0.5 ──┐ | │         │
         //    | 10:00 -> 10:30 |             | └─────────┘
 
-        List<LessonUnit> lessonUnits = getLessonUnitsOfALesson(2, 1);
+        List<LessonUnit> lessonUnits = lessonUnitMock.getLessonUnits(2, 1);
         List<LessonUnit> lessonBlocks = lessonUnitMapper.mapUnitsToBlocks(lessonUnits);
 
         Assert.isTrue(lessonBlocks.size() == 1,
@@ -283,7 +280,7 @@ public class MapUnitsToBlocksTest {
         //    | 09:30 -> 10:00 |             | │         │
         //    | 10:00 -> 10:30 |             | └─────────┘
 
-        List<LessonUnit> lessonUnits = getLessonUnitsOfALesson(1.5, 1);
+        List<LessonUnit> lessonUnits = lessonUnitMock.getLessonUnits(1.5, 1);
         List<LessonUnit> lessonBlocks = lessonUnitMapper.mapUnitsToBlocks(lessonUnits);
 
         Assert.isTrue(lessonBlocks.size() == 1,
@@ -315,7 +312,7 @@ public class MapUnitsToBlocksTest {
         //    | 09:30 -> 10:00 |             | │         │
         //    | 10:00 -> 10:30 |             | └─────────┘
 
-        List<LessonUnit> lessonUnits = getLessonUnitsOfALesson(1, 1);
+        List<LessonUnit> lessonUnits = lessonUnitMock.getLessonUnits(1, 1);
         List<LessonUnit> lessonBlocks = lessonUnitMapper.mapUnitsToBlocks(lessonUnits);
 
         Assert.isTrue(lessonBlocks.size() == 1,
@@ -343,7 +340,7 @@ public class MapUnitsToBlocksTest {
         // id | time           | input       | output
         // 01 | 08:00 -> 08:30 | ┌── 0.5 ──┐ | ┌── 0.5 ──┐
 
-        List<LessonUnit> lessonUnits = getLessonUnitsOfALesson(0.5, 1);
+        List<LessonUnit> lessonUnits = lessonUnitMock.getLessonUnits(0.5, 1);
         List<LessonUnit> lessonBlocks = lessonUnitMapper.mapUnitsToBlocks(lessonUnits);
 
         Assert.isTrue(lessonBlocks.size() == 1,
@@ -380,7 +377,7 @@ public class MapUnitsToBlocksTest {
         // 09 | 12:00 -> 12:30 | ┌── 0.5 ──┐ | │         │
         // 10 | 12:30 -> 13:00 | ┌── 0.5 ──┐ | └─────────┘
 
-        List<LessonUnit> lessonUnits = getLessonUnitsOfALesson(5, 2);
+        List<LessonUnit> lessonUnits = lessonUnitMock.getLessonUnits(5, 2);
         List<LessonUnit> lessonBlocks = lessonUnitMapper.mapUnitsToBlocks(lessonUnits);
 
         Assert.isTrue(lessonBlocks.size() == 2,
@@ -432,7 +429,7 @@ public class MapUnitsToBlocksTest {
         // 08 | 12:00 -> 12:30 | ┌── 0.5 ──┐ | │         │
         //    | 12:30 -> 13:00 |             | └─────────┘
 
-        List<LessonUnit> lessonUnits = getLessonUnitsOfALesson(4, 2);
+        List<LessonUnit> lessonUnits = lessonUnitMock.getLessonUnits(4, 2);
         List<LessonUnit> lessonBlocks = lessonUnitMapper.mapUnitsToBlocks(lessonUnits);
 
         Assert.isTrue(lessonBlocks.size() == 2,
@@ -472,7 +469,7 @@ public class MapUnitsToBlocksTest {
     @Test
     public void testIfAllThePropertiesArBeingAssigned() {
 
-        List<LessonUnit> lessonUnits = getLessonUnitsOfALesson(1, 1);
+        List<LessonUnit> lessonUnits = lessonUnitMock.getLessonUnits(1, 1);
         List<LessonUnit> lessonBlocks = lessonUnitMapper.mapUnitsToBlocks(lessonUnits);
 
         Assert.isTrue(lessonBlocks.size() == 1,
@@ -492,42 +489,5 @@ public class MapUnitsToBlocksTest {
 
         Assert.isTrue(!lessonBlocks.get(0).getIsPinned(),
                 "The isPinned of the lessonBlock 0 is not false");
-    }
-
-    private List<LessonUnit> getLessonUnitsOfALesson(double hoursPerWeek, int blocks) {
-        Lesson lesson = new Lesson();
-        lesson.setId(1L);
-        lesson.setHoursPerWeek(hoursPerWeek);
-        lesson.setBlocks(blocks);
-
-        Classroom classroom = new Classroom();
-        classroom.setId(1L);
-
-        int numberOfUnits = (int) (hoursPerWeek / SizeConstant.SIZE_0_5);
-
-        List<LessonUnit> lessonUnits = new ArrayList<>();
-        for (int i = 0; i < numberOfUnits; i++) {
-            long additionalStart = i * SizeConstant.UNIT_DURATION;
-            LocalTime startTime = LocalTime.parse("08:00").plusMinutes(additionalStart);
-            LocalTime endTime = startTime.plusMinutes(SizeConstant.UNIT_DURATION);
-
-            Timeslot timeslot = new Timeslot();
-            timeslot.setId((long) i + 1);
-            timeslot.setDayOfWeek(DayOfWeek.MONDAY);
-            timeslot.setStartTime(startTime);
-            timeslot.setEndTime(endTime);
-
-            LessonUnit lessonUnit = new LessonUnit();
-            lessonUnit.setId((long) i + 1);
-            lessonUnit.setLesson(lesson);
-            lessonUnit.setTimeslot(timeslot);
-            lessonUnit.setClassroom(classroom);
-            lessonUnit.setBlockSize(SizeConstant.SIZE_0_5);
-            lessonUnit.setIsPinned(false);
-
-            lessonUnits.add(lessonUnit);
-        }
-
-        return lessonUnits;
     }
 }
