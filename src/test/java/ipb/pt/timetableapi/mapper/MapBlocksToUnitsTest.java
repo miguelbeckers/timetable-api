@@ -18,10 +18,12 @@ import java.util.List;
 @SpringBootTest
 public class MapBlocksToUnitsTest {
     private final LessonUnitMapper lessonUnitMapper;
+    private final TimeslotMapper timeslotMapper;
 
     @Autowired
-    public MapBlocksToUnitsTest(LessonUnitMapper lessonUnitMapper) {
+    public MapBlocksToUnitsTest(LessonUnitMapper lessonUnitMapper, TimeslotMapper timeslotMapper) {
         this.lessonUnitMapper = lessonUnitMapper;
+        this.timeslotMapper = timeslotMapper;
     }
 
     @Test
@@ -1040,7 +1042,7 @@ public class MapBlocksToUnitsTest {
     }
 
     @Test
-    public void testIfAllThePropertiesArBeingAssigned(){
+    public void testIfAllThePropertiesArBeingAssigned() {
         List<LessonUnit> lessonBlocks = getBlocks(List.of(2.5));
         List<LessonUnit> lessonUnits = lessonUnitMapper.mapBlocksToUnits(lessonBlocks);
 
@@ -1072,7 +1074,7 @@ public class MapBlocksToUnitsTest {
         long timeslotId = 1L;
 
         for (Double blockSize : blockSizes) {
-            int timeslotUnitsPerBlock = (int) (getTimeslotSize(blockSize) / SizeConstant.SIZE_0_5);
+            int timeslotUnitsPerBlock = (int) (timeslotMapper.getTimeslotSize(blockSize) / SizeConstant.SIZE_0_5);
             int lessonUnitsPerBlock = (int) (blockSize / SizeConstant.SIZE_0_5);
 
             LocalTime endTime = startTime.plusMinutes(timeslotUnitsPerBlock * SizeConstant.UNIT_DURATION);
@@ -1098,11 +1100,5 @@ public class MapBlocksToUnitsTest {
         }
 
         return lessonBlocks;
-    }
-
-    private double getTimeslotSize(double blockSize) {
-        return blockSize <= SizeConstant.SIZE_0_5 ? SizeConstant.SIZE_0_5
-                : blockSize <= SizeConstant.SIZE_2_5 ? SizeConstant.SIZE_2_5
-                : SizeConstant.SIZE_5;
     }
 }

@@ -2,6 +2,7 @@ package ipb.pt.timetableapi.mapper;
 
 import ipb.pt.timetableapi.solver.SizeConstant;
 import ipb.pt.timetableapi.model.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalTime;
@@ -11,6 +12,13 @@ import java.util.List;
 
 @Component
 public class LessonUnitMapper {
+    private final TimeslotMapper timeslotMapper;
+
+    @Autowired
+    public LessonUnitMapper(TimeslotMapper timeslotMapper) {
+        this.timeslotMapper = timeslotMapper;
+    }
+
     public List<LessonUnit> mapBlocksToUnits(List<LessonUnit> lessonBlocks) {
         List<LessonUnit> lessonUnits = new ArrayList<>();
         lessonBlocks.forEach(lessonBlock -> lessonUnits.addAll(splitABlockIntoUnits(lessonBlock)));
@@ -85,21 +93,39 @@ public class LessonUnitMapper {
 
     private List<LessonUnit> createBlocks(List<LessonUnit> lessonUnits, Lesson lesson, double blockSize) {
         List<LessonUnit> lessonBlocksForLesson = new ArrayList<>();
-        int unitsPerBlock = (int) (blockSize / SizeConstant.SIZE_0_5);
+
+        int timeslotUnitsPerBlock = (int) (timeslotMapper.getTimeslotSize(blockSize) / SizeConstant.SIZE_0_5);
+        int lessonUnitsPerBlock = (int) (blockSize / SizeConstant.SIZE_0_5);
+
+        LocalTime startTime = lessonUnits.get(0).getTimeslot().getStartTime();
+        long timeslotId = lessonUnits.get(0).getTimeslot().getId();
 
         for (int i = 0; i < lesson.getBlocks(); i++) {
-            LessonUnit currentLessonBlock = lessonUnits.get(0);
+            LessonUnit currentLessonUnit = lessonUnits.get(0);
+
+            LocalTime endTime = startTime.plusMinutes(timeslotUnitsPerBlock * SizeConstant.UNIT_DURATION);
+
+            Timeslot timeslot = new Timeslot();
+            timeslot.setId(timeslotId);
+            timeslot.setDayOfWeek(currentLessonUnit.getTimeslot().getDayOfWeek());
+            timeslot.setStartTime(startTime);
+            timeslot.setEndTime(endTime);
+
             LessonUnit lessonBlock = new LessonUnit();
             lessonBlock.setLesson(lesson);
             lessonBlock.setBlockSize(blockSize);
-            lessonBlock.setId(currentLessonBlock.getId());
-            lessonBlock.setIsPinned(currentLessonBlock.getIsPinned());
-            lessonBlock.setClassroom(currentLessonBlock.getClassroom());
-            lessonBlock.setTimeslot(currentLessonBlock.getTimeslot());
-
+            lessonBlock.setId(currentLessonUnit.getId());
+            lessonBlock.setIsPinned(currentLessonUnit.getIsPinned());
+            lessonBlock.setClassroom(currentLessonUnit.getClassroom());
+            lessonBlock.setTimeslot(timeslot);
             lessonBlocksForLesson.add(lessonBlock);
-            lessonUnits.subList(0, unitsPerBlock).clear();
+
+            lessonUnits.subList(0, lessonUnitsPerBlock).clear();
+
+            timeslotId += timeslotUnitsPerBlock;
+            startTime = endTime;
         }
+
         return lessonBlocksForLesson;
     }
 

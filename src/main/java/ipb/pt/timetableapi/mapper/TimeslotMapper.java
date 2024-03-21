@@ -39,4 +39,10 @@ public class TimeslotMapper {
 
         return newTimeslots;
     }
+
+    public double getTimeslotSize(double blockSize) {
+        return blockSize <= SizeConstant.SIZE_0_5 ? SizeConstant.SIZE_0_5
+                : blockSize <= SizeConstant.SIZE_2_5 ? SizeConstant.SIZE_2_5
+                : SizeConstant.SIZE_5;
+    }
 }

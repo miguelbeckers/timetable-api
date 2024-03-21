@@ -54,9 +54,8 @@ public class MapUnitsToBlocksTest {
         Assert.isTrue(lessonBlocks.get(0).getTimeslot().getStartTime().equals(LocalTime.parse("08:00")),
                 "The startTime of the lessonBlock 0 is not 08:00");
 
-        // FIXME: assert that the timeslot end time is being set correctly
-//        Assert.isTrue(lessonBlocks.get(0).getTimeslot().getEndTime().equals(LocalTime.parse("13:00")),
-//                "The endTime of the lessonBlock is not 13:00");
+        Assert.isTrue(lessonBlocks.get(0).getTimeslot().getEndTime().equals(LocalTime.parse("13:00")),
+                "The endTime of the lessonBlock 0 is not 13:00");
 
         Assert.isTrue(lessonBlocks.get(0).getBlockSize() == 5,
                 "The blockSize of the lessonBlock 0 is not 5");
@@ -92,9 +91,8 @@ public class MapUnitsToBlocksTest {
         Assert.isTrue(lessonBlocks.get(0).getTimeslot().getStartTime().equals(LocalTime.parse("08:00")),
                 "The startTime of the lessonBlock 0 is not 08:00");
 
-        // FIXME: assert that the timeslot end time is being set correctly
-//        Assert.isTrue(lessonBlocks.get(0).getTimeslot().getEndTime().equals(LocalTime.parse("13:00")),
-//                "The endTime of the lessonBlock is not 13:00");
+        Assert.isTrue(lessonBlocks.get(0).getTimeslot().getEndTime().equals(LocalTime.parse("13:00")),
+                "The endTime of the lessonBlock 0 is not 13:00");
 
         Assert.isTrue(lessonBlocks.get(0).getBlockSize() == 4.5,
                 "The blockSize of the lessonBlock 0 is not 4.5");
@@ -130,9 +128,8 @@ public class MapUnitsToBlocksTest {
         Assert.isTrue(lessonBlocks.get(0).getTimeslot().getStartTime().equals(LocalTime.parse("08:00")),
                 "The startTime of the lessonBlock 0 is not 08:00");
 
-        // FIXME: assert that the timeslot end time is being set correctly
-//        Assert.isTrue(lessonBlocks.get(0).getTimeslot().getEndTime().equals(LocalTime.parse("13:00")),
-//                "The endTime of the lessonBlock is not 13:00");
+        Assert.isTrue(lessonBlocks.get(0).getTimeslot().getEndTime().equals(LocalTime.parse("13:00")),
+                "The endTime of the lessonBlock 0 is not 13:00");
 
         Assert.isTrue(lessonBlocks.get(0).getBlockSize() == 4,
                 "The blockSize of the lessonBlock 0 is not 4");
@@ -168,9 +165,8 @@ public class MapUnitsToBlocksTest {
         Assert.isTrue(lessonBlocks.get(0).getTimeslot().getStartTime().equals(LocalTime.parse("08:00")),
                 "The startTime of the lessonBlock 0 is not 08:00");
 
-        // FIXME: assert that the timeslot end time is being set correctly
-//        Assert.isTrue(lessonBlocks.get(0).getTimeslot().getEndTime().equals(LocalTime.parse("13:00")),
-//                "The endTime of the lessonBlock is not 13:00");
+        Assert.isTrue(lessonBlocks.get(0).getTimeslot().getEndTime().equals(LocalTime.parse("13:00")),
+                "The endTime of the lessonBlock 0 is not 13:00");
 
         Assert.isTrue(lessonBlocks.get(0).getBlockSize() == 3.5,
                 "The blockSize of the lessonBlock 0 is not 3.5");
@@ -206,9 +202,8 @@ public class MapUnitsToBlocksTest {
         Assert.isTrue(lessonBlocks.get(0).getTimeslot().getStartTime().equals(LocalTime.parse("08:00")),
                 "The startTime of the lessonBlock 0 is not 08:00");
 
-        // FIXME: assert that the timeslot end time is being set correctly
-//        Assert.isTrue(lessonBlocks.get(0).getTimeslot().getEndTime().equals(LocalTime.parse("13:00")),
-//                "The endTime of the lessonBlock is not 13:00");
+        Assert.isTrue(lessonBlocks.get(0).getTimeslot().getEndTime().equals(LocalTime.parse("13:00")),
+                "The endTime of the lessonBlock 0 is not 13:00");
 
         Assert.isTrue(lessonBlocks.get(0).getBlockSize() == 3,
                 "The blockSize of the lessonBlock 0 is not 3");
@@ -239,9 +234,8 @@ public class MapUnitsToBlocksTest {
         Assert.isTrue(lessonBlocks.get(0).getTimeslot().getStartTime().equals(LocalTime.parse("08:00")),
                 "The startTime of the lessonBlock 0 is not 08:00");
 
-        // FIXME: assert that the timeslot end time is being set correctly
-//        Assert.isTrue(lessonBlocks.get(0).getTimeslot().getEndTime().equals(LocalTime.parse("13:00")),
-//                "The endTime of the lessonBlock is not 13:00");
+        Assert.isTrue(lessonBlocks.get(0).getTimeslot().getEndTime().equals(LocalTime.parse("10:30")),
+                "The endTime of the lessonBlock 0 is not 10:30");
 
         Assert.isTrue(lessonBlocks.get(0).getBlockSize() == 2.5,
                 "The blockSize of the lessonBlock 0 is not 2.5");
@@ -272,9 +266,8 @@ public class MapUnitsToBlocksTest {
         Assert.isTrue(lessonBlocks.get(0).getTimeslot().getStartTime().equals(LocalTime.parse("08:00")),
                 "The startTime of the lessonBlock 0 is not 08:00");
 
-        // FIXME: assert that the timeslot end time is being set correctly
-//        Assert.isTrue(lessonBlocks.get(0).getTimeslot().getEndTime().equals(LocalTime.parse("13:00")),
-//                "The endTime of the lessonBlock is not 13:00");
+        Assert.isTrue(lessonBlocks.get(0).getTimeslot().getEndTime().equals(LocalTime.parse("10:30")),
+                "The endTime of the lessonBlock 0 is not 10:30");
 
         Assert.isTrue(lessonBlocks.get(0).getBlockSize() == 2,
                 "The blockSize of the lessonBlock 0 is not 2");
@@ -305,9 +298,8 @@ public class MapUnitsToBlocksTest {
         Assert.isTrue(lessonBlocks.get(0).getTimeslot().getStartTime().equals(LocalTime.parse("08:00")),
                 "The startTime of the lessonBlock 0 is not 08:00");
 
-        // FIXME: assert that the timeslot end time is being set correctly
-//        Assert.isTrue(lessonBlocks.get(0).getTimeslot().getEndTime().equals(LocalTime.parse("13:00")),
-//                "The endTime of the lessonBlock is not 13:00");
+        Assert.isTrue(lessonBlocks.get(0).getTimeslot().getEndTime().equals(LocalTime.parse("10:30")),
+                "The endTime of the lessonBlock 0 is not 10:30");
 
         Assert.isTrue(lessonBlocks.get(0).getBlockSize() == 1.5,
                 "The blockSize of the lessonBlock 0 is not 1.5");
@@ -338,9 +330,8 @@ public class MapUnitsToBlocksTest {
         Assert.isTrue(lessonBlocks.get(0).getTimeslot().getStartTime().equals(LocalTime.parse("08:00")),
                 "The startTime of the lessonBlock 0 is not 08:00");
 
-        // FIXME: assert that the timeslot end time is being set correctly
-//        Assert.isTrue(lessonBlocks.get(0).getTimeslot().getEndTime().equals(LocalTime.parse("13:00")),
-//                "The endTime of the lessonBlock is not 13:00");
+        Assert.isTrue(lessonBlocks.get(0).getTimeslot().getEndTime().equals(LocalTime.parse("10:30")),
+                "The endTime of the lessonBlock 0 is not 10:30");
 
         Assert.isTrue(lessonBlocks.get(0).getBlockSize() == 1,
                 "The blockSize of the lessonBlock 0 is not 1");
@@ -367,9 +358,8 @@ public class MapUnitsToBlocksTest {
         Assert.isTrue(lessonBlocks.get(0).getTimeslot().getStartTime().equals(LocalTime.parse("08:00")),
                 "The startTime of the lessonBlock 0 is not 08:00");
 
-        // FIXME: assert that the timeslot end time is being set correctly
-//        Assert.isTrue(lessonBlocks.get(0).getTimeslot().getEndTime().equals(LocalTime.parse("13:00")),
-//                "The endTime of the lessonBlock is not 13:00");
+        Assert.isTrue(lessonBlocks.get(0).getTimeslot().getEndTime().equals(LocalTime.parse("08:30")),
+                "The endTime of the lessonBlock 0 is not 08:30");
 
         Assert.isTrue(lessonBlocks.get(0).getBlockSize() == 0.5,
                 "The blockSize of the lessonBlock 0 is not 0.5");
@@ -405,9 +395,8 @@ public class MapUnitsToBlocksTest {
         Assert.isTrue(lessonBlocks.get(0).getTimeslot().getStartTime().equals(LocalTime.parse("08:00")),
                 "The startTime of the lessonBlock 0 is not 08:00");
 
-        // FIXME: assert that the timeslot end time is being set correctly
-//        Assert.isTrue(lessonBlocks.get(0).getTimeslot().getEndTime().equals(LocalTime.parse("10:30")),
-//                "The endTime of the lessonBlock is not 10:30");
+        Assert.isTrue(lessonBlocks.get(0).getTimeslot().getEndTime().equals(LocalTime.parse("10:30")),
+                "The endTime of the lessonBlock 0 is not 10:30");
 
         Assert.isTrue(lessonBlocks.get(0).getBlockSize() == 2.5,
                 "The blockSize of the lessonBlock 0 is not 2.5");
@@ -421,11 +410,10 @@ public class MapUnitsToBlocksTest {
         Assert.isTrue(lessonBlocks.get(1).getTimeslot().getStartTime().equals(LocalTime.parse("10:30")),
                 "The startTime of the lessonBlock 1 is not 10:30");
 
-        // FIXME: assert that the timeslot end time is being set correctly
-//        Assert.isTrue(lessonBlocks.get(0).getTimeslot().getEndTime().equals(LocalTime.parse("13:00")),
-//                "The endTime of the lessonBlock is not 13:00");
+        Assert.isTrue(lessonBlocks.get(1).getTimeslot().getEndTime().equals(LocalTime.parse("13:00")),
+                "The endTime of the lessonBlock 1 is not 13:00");
 
-        Assert.isTrue(lessonBlocks.get(0).getBlockSize() == 2.5,
+        Assert.isTrue(lessonBlocks.get(1).getBlockSize() == 2.5,
                 "The blockSize of the lessonBlock 1 is not 2.5");
     }
 
@@ -459,9 +447,8 @@ public class MapUnitsToBlocksTest {
         Assert.isTrue(lessonBlocks.get(0).getTimeslot().getStartTime().equals(LocalTime.parse("08:00")),
                 "The startTime of the lessonBlock 0 is not 08:00");
 
-        // FIXME: assert that the timeslot end time is being set correctly
-//        Assert.isTrue(lessonBlocks.get(0).getTimeslot().getEndTime().equals(LocalTime.parse("10:30")),
-//                "The endTime of the lessonBlock is not 10:30");
+        Assert.isTrue(lessonBlocks.get(0).getTimeslot().getEndTime().equals(LocalTime.parse("10:30")),
+                "The endTime of the lessonBlock is not 10:30");
 
         Assert.isTrue(lessonBlocks.get(0).getBlockSize() == 2,
                 "The blockSize of the lessonBlock 0 is not 2");
@@ -469,19 +456,16 @@ public class MapUnitsToBlocksTest {
         Assert.isTrue(lessonBlocks.get(1).getId() == 5,
                 "The id of the lessonBlock 1 is not 5");
 
-        // FIXME: assert that the timeslot id of the lessonBlock 1 is being set correctly
-//        Assert.isTrue(lessonBlocks.get(1).getTimeslot().getId() == 6,
-//                "The id of the timeslot of the lessonBlock 1 is not 6");
+        Assert.isTrue(lessonBlocks.get(1).getTimeslot().getId() == 6,
+                "The id of the timeslot of the lessonBlock 1 is not 6");
 
-        // FIXME: assert that the timeslot start time of the lessonBlock 1 is being set correctly
-//        Assert.isTrue(lessonBlocks.get(1).getTimeslot().getStartTime().equals(LocalTime.parse("10:30")),
-//                "The startTime of the lessonBlock 1 is not 10:30");
+        Assert.isTrue(lessonBlocks.get(1).getTimeslot().getStartTime().equals(LocalTime.parse("10:30")),
+                "The startTime of the lessonBlock 1 is not 10:30");
 
-        // FIXME: assert that the timeslot end time of the lessonBlock 1 is being set correctly
-//        Assert.isTrue(lessonBlocks.get(0).getTimeslot().getEndTime().equals(LocalTime.parse("13:00")),
-//                "The endTime of the lessonBlock is not 13:00");
+        Assert.isTrue(lessonBlocks.get(1).getTimeslot().getEndTime().equals(LocalTime.parse("13:00")),
+                "The endTime of the lessonBlock 1 is not 13:00");
 
-        Assert.isTrue(lessonBlocks.get(0).getBlockSize() == 2,
+        Assert.isTrue(lessonBlocks.get(1).getBlockSize() == 2,
                 "The blockSize of the lessonBlock 1 is not 2");
     }
 
