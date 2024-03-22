@@ -12,11 +12,6 @@ import java.util.List;
 @Component
 public class TimeslotMapper {
     public List<Timeslot> mapTimeslotsOfUnitsToTimeslotsOfBlocks(List<Timeslot> timeslots, double blockSize) {
-        if (timeslots.size() % blockSize != 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "The timeslots size is not multiple of " + blockSize);
-        }
-
         List<Timeslot> newTimeslots = new ArrayList<>();
 
         while (!timeslots.isEmpty()) {
@@ -34,6 +29,26 @@ public class TimeslotMapper {
             }
 
             newTimeslot.setEndTime(timeslot.getEndTime());
+            newTimeslots.add(newTimeslot);
+        }
+
+        return newTimeslots;
+    }
+
+    public List<Timeslot> mapTimeslotsOfUnitsToTimeslotsOfBlocks2(List<Timeslot> timeslots, double blockSize) {
+        List<Timeslot> newTimeslots = new ArrayList<>();
+        int timeslotUnits = (int) (blockSize / SizeConstant.SIZE_0_5);
+
+        for (int i = 0; i < timeslots.size(); i += timeslotUnits) {
+            Timeslot startTimeSlot = timeslots.get(i);
+            Timeslot endTimeSlot = timeslots.get(Math.min(i + timeslotUnits - 1, timeslots.size() - 1));
+
+            Timeslot newTimeslot = new Timeslot();
+            newTimeslot.setId(startTimeSlot.getId());
+            newTimeslot.setDayOfWeek(startTimeSlot.getDayOfWeek());
+            newTimeslot.setStartTime(startTimeSlot.getStartTime());
+            newTimeslot.setEndTime(endTimeSlot.getEndTime());
+
             newTimeslots.add(newTimeslot);
         }
 
