@@ -2,9 +2,7 @@ package ipb.pt.timetableapi.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.optaplanner.core.api.domain.lookup.PlanningId;
 
 import java.time.DayOfWeek;
@@ -14,6 +12,8 @@ import java.time.LocalTime;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(of = "id")
 public class Timeslot {
     @Id
     @PlanningId

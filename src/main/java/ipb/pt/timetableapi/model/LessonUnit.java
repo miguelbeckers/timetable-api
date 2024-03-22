@@ -3,19 +3,18 @@ package ipb.pt.timetableapi.model;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.optaplanner.core.api.domain.entity.PlanningEntity;
 import org.optaplanner.core.api.domain.entity.PlanningPin;
 import org.optaplanner.core.api.domain.lookup.PlanningId;
 import org.optaplanner.core.api.domain.variable.PlanningVariable;
 
 @Entity
+@PlanningEntity
 @Getter
 @Setter
 @NoArgsConstructor
-@PlanningEntity
+@EqualsAndHashCode(of = "id")
 public class LessonUnit {
     @Id
     @PlanningId

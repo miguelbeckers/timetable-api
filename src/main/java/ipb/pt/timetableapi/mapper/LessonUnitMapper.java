@@ -10,6 +10,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class LessonUnitMapper {
@@ -22,31 +23,29 @@ public class LessonUnitMapper {
 
     public List<LessonUnit> mapBlocksToUnits(List<LessonUnit> lessonBlocks) {
         List<LessonUnit> lessonUnits = new ArrayList<>();
-        lessonBlocks.forEach(lessonBlock -> lessonUnits.addAll(splitABlockIntoUnits(lessonBlock)));
-        return lessonUnits;
-    }
 
-    private List<LessonUnit> splitABlockIntoUnits(LessonUnit lessonBlock) {
-        List<LessonUnit> lessonUnits = new ArrayList<>();
-        int unitsPerBlock = (int) (lessonBlock.getBlockSize() / SizeConstant.SIZE_0_5);
+        for (LessonUnit lessonBlock : lessonBlocks) {
+            int unitsPerBlock = (int) (lessonBlock.getBlockSize() / SizeConstant.SIZE_0_5);
+            long timeslotId = lessonBlock.getTimeslot().getId();
 
-        LocalTime startTime = lessonBlock.getTimeslot().getStartTime();
-        long timeslotId = lessonBlock.getTimeslot().getId();
+            LocalTime startTime = lessonBlock.getTimeslot().getStartTime();
+            DayOfWeek dayOfWeek = lessonBlock.getTimeslot().getDayOfWeek();
 
-        for (int i = 0; i < unitsPerBlock; i++) {
-            LocalTime endTime = startTime.plusMinutes(SizeConstant.UNIT_DURATION);
-            Timeslot timeslot = getTimeslot(timeslotId++, startTime, endTime, lessonBlock.getTimeslot().getDayOfWeek());
+            for (int i = 0; i < unitsPerBlock; i++) {
+                LocalTime endTime = startTime.plusMinutes(SizeConstant.UNIT_DURATION);
+                Timeslot timeslot = new Timeslot(timeslotId++, dayOfWeek, startTime, endTime);
 
-            LessonUnit lessonUnit = new LessonUnit();
-            lessonUnit.setId(lessonBlock.getId() + i);
-            lessonUnit.setBlockSize(SizeConstant.SIZE_0_5);
-            lessonUnit.setLesson(lessonBlock.getLesson());
-            lessonUnit.setIsPinned(lessonBlock.getIsPinned());
-            lessonUnit.setClassroom(lessonBlock.getClassroom());
-            lessonUnit.setTimeslot(timeslot);
-            lessonUnits.add(lessonUnit);
+                LessonUnit lessonUnit = new LessonUnit();
+                lessonUnit.setId(lessonBlock.getId() + i);
+                lessonUnit.setBlockSize(SizeConstant.SIZE_0_5);
+                lessonUnit.setLesson(lessonBlock.getLesson());
+                lessonUnit.setIsPinned(lessonBlock.getIsPinned());
+                lessonUnit.setClassroom(lessonBlock.getClassroom());
+                lessonUnit.setTimeslot(timeslot);
+                lessonUnits.add(lessonUnit);
 
-            startTime = endTime;
+                startTime = endTime;
+            }
         }
 
         return lessonUnits;
@@ -54,137 +53,98 @@ public class LessonUnitMapper {
 
     public List<LessonUnit> mapUnitsToBlocks(List<LessonUnit> lessonUnits) {
         List<LessonUnit> lessonBlocks = new ArrayList<>();
+        HashMap<Lesson, List<LessonUnit>> lessonBlocksMap = new HashMap<>();
 
-        HashMap<Lesson, List<LessonUnit>> lessonUnitsMap = new HashMap<>();
-        lessonUnits.forEach(lessonUnit -> groupLessonUnitsByLesson(lessonUnitsMap, lessonUnit));
+        for (LessonUnit lessonUnit : lessonUnits) {
+            Lesson lesson = lessonUnit.getLesson();
+            lessonBlocksMap.computeIfAbsent(lesson, k -> new ArrayList<>()).add(lessonUnit);
+        }
 
-        for (Lesson lesson : lessonUnitsMap.keySet()) {
-            List<LessonUnit> lessonUnitsWithSameLesson = lessonUnitsMap.get(lesson);
-            List<LessonUnit> lessonBlocksForLesson = mergeUnitsIntoBlocks(lessonUnitsWithSameLesson, lesson);
-            lessonBlocks.addAll(lessonBlocksForLesson);
+        for (Map.Entry<Lesson, List<LessonUnit>> entry : lessonBlocksMap.entrySet()) {
+            List<LessonUnit> lessonUnitsWithSameLesson = entry.getValue();
+            Lesson lesson = entry.getKey();
+
+            double blockSize = (double) lesson.getHoursPerWeek() / lesson.getBlocks();
+            int timeslotUnitsPerBlock = (int) (timeslotMapper.getTimeslotSize(blockSize) / SizeConstant.SIZE_0_5);
+            int lessonUnitsPerBlock = (int) (blockSize / SizeConstant.SIZE_0_5);
+
+            long timeslotId = lessonUnitsWithSameLesson.get(0).getTimeslot().getId();
+            LocalTime startTime = lessonUnitsWithSameLesson.get(0).getTimeslot().getStartTime();
+            DayOfWeek dayOfWeek = lessonUnitsWithSameLesson.get(0).getTimeslot().getDayOfWeek();
+
+            for (int i = 0; i < lesson.getBlocks(); i++) {
+                LessonUnit lessonUnit = lessonUnitsWithSameLesson.get(0);
+
+                LocalTime endTime = startTime.plusMinutes(timeslotUnitsPerBlock * SizeConstant.UNIT_DURATION);
+                Timeslot timeslot = new Timeslot(timeslotId, dayOfWeek, startTime, endTime);
+
+                LessonUnit lessonBlock = new LessonUnit();
+                lessonBlock.setLesson(lesson);
+                lessonBlock.setBlockSize(blockSize);
+                lessonBlock.setId(lessonUnit.getId());
+                lessonBlock.setIsPinned(lessonUnit.getIsPinned());
+                lessonBlock.setClassroom(lessonUnit.getClassroom());
+                lessonBlock.setTimeslot(timeslot);
+                lessonBlocks.add(lessonBlock);
+
+                if (lessonUnitsPerBlock > 0) {
+                    lessonUnitsWithSameLesson.subList(0, lessonUnitsPerBlock).clear();
+                }
+
+                timeslotId += timeslotUnitsPerBlock;
+                startTime = endTime;
+            }
         }
 
         return lessonBlocks;
     }
 
-    private void groupLessonUnitsByLesson(HashMap<Lesson, List<LessonUnit>> lessonBlocksMap, LessonUnit lessonBlock) {
-        Lesson lesson = lessonBlock.getLesson();
-        if (lessonBlocksMap.containsKey(lesson)) {
-            List<LessonUnit> lessonBlocksForLesson = lessonBlocksMap.get(lesson);
-            lessonBlocksForLesson.add(lessonBlock);
-        } else {
-            List<LessonUnit> lessonBlocksForLesson = new ArrayList<>();
-            lessonBlocksForLesson.add(lessonBlock);
-            lessonBlocksMap.put(lesson, lessonBlocksForLesson);
-        }
-    }
-
-    private List<LessonUnit> mergeUnitsIntoBlocks(List<LessonUnit> lessonUnits, Lesson lesson) {
-        double blockSize = (double) lesson.getHoursPerWeek() / lesson.getBlocks();
-        return new ArrayList<>(createBlocks(lessonUnits, lesson, blockSize));
-    }
-
-    private List<LessonUnit> createBlocks(List<LessonUnit> lessonUnits, Lesson lesson, double blockSize) {
-        List<LessonUnit> lessonBlocksForLesson = new ArrayList<>();
-
-        int timeslotUnitsPerBlock = (int) (timeslotMapper.getTimeslotSize(blockSize) / SizeConstant.SIZE_0_5);
-        int lessonUnitsPerBlock = (int) (blockSize / SizeConstant.SIZE_0_5);
-
-        LocalTime startTime = lessonUnits.get(0).getTimeslot().getStartTime();
-        long timeslotId = lessonUnits.get(0).getTimeslot().getId();
-
-        for (int i = 0; i < lesson.getBlocks(); i++) {
-            LessonUnit lessonUnit = lessonUnits.get(0);
-
-            LocalTime endTime = startTime.plusMinutes(timeslotUnitsPerBlock * SizeConstant.UNIT_DURATION);
-            Timeslot timeslot = getTimeslot(timeslotId, startTime, endTime, lessonUnit.getTimeslot().getDayOfWeek());
-
-            LessonUnit lessonBlock = new LessonUnit();
-            lessonBlock.setLesson(lesson);
-            lessonBlock.setBlockSize(blockSize);
-            lessonBlock.setId(lessonUnit.getId());
-            lessonBlock.setIsPinned(lessonUnit.getIsPinned());
-            lessonBlock.setClassroom(lessonUnit.getClassroom());
-            lessonBlock.setTimeslot(timeslot);
-            lessonBlocksForLesson.add(lessonBlock);
-
-            if (lessonUnitsPerBlock > 0) {
-                lessonUnits.subList(0, lessonUnitsPerBlock).clear();
-            }
-
-            timeslotId += timeslotUnitsPerBlock;
-            startTime = endTime;
-        }
-
-        return lessonBlocksForLesson;
-    }
-
-    public List<LessonUnit> mapBlocksToBlocks(List<LessonUnit> lessonBlocks, double blocksSize) {
+    public List<LessonUnit> mapBlocksToBlocks(List<LessonUnit> lessonBlocks, double blockSize) {
         List<LessonUnit> splitLessonBlocks = new ArrayList<>();
+        int timeslotUnitsPerBlock = (int) (timeslotMapper.getTimeslotSize(blockSize) / SizeConstant.SIZE_0_5);
 
         for (LessonUnit lessonBlock : lessonBlocks) {
-            splitLessonBlocks.addAll(splitBlock(lessonBlock, blocksSize));
+            int numberOfBlocks = (int) Math.ceil(lessonBlock.getBlockSize() / blockSize);
+            double remainingSize = lessonBlock.getBlockSize();
+
+            long timeslotId = lessonBlock.getTimeslot().getId();
+            LocalTime startTime = lessonBlock.getTimeslot().getStartTime();
+            DayOfWeek dayOfWeek = lessonBlock.getTimeslot().getDayOfWeek();
+
+            for (int i = 0; i < numberOfBlocks; i++) {
+                LocalTime endTime = startTime.plusMinutes(timeslotUnitsPerBlock * SizeConstant.UNIT_DURATION);
+                Timeslot timeslot = new Timeslot(timeslotId, dayOfWeek, startTime, endTime);
+                long lessonBlockId = (long) (lessonBlock.getId() + (blockSize / SizeConstant.SIZE_0_5) * i);
+
+                LessonUnit newLessonBlock = new LessonUnit();
+                newLessonBlock.setId(lessonBlockId);
+                newLessonBlock.setLesson(lessonBlock.getLesson());
+                newLessonBlock.setBlockSize(Math.min(blockSize, remainingSize));
+                newLessonBlock.setIsPinned(lessonBlock.getIsPinned());
+                newLessonBlock.setClassroom(lessonBlock.getClassroom());
+                newLessonBlock.setTimeslot(timeslot);
+                splitLessonBlocks.add(newLessonBlock);
+
+                remainingSize -= blockSize;
+                timeslotId += timeslotUnitsPerBlock;
+                startTime = endTime;
+            }
         }
 
         return splitLessonBlocks;
-    }
-
-    private List<LessonUnit> splitBlock(LessonUnit lessonBlock, double blockSize) {
-        List<LessonUnit> splitLessonBlocks = new ArrayList<>();
-
-        int timeslotUnitsPerBlock = (int) (timeslotMapper.getTimeslotSize(blockSize) / SizeConstant.SIZE_0_5);
-        int numberOfBlocks = (int) Math.ceil(lessonBlock.getBlockSize() / blockSize);
-        double remainingSize = lessonBlock.getBlockSize();
-
-        LocalTime startTime = lessonBlock.getTimeslot().getStartTime();
-        long timeslotId = lessonBlock.getTimeslot().getId();
-
-        for (int i = 0; i < numberOfBlocks; i++) {
-            LocalTime endTime = startTime.plusMinutes(timeslotUnitsPerBlock * SizeConstant.UNIT_DURATION);
-            Timeslot timeslot = getTimeslot(timeslotId, startTime, endTime, lessonBlock.getTimeslot().getDayOfWeek());
-            long lessonBlockId = (long) (lessonBlock.getId() + (blockSize / SizeConstant.SIZE_0_5) * i);
-
-            LessonUnit newLessonBlock = new LessonUnit();
-            newLessonBlock.setId(lessonBlockId);
-            newLessonBlock.setLesson(lessonBlock.getLesson());
-            newLessonBlock.setBlockSize(Math.min(blockSize, remainingSize));
-            newLessonBlock.setIsPinned(lessonBlock.getIsPinned());
-            newLessonBlock.setClassroom(lessonBlock.getClassroom());
-            newLessonBlock.setTimeslot(timeslot);
-            splitLessonBlocks.add(newLessonBlock);
-
-            remainingSize -= blockSize;
-            timeslotId += timeslotUnitsPerBlock;
-            startTime = endTime;
-        }
-
-        return splitLessonBlocks;
-    }
-
-    private Timeslot getTimeslot(long timeslotId, LocalTime startTime, LocalTime endTime, DayOfWeek dayOfWeek) {
-        Timeslot timeslot = new Timeslot();
-        timeslot.setId(timeslotId);
-        timeslot.setDayOfWeek(dayOfWeek);
-        timeslot.setStartTime(startTime);
-        timeslot.setEndTime(endTime);
-        return timeslot;
     }
 
     public List<LessonUnit> getLessonBlocksBySize(List<LessonUnit> lessonUnits, double size, Double nextSize, Double firstSize) {
         List<LessonUnit> lessonBlocks = mapUnitsToBlocks(lessonUnits);
         List<LessonUnit> lessonBlocksOfTheCurrentSize = getLessonBlocksBySize(lessonBlocks, size, nextSize);
 
-        if (firstSize == size) {
-            return lessonBlocksOfTheCurrentSize;
+        if (firstSize != size) {
+            List<LessonUnit> lessonBlocksOfThePreviousSize = getLessonBlocksBySize(lessonBlocks, firstSize, size);
+            List<LessonUnit> previousLessonBlocksSplitIntoTheCurrentSize = mapBlocksToBlocks(lessonBlocksOfThePreviousSize, size);
+            lessonBlocksOfTheCurrentSize.addAll(previousLessonBlocksSplitIntoTheCurrentSize);
         }
 
-        List<LessonUnit> lessonBlocksOfThePreviousSize = getLessonBlocksBySize(lessonBlocks, firstSize, size);
-        List<LessonUnit> previousLessonBlocksSplitIntoTheCurrentSize = mapBlocksToBlocks(lessonBlocksOfThePreviousSize, size);
-
-        return new ArrayList<>() {{
-            addAll(lessonBlocksOfTheCurrentSize);
-            addAll(previousLessonBlocksSplitIntoTheCurrentSize);
-        }};
+        return lessonBlocksOfTheCurrentSize;
     }
 
     private List<LessonUnit> getLessonBlocksBySize(List<LessonUnit> lessonBlocks, double size, Double nextSize) {
