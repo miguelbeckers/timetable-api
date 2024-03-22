@@ -24,6 +24,8 @@ public class LessonUnitMock {
     }
 
     public List<LessonUnit> getLessonUnits(double hoursPerWeek, int blocks) {
+        List<LessonUnit> lessonUnits = new ArrayList<>();
+
         Lesson lesson = new Lesson();
         lesson.setId(1L);
         lesson.setHoursPerWeek(hoursPerWeek);
@@ -32,23 +34,23 @@ public class LessonUnitMock {
         Classroom classroom = new Classroom();
         classroom.setId(1L);
 
+        LocalTime startTime = LocalTime.parse("08:00");
         int numberOfUnits = (int) (hoursPerWeek / SizeConstant.SIZE_0_5);
 
-        List<LessonUnit> lessonUnits = new ArrayList<>();
-        for (int i = 0; i < numberOfUnits; i++) {
-            LocalTime startTime = LocalTime.parse("08:00").plusMinutes(i * SizeConstant.UNIT_DURATION);
+        for (long i = 1L; i <= numberOfUnits; i++) {
             LocalTime endTime = startTime.plusMinutes(SizeConstant.UNIT_DURATION);
-
-            Timeslot timeslot = new Timeslot((long) (i + 1), DayOfWeek.MONDAY, startTime, endTime);
+            Timeslot timeslot = new Timeslot(i, DayOfWeek.MONDAY, startTime, endTime);
 
             LessonUnit lessonUnit = new LessonUnit();
-            lessonUnit.setId((long) i + 1);
+            lessonUnit.setId(i);
             lessonUnit.setLesson(lesson);
             lessonUnit.setTimeslot(timeslot);
             lessonUnit.setClassroom(classroom);
             lessonUnit.setBlockSize(SizeConstant.SIZE_0_5);
             lessonUnit.setIsPinned(false);
             lessonUnits.add(lessonUnit);
+
+            startTime = endTime;
         }
 
         return lessonUnits;
@@ -59,8 +61,8 @@ public class LessonUnitMock {
 
         Lesson lesson = new Lesson();
         lesson.setId(1L);
-        lesson.setHoursPerWeek(blockSizes.stream().mapToDouble(Double::doubleValue).sum());
         lesson.setBlocks(blockSizes.size());
+        lesson.setHoursPerWeek(blockSizes.stream().mapToDouble(Double::doubleValue).sum());
 
         Classroom classroom = new Classroom();
         classroom.setId(1L);
