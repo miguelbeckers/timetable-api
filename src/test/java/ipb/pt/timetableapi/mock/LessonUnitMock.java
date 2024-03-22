@@ -35,26 +35,35 @@ public class LessonUnitMock {
         classroom.setId(1L);
 
         LocalTime startTime = LocalTime.parse("08:00");
-        int numberOfUnits = (int) (hoursPerWeek / SizeConstant.SIZE_0_5);
+        long timeslotId = 1L;
+        long lessonUnitId = 1L;
 
-        // FIXME: Improve the timeslot attribution
-        int numberOfUnitsPerBlock = numberOfUnits / blocks;
         double timeslotSize = timeslotMapper.getTimeslotSize(hoursPerWeek / blocks);
+        double numberOfTimeslotUnitsPerBlock = timeslotSize / SizeConstant.SIZE_0_5;
 
-        for (long i = 1L; i <= numberOfUnits; i++) {
-            LocalTime endTime = startTime.plusMinutes(SizeConstant.UNIT_DURATION);
-            Timeslot timeslot = new Timeslot(i, DayOfWeek.MONDAY, startTime, endTime);
+        int numberOfLessonUnits = (int) (hoursPerWeek / SizeConstant.SIZE_0_5);
+        int numberOfLessonUnitsPerBlock = numberOfLessonUnits / blocks;
+        int ignoredTimeslotUnitsPerBlock = (int) (numberOfTimeslotUnitsPerBlock - numberOfLessonUnitsPerBlock);
 
-            LessonUnit lessonUnit = new LessonUnit();
-            lessonUnit.setId(i);
-            lessonUnit.setLesson(lesson);
-            lessonUnit.setTimeslot(timeslot);
-            lessonUnit.setClassroom(classroom);
-            lessonUnit.setBlockSize(SizeConstant.SIZE_0_5);
-            lessonUnit.setIsPinned(false);
-            lessonUnits.add(lessonUnit);
+        for(int i = 0; i < blocks; i++) {
+            for (int j = 0; j < numberOfLessonUnitsPerBlock; j++) {
+                LocalTime endTime = startTime.plusMinutes(SizeConstant.UNIT_DURATION);
+                Timeslot timeslot = new Timeslot(timeslotId++, DayOfWeek.MONDAY, startTime, endTime);
 
-            startTime = endTime;
+                LessonUnit lessonUnit = new LessonUnit();
+                lessonUnit.setId(lessonUnitId++);
+                lessonUnit.setLesson(lesson);
+                lessonUnit.setTimeslot(timeslot);
+                lessonUnit.setClassroom(classroom);
+                lessonUnit.setBlockSize(SizeConstant.SIZE_0_5);
+                lessonUnit.setIsPinned(false);
+                lessonUnits.add(lessonUnit);
+
+                startTime = endTime;
+            }
+
+            timeslotId += ignoredTimeslotUnitsPerBlock;
+            startTime = startTime.plusMinutes(ignoredTimeslotUnitsPerBlock * SizeConstant.UNIT_DURATION);
         }
 
         return lessonUnits;

@@ -520,8 +520,14 @@ public class MapUnitsToBlocksTest {
         Assert.isTrue(lessonBlocks.get(0).getTimeslot() == null,
                 "The timeslot of the lessonBlock 0 is not null");
 
-        Assert.isTrue(lessonBlocks.get(1).getTimeslot() == null,
-                "The timeslot of the lessonBlock 1 is not null");
+        Assert.isTrue(lessonBlocks.get(1).getTimeslot().getId() == 6,
+                "The id of the timeslot of the lessonBlock 1 is not 6");
+
+        Assert.isTrue(lessonBlocks.get(1).getTimeslot().getStartTime().equals(LocalTime.parse("10:30")),
+                "The startTime of the lessonBlock 1 is not 10:30");
+
+        Assert.isTrue(lessonBlocks.get(1).getTimeslot().getEndTime().equals(LocalTime.parse("13:00")),
+                "The endTime of the lessonBlock 1 is not 13:00");
     }
 
     @Test
@@ -549,7 +555,7 @@ public class MapUnitsToBlocksTest {
         Assert.isTrue(lessonBlocks.get(0).getTimeslot().getStartTime().equals(LocalTime.parse("08:00")),
                 "The timeslot of the lessonBlock 0 doesn't start at 08:00");
 
-        Assert.isTrue(lessonBlocks.get(1).getTimeslot() != null,
-                "The timeslot of the lessonBlock 1 is null");
+        Assert.isTrue(lessonBlocks.get(1).getTimeslot() == null,
+                "The timeslot of the lessonBlock 1 is not null");
     }
 }
