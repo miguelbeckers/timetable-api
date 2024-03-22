@@ -36,15 +36,10 @@ public class LessonUnitMock {
 
         List<LessonUnit> lessonUnits = new ArrayList<>();
         for (int i = 0; i < numberOfUnits; i++) {
-            long additionalStart = i * SizeConstant.UNIT_DURATION;
-            LocalTime startTime = LocalTime.parse("08:00").plusMinutes(additionalStart);
+            LocalTime startTime = LocalTime.parse("08:00").plusMinutes(i * SizeConstant.UNIT_DURATION);
             LocalTime endTime = startTime.plusMinutes(SizeConstant.UNIT_DURATION);
 
-            Timeslot timeslot = new Timeslot();
-            timeslot.setId((long) i + 1);
-            timeslot.setDayOfWeek(DayOfWeek.MONDAY);
-            timeslot.setStartTime(startTime);
-            timeslot.setEndTime(endTime);
+            Timeslot timeslot = new Timeslot((long) (i + 1), DayOfWeek.MONDAY, startTime, endTime);
 
             LessonUnit lessonUnit = new LessonUnit();
             lessonUnit.setId((long) i + 1);
@@ -53,7 +48,6 @@ public class LessonUnitMock {
             lessonUnit.setClassroom(classroom);
             lessonUnit.setBlockSize(SizeConstant.SIZE_0_5);
             lessonUnit.setIsPinned(false);
-
             lessonUnits.add(lessonUnit);
         }
 
@@ -81,12 +75,7 @@ public class LessonUnitMock {
             int lessonUnitsPerBlock = (int) (blockSize / SizeConstant.SIZE_0_5);
 
             LocalTime endTime = startTime.plusMinutes(timeslotUnitsPerBlock * SizeConstant.UNIT_DURATION);
-
-            Timeslot timeslot = new Timeslot();
-            timeslot.setId(timeslotId);
-            timeslot.setStartTime(startTime);
-            timeslot.setEndTime(endTime);
-            timeslot.setDayOfWeek(DayOfWeek.MONDAY);
+            Timeslot timeslot = new Timeslot(timeslotId, DayOfWeek.MONDAY, startTime, endTime);
 
             LessonUnit lessonBlock = new LessonUnit();
             lessonBlock.setId(lessonBlockId);
