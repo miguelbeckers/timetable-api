@@ -375,5 +375,180 @@ public class MapBlocksToBlocksTest {
                 "The fifth block should have the end time 10:30");
     }
 
-    // TODO: Test what happens when the timeslot is null
+    @Test
+    public void test_2_Blocks_4_To_2_Blocks_2_5_And_2_Bloc_1_5() {
+
+        // id | time           | input       | output
+        // 01 | 08:00 -> 08:30 | ┌─── 4 ───┐ | ┌── 2.5 ──┐
+        // 02 | 08:30 -> 09:00 | │         │ | │         │
+        // 03 | 09:00 -> 09:30 | │         │ | │         │
+        // 04 | 09:30 -> 10:00 | │         │ | │         │
+        // 05 | 10:00 -> 10:30 | │         │ | └─────────┘
+        // 06 | 10:30 -> 11:00 | │         │ | ┌── 1.5 ──┐
+        // 07 | 11:00 -> 11:30 | │         │ | │         │
+        // 08 | 11:30 -> 12:00 | │         │ | │         │
+        //    | 12:00 -> 12:30 | │         │ | │         │
+        //    | 12:30 -> 13:00 | └─────────┘ | └─────────┘
+        // 09 | 13:00 -> 13:30 | ┌─── 4 ───┐ | ┌── 2.5 ──┐
+        // 10 | 13:30 -> 14:00 | │         │ | │         │
+        // 11 | 14:00 -> 14:30 | │         │ | │         │
+        // 12 | 14:30 -> 15:00 | │         │ | │         │
+        // 13 | 15:00 -> 15:30 | │         │ | └─────────┘
+        // 14 | 15:30 -> 16:00 | │         │ | ┌── 1.5 ──┐
+        // 15 | 16:00 -> 16:30 | │         │ | │         │
+        // 16 | 16:30 -> 17:00 | │         │ | │         │
+        //    | 17:00 -> 17:30 | │         │ | │         │
+        //    | 17:30 -> 18:00 | └─────────┘ | └─────────┘
+
+        List<LessonUnit> lessonBlocks = lessonUnitMock.getLessonBlocks(List.of(4.0, 4.0));
+        List<LessonUnit> splitLessonBlocks = lessonUnitMapper.mapBlocksToBlocks(lessonBlocks, 2.5);
+
+        Assert.isTrue(splitLessonBlocks.size() == 4,
+                "The splitLessonBlocks should have 4 blocks");
+
+        Assert.isTrue(splitLessonBlocks.get(0).getId() == 1,
+                "The first block should have the id 1");
+
+        Assert.isTrue(splitLessonBlocks.get(1).getId() == 6,
+                "The second block should have the id 6");
+
+        Assert.isTrue(splitLessonBlocks.get(2).getId() == 9,
+                "The third block should have the id 9");
+
+        Assert.isTrue(splitLessonBlocks.get(3).getId() == 14,
+                "The fourth block should have the id 14");
+
+        Assert.isTrue(splitLessonBlocks.get(0).getBlockSize() == 2.5,
+                "The first block should have the block size 2.5");
+
+        Assert.isTrue(splitLessonBlocks.get(1).getBlockSize() == 1.5,
+                "The second block should have the block size 1.5");
+
+        Assert.isTrue(splitLessonBlocks.get(2).getBlockSize() == 2.5,
+                "The third block should have the block size 2.5");
+
+        Assert.isTrue(splitLessonBlocks.get(3).getBlockSize() == 1.5,
+                "The fourth block should have the block size 1.5");
+
+        Assert.isTrue(splitLessonBlocks.get(0).getTimeslot().getId() == 1,
+                "The first block should have the timeslot with id 1");
+
+        Assert.isTrue(splitLessonBlocks.get(1).getTimeslot().getId() == 6,
+                "The second block should have the timeslot with id 6");
+
+        Assert.isTrue(splitLessonBlocks.get(2).getTimeslot().getId() == 11,
+                "The third block should have the timeslot with id 11");
+
+        Assert.isTrue(splitLessonBlocks.get(3).getTimeslot().getId() == 16,
+                "The fourth block should have the timeslot with id 16");
+
+        Assert.isTrue(splitLessonBlocks.get(0).getTimeslot().getStartTime().equals(LocalTime.parse("08:00")),
+                "The first block should have the start time 08:00");
+
+        Assert.isTrue(splitLessonBlocks.get(0).getTimeslot().getEndTime().equals(LocalTime.parse("10:30")),
+                "The first block should have the end time 10:30");
+
+        Assert.isTrue(splitLessonBlocks.get(1).getTimeslot().getStartTime().equals(LocalTime.parse("10:30")),
+                "The second block should have the start time 10:30");
+
+        Assert.isTrue(splitLessonBlocks.get(1).getTimeslot().getEndTime().equals(LocalTime.parse("13:00")),
+                "The second block should have the end time 13:00");
+
+        Assert.isTrue(splitLessonBlocks.get(2).getTimeslot().getStartTime().equals(LocalTime.parse("13:00")),
+                "The third block should have the start time 13:00");
+
+        Assert.isTrue(splitLessonBlocks.get(2).getTimeslot().getEndTime().equals(LocalTime.parse("15:30")),
+                "The third block should have the end time 15:30");
+
+        Assert.isTrue(splitLessonBlocks.get(3).getTimeslot().getStartTime().equals(LocalTime.parse("15:30")),
+                "The fourth block should have the start time 15:30");
+
+        Assert.isTrue(splitLessonBlocks.get(3).getTimeslot().getEndTime().equals(LocalTime.parse("18:00")),
+                "The fourth block should have the end time 18:00");
+
+    }
+
+    @Test
+    public void test_2_Blocks_4_WithTheFistBlockWithTimeslotNull() {
+
+        // id | time           | input       | output
+        // 01 | null           | ┌─── 4 ───┐ | ┌── 2.5 ──┐
+        // 02 | 08:30 -> 09:00 | │         │ | │         │
+        // 03 | 09:00 -> 09:30 | │         │ | │         │
+        // 04 | 09:30 -> 10:00 | │         │ | │         │
+        // 05 | 10:00 -> 10:30 | │         │ | └─────────┘
+        // 06 | 10:30 -> 11:00 | │         │ | ┌── 1.5 ──┐
+        // 07 | 11:00 -> 11:30 | │         │ | │         │
+        // 08 | 11:30 -> 12:00 | │         │ | │         │
+        //    | 12:00 -> 12:30 | │         │ | │         │
+        //    | 12:30 -> 13:00 | └─────────┘ | └─────────┘
+        // 09 | 13:00 -> 13:30 | ┌─── 4 ───┐ | ┌── 2.5 ──┐
+        // 10 | 13:30 -> 14:00 | │         │ | │         │
+        // 11 | 14:00 -> 14:30 | │         │ | │         │
+        // 12 | 14:30 -> 15:00 | │         │ | │         │
+        // 13 | 15:00 -> 15:30 | │         │ | └─────────┘
+        // 14 | 15:30 -> 16:00 | │         │ | ┌── 1.5 ──┐
+        // 15 | 16:00 -> 16:30 | │         │ | │         │
+        // 16 | 16:30 -> 17:00 | │         │ | │         │
+        //    | 17:00 -> 17:30 | │         │ | │         │
+        //    | 17:30 -> 18:00 | └─────────┘ | └─────────┘
+
+        List<LessonUnit> lessonBlocks = lessonUnitMock.getLessonBlocks(List.of(4.0, 4.0));
+        lessonBlocks.get(0).setTimeslot(null);
+        List<LessonUnit> splitLessonBlocks = lessonUnitMapper.mapBlocksToBlocks(lessonBlocks, 2.5);
+
+        Assert.isTrue(splitLessonBlocks.get(0).getTimeslot() == null,
+                "The first block should have the timeslot null");
+
+        Assert.isTrue(splitLessonBlocks.get(1).getTimeslot() == null,
+                "The second block should have the timeslot null");
+
+        Assert.isTrue(splitLessonBlocks.get(2).getTimeslot().getId() == 11,
+                "The third block should have the timeslot with id 11");
+
+        Assert.isTrue(splitLessonBlocks.get(3).getTimeslot().getId() == 16,
+                "The fourth block should have the timeslot with id 16");
+    }
+
+    @Test
+    public void test_2_Blocks_4_WithTheSecondBlockWithTimeslotNull() {
+
+        // id | time           | input       | output
+        // 01 | null           | ┌─── 4 ───┐ | ┌── 2.5 ──┐
+        // 02 | 08:30 -> 09:00 | │         │ | │         │
+        // 03 | 09:00 -> 09:30 | │         │ | │         │
+        // 04 | 09:30 -> 10:00 | │         │ | │         │
+        // 05 | 10:00 -> 10:30 | │         │ | └─────────┘
+        // 06 | 10:30 -> 11:00 | │         │ | ┌── 1.5 ──┐
+        // 07 | 11:00 -> 11:30 | │         │ | │         │
+        // 08 | 11:30 -> 12:00 | │         │ | │         │
+        //    | 12:00 -> 12:30 | │         │ | │         │
+        //    | 12:30 -> 13:00 | └─────────┘ | └─────────┘
+        // 09 | 13:00 -> 13:30 | ┌─── 4 ───┐ | ┌── 2.5 ──┐
+        // 10 | 13:30 -> 14:00 | │         │ | │         │
+        // 11 | 14:00 -> 14:30 | │         │ | │         │
+        // 12 | 14:30 -> 15:00 | │         │ | │         │
+        // 13 | 15:00 -> 15:30 | │         │ | └─────────┘
+        // 14 | 15:30 -> 16:00 | │         │ | ┌── 1.5 ──┐
+        // 15 | 16:00 -> 16:30 | │         │ | │         │
+        // 16 | 16:30 -> 17:00 | │         │ | │         │
+        //    | 17:00 -> 17:30 | │         │ | │         │
+        //    | 17:30 -> 18:00 | └─────────┘ | └─────────┘
+
+        List<LessonUnit> lessonBlocks = lessonUnitMock.getLessonBlocks(List.of(4.0, 4.0));
+        lessonBlocks.get(1).setTimeslot(null);
+        List<LessonUnit> splitLessonBlocks = lessonUnitMapper.mapBlocksToBlocks(lessonBlocks, 2.5);
+
+        Assert.isTrue(splitLessonBlocks.get(0).getTimeslot().getId() == 1,
+                "The first block should have the timeslot with id 1");
+
+        Assert.isTrue(splitLessonBlocks.get(1).getTimeslot().getId() == 6,
+                "The second block should have the timeslot with id 6");
+
+        Assert.isTrue(splitLessonBlocks.get(2).getTimeslot() == null,
+                "The third block should have the timeslot null");
+
+        Assert.isTrue(splitLessonBlocks.get(3).getTimeslot() == null,
+                "The fourth block should have the timeslot null");
+    }
 }
