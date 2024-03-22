@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -86,9 +85,23 @@ public class LessonUnitService {
         return lessonUnitConverter.toDto(lessonUnitRepository.saveAll(lessonUnits));
     }
 
-    public List<LessonUnit> getLessonBlocksBySize(double currentSize, Double nextSize, Double firstSize) {
+    public List<LessonUnit> getLessonBlocksBySize(double size, Double nextSize, Double firstSize) {
         List<LessonUnit> lessonUnits = lessonUnitRepository.findAll();
-        return lessonUnitMapper.getLessonBlocksBySize(lessonUnits, currentSize, nextSize, firstSize);
+        List<LessonUnit> lessonBlocks = lessonUnitMapper.mapUnitsToBlocks(lessonUnits);
+        List<LessonUnit> lessonBlocksOfTheCurrentSize = getLessonBlocksBySize(lessonBlocks, size, nextSize);
+
+        if (firstSize != size) {
+            List<LessonUnit> lessonBlocksOfThePreviousSize = getLessonBlocksBySize(lessonBlocks, firstSize, size);
+            List<LessonUnit> previousLessonBlocksSplitIntoTheCurrentSize = lessonUnitMapper.mapBlocksToBlocks(lessonBlocksOfThePreviousSize, size);
+            lessonBlocksOfTheCurrentSize.addAll(previousLessonBlocksSplitIntoTheCurrentSize);
+        }
+
+        return lessonBlocksOfTheCurrentSize;
+    }
+
+    private List<LessonUnit> getLessonBlocksBySize(List<LessonUnit> lessonBlocks, double size, Double nextSize) {
+        return lessonBlocks.stream().filter(lessonUnit -> lessonUnit.getBlockSize() <= size
+                && (nextSize == null || lessonUnit.getBlockSize() > nextSize)).toList();
     }
 
     public List<LessonUnit> divideLessonBlocksIntoUnits(List<LessonUnit> lessonBlocks) {

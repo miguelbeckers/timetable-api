@@ -133,22 +133,4 @@ public class LessonUnitMapper {
 
         return splitLessonBlocks;
     }
-
-    public List<LessonUnit> getLessonBlocksBySize(List<LessonUnit> lessonUnits, double size, Double nextSize, Double firstSize) {
-        List<LessonUnit> lessonBlocks = mapUnitsToBlocks(lessonUnits);
-        List<LessonUnit> lessonBlocksOfTheCurrentSize = getLessonBlocksBySize(lessonBlocks, size, nextSize);
-
-        if (firstSize != size) {
-            List<LessonUnit> lessonBlocksOfThePreviousSize = getLessonBlocksBySize(lessonBlocks, firstSize, size);
-            List<LessonUnit> previousLessonBlocksSplitIntoTheCurrentSize = mapBlocksToBlocks(lessonBlocksOfThePreviousSize, size);
-            lessonBlocksOfTheCurrentSize.addAll(previousLessonBlocksSplitIntoTheCurrentSize);
-        }
-
-        return lessonBlocksOfTheCurrentSize;
-    }
-
-    private List<LessonUnit> getLessonBlocksBySize(List<LessonUnit> lessonBlocks, double size, Double nextSize) {
-        return lessonBlocks.stream().filter(lessonUnit -> lessonUnit.getBlockSize() <= size
-                && (nextSize == null || lessonUnit.getBlockSize() > nextSize)).toList();
-    }
 }
