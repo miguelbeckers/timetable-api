@@ -72,4 +72,41 @@ public class TimeslotMapper {
 
     // nesse caso, não há problemas, pode se usar a conversão normal de unidade para bloco
     // no entanto, se começar no meio de um bloco, ainda assim os blocos deveriam ser os mesmos
+    // por exemplo, para as entradas abaixo, todos os blocos devem ser retornados
+
+    // id | input                | output
+    // 01 |                      |  MON - 08:00 ┐
+    // 02 |                      |              │
+    // 03 |                      |              │
+    // 04 | MON - 09:30 -> 10:00 |              │
+    // 05 |                      |              └> 10:30
+    // 06 | MON - 10:30 -> 11:00 |  MON - 10:30 ┐
+    // 07 | MON - 11:00 -> 11:30 |              │
+    // 08 | MON - 11:30 -> 12:00 |              │
+    // 09 | MON - 12:00 -> 12:30 |              │
+    // 10 | MON - 12:30 -> 13:00 |              └> 13:00
+    // 11 | MON - 13:00 -> 13:30 |  MON - 13:00 ┐
+    // 12 |                      |              │
+    // 13 |                      |              │
+    // 14 |                      |              │
+    // 15 |                      |              └> 15:30
+    // 16 | MON - 15:30 -> 16:00 |  MON - 15:30 ┐
+    // 17 | MON - 16:00 -> 16:30 |              │
+    // 18 | MON - 16:30 -> 17:00 |              │
+    // 19 | MON - 17:00 -> 17:30 |              │
+    // 20 |                      |              └> 18:00
+    // 21 | MON - 18:00 -> 18:30 |  MON - 18:00 ┐
+    // 22 |                      |              │
+    // 23 |                      |              │
+    // 24 |                      |              │
+    // 25 |                      |              └> 20:30
+    // 26 |                      |  MON - 20:30 ┐
+    // 27 |                      |              │
+    // 28 |                      |              │
+    // 29 |                      |              │
+    // 30 | MON - 22:30 -> 23:00 |              └> 23:00
+
+    // como fazer isso?
+    // criar uma função que retorne o bloco da unidade com snap
+    // adicionar esses blocos a uma lista desconsiderando os repetidos.
 }
