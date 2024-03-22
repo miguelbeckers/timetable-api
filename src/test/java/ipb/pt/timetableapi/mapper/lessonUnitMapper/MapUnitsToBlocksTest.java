@@ -1,5 +1,6 @@
-package ipb.pt.timetableapi.mapper;
+package ipb.pt.timetableapi.mapper.lessonUnitMapper;
 
+import ipb.pt.timetableapi.mapper.LessonUnitMapper;
 import ipb.pt.timetableapi.mock.LessonUnitMock;
 import ipb.pt.timetableapi.model.LessonUnit;
 import org.junit.jupiter.api.Test;
@@ -489,5 +490,66 @@ public class MapUnitsToBlocksTest {
 
         Assert.isTrue(!lessonBlocks.get(0).getIsPinned(),
                 "The isPinned of the lessonBlock 0 is not false");
+    }
+
+    @Test
+    public void testTheCaseOfTheFirstUnitOfTheFirstBlockWithoutTimeslot() {
+        // id | time           | input       | output
+        // 01 | null           | ┌── 0.5 ──┐ | ┌── 2.5 ──┐
+        // 02 | 08:30 -> 09:00 | ┌── 0.5 ──┐ | │         │
+        // 03 | 09:00 -> 09:30 | ┌── 0.5 ──┐ | │         │
+        // 04 | 09:30 -> 10:00 | ┌── 0.5 ──┐ | │         │
+        // 05 | 10:00 -> 10:30 | ┌── 0.5 ──┐ | └─────────┘
+        // 06 | 10:30 -> 11:00 | ┌── 0.5 ──┐ | ┌── 2.5 ──┐
+        // 07 | 11:00 -> 11:30 | ┌── 0.5 ──┐ | │         │
+        // 08 | 11:30 -> 12:00 | ┌── 0.5 ──┐ | │         │
+        // 09 | 12:00 -> 12:30 | ┌── 0.5 ──┐ | │         │
+        // 10 | 12:30 -> 13:00 | ┌── 0.5 ──┐ | └─────────┘
+
+        List<LessonUnit> lessonUnits = lessonUnitMock.getLessonUnits(5, 2);
+        lessonUnits.get(0).setTimeslot(null);
+
+        List<LessonUnit> lessonBlocks = lessonUnitMapper.mapUnitsToBlocks(lessonUnits);
+
+        Assert.isTrue(lessonBlocks.size() == 2,
+                "The number of blocks is not 2");
+
+        Assert.isTrue(lessonBlocks.get(0).getId() == 1,
+                "The id of the lessonBlock 0 is not 1");
+
+        Assert.isTrue(lessonBlocks.get(0).getTimeslot() == null,
+                "The timeslot of the lessonBlock 0 is not null");
+
+        Assert.isTrue(lessonBlocks.get(1).getTimeslot() == null,
+                "The timeslot of the lessonBlock 1 is not null");
+    }
+
+    @Test
+    public void testTheCaseOfTheFirstUnitOfTheSecondBlockWithoutTimeslot() {
+        // id | time           | input       | output
+        // 01 | 08:00 -> 08:30 | ┌── 0.5 ──┐ | ┌── 2.5 ──┐
+        // 02 | 08:30 -> 09:00 | ┌── 0.5 ──┐ | │         │
+        // 03 | 09:00 -> 09:30 | ┌── 0.5 ──┐ | │         │
+        // 04 | 09:30 -> 10:00 | ┌── 0.5 ──┐ | │         │
+        // 05 | 10:00 -> 10:30 | ┌── 0.5 ──┐ | └─────────┘
+        // 06 | null           | ┌── 0.5 ──┐ | ┌── 2.5 ──┐
+        // 07 | 11:00 -> 11:30 | ┌── 0.5 ──┐ | │         │
+        // 08 | 11:30 -> 12:00 | ┌── 0.5 ──┐ | │         │
+        // 09 | 12:00 -> 12:30 | ┌── 0.5 ──┐ | │         │
+        // 10 | 12:30 -> 13:00 | ┌── 0.5 ──┐ | └─────────┘
+
+        List<LessonUnit> lessonUnits = lessonUnitMock.getLessonUnits(5, 2);
+        lessonUnits.get(5).setTimeslot(null);
+
+        List<LessonUnit> lessonBlocks = lessonUnitMapper.mapUnitsToBlocks(lessonUnits);
+
+        Assert.isTrue(lessonBlocks.size() == 2,
+                "The number of blocks is not 2");
+
+        Assert.isTrue(lessonBlocks.get(0).getTimeslot().getStartTime().equals(LocalTime.parse("08:00")),
+                "The timeslot of the lessonBlock 0 doesn't start at 08:00");
+
+        Assert.isTrue(lessonBlocks.get(1).getTimeslot() != null,
+                "The timeslot of the lessonBlock 1 is null");
     }
 }

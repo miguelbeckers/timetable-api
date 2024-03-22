@@ -37,6 +37,10 @@ public class LessonUnitMock {
         LocalTime startTime = LocalTime.parse("08:00");
         int numberOfUnits = (int) (hoursPerWeek / SizeConstant.SIZE_0_5);
 
+        // FIXME: Improve the timeslot attribution
+        int numberOfUnitsPerBlock = numberOfUnits / blocks;
+        double timeslotSize = timeslotMapper.getTimeslotSize(hoursPerWeek / blocks);
+
         for (long i = 1L; i <= numberOfUnits; i++) {
             LocalTime endTime = startTime.plusMinutes(SizeConstant.UNIT_DURATION);
             Timeslot timeslot = new Timeslot(i, DayOfWeek.MONDAY, startTime, endTime);

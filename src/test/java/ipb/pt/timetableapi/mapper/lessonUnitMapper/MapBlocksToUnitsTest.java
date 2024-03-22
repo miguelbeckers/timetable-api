@@ -1,5 +1,6 @@
-package ipb.pt.timetableapi.mapper;
+package ipb.pt.timetableapi.mapper.lessonUnitMapper;
 
+import ipb.pt.timetableapi.mapper.LessonUnitMapper;
 import ipb.pt.timetableapi.mock.LessonUnitMock;
 import ipb.pt.timetableapi.model.LessonUnit;
 import org.junit.jupiter.api.Test;
@@ -1054,4 +1055,6 @@ public class MapBlocksToUnitsTest {
         Assert.isTrue(lessonUnits.stream().allMatch(lessonUnit -> lessonUnit.getTimeslot().getDayOfWeek() == DayOfWeek.MONDAY),
                 "All the units do not have the day of the week as Monday");
     }
+
+    // TODO: Test what happens when the timeslot is null
 }

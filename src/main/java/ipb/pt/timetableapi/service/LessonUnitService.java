@@ -5,6 +5,7 @@ import ipb.pt.timetableapi.dto.LessonUnitDto;
 import ipb.pt.timetableapi.mapper.LessonUnitMapper;
 import ipb.pt.timetableapi.model.LessonUnit;
 import ipb.pt.timetableapi.repository.LessonUnitRepository;
+import ipb.pt.timetableapi.solver.SizeConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -87,6 +88,11 @@ public class LessonUnitService {
 
     public List<LessonUnit> getLessonBlocksBySize(double size, Double nextSize, Double firstSize) {
         List<LessonUnit> lessonUnits = lessonUnitRepository.findAll();
+
+        if (size == SizeConstant.SIZE_0_5) {
+            return lessonUnits;
+        }
+
         List<LessonUnit> lessonBlocks = lessonUnitMapper.mapUnitsToBlocks(lessonUnits);
         List<LessonUnit> lessonBlocksOfTheCurrentSize = getLessonBlocksBySize(lessonBlocks, size, nextSize);
 

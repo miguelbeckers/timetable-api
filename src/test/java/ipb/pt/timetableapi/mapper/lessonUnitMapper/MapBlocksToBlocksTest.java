@@ -1,5 +1,6 @@
-package ipb.pt.timetableapi.mapper;
+package ipb.pt.timetableapi.mapper.lessonUnitMapper;
 
+import ipb.pt.timetableapi.mapper.LessonUnitMapper;
 import ipb.pt.timetableapi.mock.LessonUnitMock;
 import ipb.pt.timetableapi.model.LessonUnit;
 import org.junit.jupiter.api.Test;
@@ -373,4 +374,6 @@ public class MapBlocksToBlocksTest {
         Assert.isTrue(splitLessonBlocks.get(4).getTimeslot().getEndTime().equals(LocalTime.parse("10:30")),
                 "The fifth block should have the end time 10:30");
     }
+
+    // TODO: Test what happens when the timeslot is null
 }

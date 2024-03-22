@@ -1,5 +1,6 @@
-package ipb.pt.timetableapi.mapper;
+package ipb.pt.timetableapi.mapper.timeslotMapper;
 
+import ipb.pt.timetableapi.mapper.TimeslotMapper;
 import ipb.pt.timetableapi.mock.TimeslotMock;
 import ipb.pt.timetableapi.model.Timeslot;
 import org.junit.jupiter.api.Test;
