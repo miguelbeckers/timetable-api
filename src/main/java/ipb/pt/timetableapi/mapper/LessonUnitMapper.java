@@ -84,11 +84,13 @@ public class LessonUnitMapper {
                 Timeslot timeslot = null;
 
                 if (firstLessonUnit.getTimeslot() != null) {
+                    long timeslotId = firstLessonUnit.getTimeslot().getId();
                     long blockDuration = timeslotUnitsPerBlock * SizeConstant.UNIT_DURATION;
-                    Long timeslotId = firstLessonUnit.getTimeslot().getId();
+
                     LocalTime startTime = firstLessonUnit.getTimeslot().getStartTime();
                     LocalTime endTime = startTime.plusMinutes(blockDuration);
                     DayOfWeek dayOfWeek = firstLessonUnit.getTimeslot().getDayOfWeek();
+
                     timeslot = new Timeslot(timeslotId, dayOfWeek, startTime, endTime);
                 }
 

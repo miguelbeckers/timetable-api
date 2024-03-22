@@ -1056,5 +1056,219 @@ public class MapBlocksToUnitsTest {
                 "All the units do not have the day of the week as Monday");
     }
 
-    // TODO: Test what happens when the timeslot is null
+    @Test
+    public void test_2_Blocks_2_5_WithTheFirstBlockWithTimeslotNull() {
+        // id | time           | input       | output
+        // 01 | null           | ┌── 2.5 ──┐ | ┌── 0.5 ──┐
+        // 02 | 08:30 -> 09:00 | │         │ | ┌── 0.5 ──┐
+        // 03 | 09:00 -> 09:30 | │         │ | ┌── 0.5 ──┐
+        // 04 | 09:30 -> 10:00 | │         │ | ┌── 0.5 ──┐
+        // 05 | 10:00 -> 10:30 | └─────────┘ │ ┌── 0.5 ──┐
+        // 06 | 10:30 -> 11:00 | ┌── 2.5 ──┐ | ┌── 0.5 ──┐
+        // 07 | 11:00 -> 11:30 | │         │ | ┌── 0.5 ──┐
+        // 08 | 11:30 -> 12:00 | │         │ | ┌── 0.5 ──┐
+        // 09 | 12:00 -> 12:30 | │         │ | ┌── 0.5 ──┐
+        // 10 | 12:30 -> 13:00 | └─────────┘ | ┌── 0.5 ──┐
+
+        List<LessonUnit> lessonBlocks = lessonUnitMock.getLessonBlocks(List.of(2.5, 2.5));
+        lessonBlocks.get(0).setTimeslot(null);
+        List<LessonUnit> lessonUnits = lessonUnitMapper.mapBlocksToUnits(lessonBlocks);
+
+        // assert that the block with id 0 has the timeslot as null
+        Assert.isTrue(lessonUnits.get(0).getTimeslot() == null,
+                "The first unit does not have the timeslot as null");
+
+        Assert.isTrue(lessonUnits.get(1).getTimeslot() == null,
+                "The second unit does not have the timeslot as null");
+
+        Assert.isTrue(lessonUnits.get(2).getTimeslot() == null,
+                "The third unit does not have the timeslot as null");
+
+        Assert.isTrue(lessonUnits.get(3).getTimeslot() == null,
+                "The fourth unit does not have the timeslot as null");
+
+        Assert.isTrue(lessonUnits.get(4).getTimeslot() == null,
+                "The fifth unit does not have the timeslot as null");
+
+        Assert.isTrue(lessonUnits.get(5).getTimeslot().getId().equals(6L),
+                "The sixth unit does not have the timeslot id 6");
+
+        Assert.isTrue(lessonUnits.get(6).getTimeslot().getId().equals(7L),
+                "The seventh unit does not have the timeslot id 7");
+
+        Assert.isTrue(lessonUnits.get(7).getTimeslot().getId().equals(8L),
+                "The eighth unit does not have the timeslot id 8");
+
+        Assert.isTrue(lessonUnits.get(8).getTimeslot().getId().equals(9L),
+                "The ninth unit does not have the timeslot id 9");
+
+        Assert.isTrue(lessonUnits.get(9).getTimeslot().getId().equals(10L),
+                "The tenth unit does not have the timeslot id 10");
+
+        Assert.isTrue(lessonUnits.get(5).getTimeslot().getStartTime().equals(LocalTime.parse("10:30")),
+                "The sixth unit does not have the start time of 10:30");
+
+        Assert.isTrue(lessonUnits.get(5).getTimeslot().getEndTime().equals(LocalTime.parse("11:00")),
+                "The sixth unit does not have the end time of 11:00");
+
+        Assert.isTrue(lessonUnits.get(6).getTimeslot().getStartTime().equals(LocalTime.parse("11:00")),
+                "The seventh unit does not have the start time of 11:00");
+
+        Assert.isTrue(lessonUnits.get(6).getTimeslot().getEndTime().equals(LocalTime.parse("11:30")),
+                "The seventh unit does not have the end time of 11:30");
+
+        Assert.isTrue(lessonUnits.get(7).getTimeslot().getStartTime().equals(LocalTime.parse("11:30")),
+                "The eighth unit does not have the start time of 11:30");
+
+        Assert.isTrue(lessonUnits.get(7).getTimeslot().getEndTime().equals(LocalTime.parse("12:00")),
+                "The eighth unit does not have the end time of 12:00");
+
+        Assert.isTrue(lessonUnits.get(8).getTimeslot().getStartTime().equals(LocalTime.parse("12:00")),
+                "The ninth unit does not have the start time of 12:00");
+
+        Assert.isTrue(lessonUnits.get(8).getTimeslot().getEndTime().equals(LocalTime.parse("12:30")),
+                "The ninth unit does not have the end time of 12:30");
+
+        Assert.isTrue(lessonUnits.get(9).getTimeslot().getStartTime().equals(LocalTime.parse("12:30")),
+                "The tenth unit does not have the start time of 12:30");
+
+        Assert.isTrue(lessonUnits.get(9).getTimeslot().getEndTime().equals(LocalTime.parse("13:00")),
+                "The tenth unit does not have the end time of 13:00");
+
+    }
+
+    @Test
+    public void test_2_Blocks_2_5_WithTheSecondBlockWithTimeslotNull() {
+        // id | time           | input       | output
+        // 01 | 08:00 -> 08:30 | ┌── 2.5 ──┐ | ┌── 0.5 ──┐
+        // 02 | 08:30 -> 09:00 | │         │ | ┌── 0.5 ──┐
+        // 03 | 09:00 -> 09:30 | │         │ | ┌── 0.5 ──┐
+        // 04 | 09:30 -> 10:00 | │         │ | ┌── 0.5 ──┐
+        // 05 | 10:00 -> 10:30 | └─────────┘ │ ┌── 0.5 ──┐
+        // 06 | null           | ┌── 2.5 ──┐ | ┌── 0.5 ──┐
+        // 07 | 11:00 -> 11:30 | │         │ | ┌── 0.5 ──┐
+        // 08 | 11:30 -> 12:00 | │         │ | ┌── 0.5 ──┐
+        // 09 | 12:00 -> 12:30 | │         │ | ┌── 0.5 ──┐
+        // 10 | 12:30 -> 13:00 | └─────────┘ | ┌── 0.5 ──┐
+
+        List<LessonUnit> lessonBlocks = lessonUnitMock.getLessonBlocks(List.of(2.5, 2.5));
+        lessonBlocks.get(1).setTimeslot(null);
+        List<LessonUnit> lessonUnits = lessonUnitMapper.mapBlocksToUnits(lessonBlocks);
+
+        Assert.isTrue(lessonUnits.get(0).getTimeslot().getId().equals(1L),
+                "The first unit does not have the timeslot id 1");
+
+        Assert.isTrue(lessonUnits.get(1).getTimeslot().getId().equals(2L),
+                "The second unit does not have the timeslot id 2");
+
+        Assert.isTrue(lessonUnits.get(2).getTimeslot().getId().equals(3L),
+                "The third unit does not have the timeslot id 3");
+
+        Assert.isTrue(lessonUnits.get(3).getTimeslot().getId().equals(4L),
+                "The fourth unit does not have the timeslot id 4");
+
+        Assert.isTrue(lessonUnits.get(4).getTimeslot().getId().equals(5L),
+                "The fifth unit does not have the timeslot id 5");
+
+        Assert.isTrue(lessonUnits.get(5).getTimeslot() == null,
+                "The sixth unit does not have the timeslot as null");
+
+        Assert.isTrue(lessonUnits.get(6).getTimeslot() == null,
+                "The seventh unit does not have the timeslot as null");
+
+        Assert.isTrue(lessonUnits.get(7).getTimeslot() == null,
+                "The eighth unit does not have the timeslot as null");
+
+        Assert.isTrue(lessonUnits.get(8).getTimeslot() == null,
+                "The ninth unit does not have the timeslot as null");
+
+        Assert.isTrue(lessonUnits.get(9).getTimeslot() == null,
+                "The tenth unit does not have the timeslot as null");
+    }
+
+    @Test
+    public void test_1_Block_2_5_And_1_Block_1_5_WithTheSecondBlockWithTimeslotNull() {
+        // id | time           | input       | output
+        // 01 | 08:00 -> 08:30 | ┌── 2.5 ──┐ | ┌── 0.5 ──┐
+        // 02 | 08:30 -> 09:00 | │         │ | ┌── 0.5 ──┐
+        // 03 | 09:00 -> 09:30 | │         │ | ┌── 0.5 ──┐
+        // 04 | 09:30 -> 10:00 | │         │ | ┌── 0.5 ──┐
+        // 05 | 10:00 -> 10:30 | └─────────┘ │ ┌── 0.5 ──┐
+        // 06 | null           | ┌── 1.5 ──┐ | ┌── 0.5 ──┐
+        // 07 | 11:00 -> 11:30 | │         │ | ┌── 0.5 ──┐
+        // 08 | 11:30 -> 12:00 | │         │ | ┌── 0.5 ──┐
+        //    | 12:00 -> 12:30 | │         │ |
+        //    | 12:30 -> 13:00 | └─────────┘ |
+
+        List<LessonUnit> lessonBlocks = lessonUnitMock.getLessonBlocks(List.of(2.5, 1.5));
+        lessonBlocks.get(1).setTimeslot(null);
+        List<LessonUnit> lessonUnits = lessonUnitMapper.mapBlocksToUnits(lessonBlocks);
+
+        Assert.isTrue(lessonUnits.get(0).getTimeslot().getId().equals(1L),
+                "The first unit does not have the timeslot id 1");
+
+        Assert.isTrue(lessonUnits.get(1).getTimeslot().getId().equals(2L),
+                "The second unit does not have the timeslot id 2");
+
+        Assert.isTrue(lessonUnits.get(2).getTimeslot().getId().equals(3L),
+                "The third unit does not have the timeslot id 3");
+
+        Assert.isTrue(lessonUnits.get(3).getTimeslot().getId().equals(4L),
+                "The fourth unit does not have the timeslot id 4");
+
+        Assert.isTrue(lessonUnits.get(4).getTimeslot().getId().equals(5L),
+                "The fifth unit does not have the timeslot id 5");
+
+        Assert.isTrue(lessonUnits.get(5).getTimeslot() == null,
+                "The sixth unit does not have the timeslot as null");
+
+        Assert.isTrue(lessonUnits.get(6).getTimeslot() == null,
+                "The seventh unit does not have the timeslot as null");
+
+        Assert.isTrue(lessonUnits.get(7).getTimeslot() == null,
+                "The eighth unit does not have the timeslot as null");
+    }
+
+    @Test
+    public void test_2_Blocks_2_WithTheSecondBlockWithTimeslotNull() {
+        // id | time           | input       | output
+        // 01 | 08:00 -> 08:30 | ┌─── 2 ───┐ | ┌── 0.5 ──┐
+        // 02 | 08:30 -> 09:00 | │         │ | ┌── 0.5 ──┐
+        // 03 | 09:00 -> 09:30 | │         │ | ┌── 0.5 ──┐
+        // 04 | 09:30 -> 10:00 | │         │ | ┌── 0.5 ──┐
+        //    | 10:00 -> 10:30 | └─────────┘ │
+        // 05 | 10:30 -> 11:00 | ┌─── 2 ───┐ | ┌── 0.5 ──┐
+        // 06 | 11:00 -> 11:30 | │         │ | ┌── 0.5 ──┐
+        // 07 | 11:30 -> 12:00 | │         │ | ┌── 0.5 ──┐
+        // 08 | 12:00 -> 12:30 | │         │ | ┌── 0.5 ──┐
+        //    | 12:30 -> 13:00 | └─────────┘ |
+
+        List<LessonUnit> lessonBlocks = lessonUnitMock.getLessonBlocks(List.of(2.0, 2.0));
+        lessonBlocks.get(1).setTimeslot(null);
+        List<LessonUnit> lessonUnits = lessonUnitMapper.mapBlocksToUnits(lessonBlocks);
+
+        Assert.isTrue(lessonUnits.get(0).getTimeslot().getId().equals(1L),
+                "The first unit does not have the timeslot id 1");
+
+        Assert.isTrue(lessonUnits.get(1).getTimeslot().getId().equals(2L),
+                "The second unit does not have the timeslot id 2");
+
+        Assert.isTrue(lessonUnits.get(2).getTimeslot().getId().equals(3L),
+                "The third unit does not have the timeslot id 3");
+
+        Assert.isTrue(lessonUnits.get(3).getTimeslot().getId().equals(4L),
+                "The fourth unit does not have the timeslot id 4");
+
+        Assert.isTrue(lessonUnits.get(4).getTimeslot() == null,
+                "The fifth unit does not have the timeslot as null");
+
+        Assert.isTrue(lessonUnits.get(5).getTimeslot() == null,
+                "The sixth unit does not have the timeslot as null");
+
+        Assert.isTrue(lessonUnits.get(6).getTimeslot() == null,
+                "The seventh unit does not have the timeslot as null");
+
+        Assert.isTrue(lessonUnits.get(7).getTimeslot() == null,
+                "The eighth unit does not have the timeslot as null");
+    }
 }
