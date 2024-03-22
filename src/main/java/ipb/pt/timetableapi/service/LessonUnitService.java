@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -96,13 +97,17 @@ public class LessonUnitService {
         List<LessonUnit> lessonBlocks = lessonUnitMapper.mapUnitsToBlocks(lessonUnits);
         List<LessonUnit> lessonBlocksOfTheCurrentSize = getLessonBlocksBySize(lessonBlocks, size, nextSize);
 
-        if (firstSize != size) {
-            List<LessonUnit> lessonBlocksOfThePreviousSize = getLessonBlocksBySize(lessonBlocks, firstSize, size);
-            List<LessonUnit> previousLessonBlocksSplitIntoTheCurrentSize = lessonUnitMapper.mapBlocksToBlocks(lessonBlocksOfThePreviousSize, size);
-            lessonBlocksOfTheCurrentSize.addAll(previousLessonBlocksSplitIntoTheCurrentSize);
+        if (firstSize == size) {
+            return lessonBlocksOfTheCurrentSize;
         }
 
-        return lessonBlocksOfTheCurrentSize;
+        List<LessonUnit> lessonBlocksOfThePreviousSize = getLessonBlocksBySize(lessonBlocks, firstSize, size);
+        List<LessonUnit> previousLessonBlocksSplitIntoTheCurrentSize = lessonUnitMapper.mapBlocksToBlocks(lessonBlocksOfThePreviousSize, size);
+
+        return new ArrayList<>() {{
+            addAll(lessonBlocksOfTheCurrentSize);
+            addAll(previousLessonBlocksSplitIntoTheCurrentSize);
+        }};
     }
 
     private List<LessonUnit> getLessonBlocksBySize(List<LessonUnit> lessonBlocks, double size, Double nextSize) {
