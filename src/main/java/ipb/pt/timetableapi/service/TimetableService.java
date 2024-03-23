@@ -248,7 +248,7 @@ public class TimetableService {
      MON - 22:30 -> 23:00 ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌──── ┌────
      [...]
      */
-    public String solveAsBlocks() throws ExecutionException, InterruptedException {
+    public List<String> solveAsBlocks() throws ExecutionException, InterruptedException {
         List<Double> sizes = List.of(
                 SizeConstant.SIZE_5,
                 SizeConstant.SIZE_2_5,
@@ -274,6 +274,6 @@ public class TimetableService {
             solutionScores.add("Completed solving with size " + size + " and score: " + solution.getScore());
         }
 
-        return solutionScores.toString();
+        return solutionScores;
     }
 }

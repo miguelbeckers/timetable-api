@@ -9,10 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class LessonUnitMapper {
@@ -29,15 +26,10 @@ public class LessonUnitMapper {
         for (LessonUnit lessonBlock : lessonBlocks) {
             int unitsPerBlock = (int) (lessonBlock.getBlockSize() / SizeConstant.SIZE_0_5);
 
-            Long timeslotId = null;
-            LocalTime startTime = null;
-            DayOfWeek dayOfWeek = null;
-
-            if (lessonBlock.getTimeslot() != null) {
-                timeslotId = lessonBlock.getTimeslot().getId();
-                startTime = lessonBlock.getTimeslot().getStartTime();
-                dayOfWeek = lessonBlock.getTimeslot().getDayOfWeek();
-            }
+            Optional<Timeslot> timeslotOptional = Optional.ofNullable(lessonBlock.getTimeslot());
+            Long timeslotId = timeslotOptional.map(Timeslot::getId).orElse(null);
+            LocalTime startTime = timeslotOptional.map(Timeslot::getStartTime).orElse(null);
+            DayOfWeek dayOfWeek = timeslotOptional.map(Timeslot::getDayOfWeek).orElse(null);
 
             for (int i = 0; i < unitsPerBlock; i++) {
                 Timeslot timeslot = null;
@@ -120,15 +112,10 @@ public class LessonUnitMapper {
             int numberOfBlocks = (int) Math.ceil(lessonBlock.getBlockSize() / blockSize);
             double remainingSize = lessonBlock.getBlockSize();
 
-            Long timeslotId = null;
-            LocalTime startTime = null;
-            DayOfWeek dayOfWeek = null;
-
-            if (lessonBlock.getTimeslot() != null) {
-                timeslotId = lessonBlock.getTimeslot().getId();
-                startTime = lessonBlock.getTimeslot().getStartTime();
-                dayOfWeek = lessonBlock.getTimeslot().getDayOfWeek();
-            }
+            Optional<Timeslot> timeslotOptional = Optional.ofNullable(lessonBlock.getTimeslot());
+            Long timeslotId = timeslotOptional.map(Timeslot::getId).orElse(null);
+            LocalTime startTime = timeslotOptional.map(Timeslot::getStartTime).orElse(null);
+            DayOfWeek dayOfWeek = timeslotOptional.map(Timeslot::getDayOfWeek).orElse(null);
 
             for (int i = 0; i < numberOfBlocks; i++) {
                 Timeslot timeslot = null;
