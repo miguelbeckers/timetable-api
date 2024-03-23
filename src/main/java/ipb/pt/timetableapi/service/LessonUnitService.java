@@ -3,6 +3,7 @@ package ipb.pt.timetableapi.service;
 import ipb.pt.timetableapi.converter.LessonUnitConverter;
 import ipb.pt.timetableapi.dto.LessonUnitDto;
 import ipb.pt.timetableapi.mapper.LessonUnitMapper;
+import ipb.pt.timetableapi.model.Lesson;
 import ipb.pt.timetableapi.model.LessonUnit;
 import ipb.pt.timetableapi.repository.LessonUnitRepository;
 import ipb.pt.timetableapi.solver.SizeConstant;
@@ -11,8 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class LessonUnitService {
@@ -117,5 +117,51 @@ public class LessonUnitService {
 
     public List<LessonUnit> divideLessonBlocksIntoUnits(List<LessonUnit> lessonBlocks) {
         return lessonUnitMapper.mapBlocksToUnits(lessonBlocks);
+    }
+
+    public List<List<LessonUnit>> getLessonUnitsSplitWrong() {
+        List<LessonUnit> lessonUnits = lessonUnitRepository.findAll();
+
+        HashMap<Lesson, List<LessonUnit>> lessonUnitMap = new HashMap<>();
+        List<List<LessonUnit>> lessonUnitsSplitWrong = new ArrayList<>();
+        List<List<LessonUnit>> lessonUnitsSplitCorrect = new ArrayList<>();
+
+        for (LessonUnit lessonBlock : lessonUnits) {
+            Lesson lesson = lessonBlock.getLesson();
+            lessonUnitMap.computeIfAbsent(lesson, k -> new ArrayList<>()).add(lessonBlock);
+        }
+
+        for (Map.Entry<Lesson, List<LessonUnit>> entry : lessonUnitMap.entrySet()) {
+            List<LessonUnit> lessonUnitsWithSameLesson = entry.getValue();
+            List<LessonUnit> lessonBlocksWithTheSameLesson = new ArrayList<>(lessonUnitsWithSameLesson);
+            Lesson lesson = entry.getKey();
+
+            int i = 0;
+
+            while (i < lessonBlocksWithTheSameLesson.size() - 1) {
+                LessonUnit lessonUnit = lessonBlocksWithTheSameLesson.get(i);
+                LessonUnit nextLessonUnit = lessonBlocksWithTheSameLesson.get(i + 1);
+
+                if (lessonUnit.getTimeslot() != null && nextLessonUnit.getTimeslot() != null
+                        && lessonUnit.getClassroom() != null && nextLessonUnit.getClassroom() != null
+                        && lessonUnit.getClassroom().equals(nextLessonUnit.getClassroom())
+                        && lessonUnit.getTimeslot().getDayOfWeek() == nextLessonUnit.getTimeslot().getDayOfWeek()
+                        && lessonUnit.getTimeslot().getEndTime().equals(nextLessonUnit.getTimeslot().getStartTime())) {
+                    lessonBlocksWithTheSameLesson.remove(i + 1);
+                    lessonUnit.getTimeslot().setEndTime(nextLessonUnit.getTimeslot().getEndTime());
+                } else {
+                    i++;
+                }
+            }
+
+            if (lessonBlocksWithTheSameLesson.size() != lesson.getBlocks()) {
+                lessonUnitsSplitWrong.add(lessonBlocksWithTheSameLesson);
+            } else {
+                lessonUnitsSplitCorrect.add(lessonBlocksWithTheSameLesson);
+            }
+        }
+
+        System.out.println("lessonUnitsSplitCorrect: " + lessonUnitsSplitCorrect.size());
+        return lessonUnitsSplitWrong;
     }
 }

@@ -48,4 +48,9 @@ public class LessonUnitController {
     public ResponseEntity<Object> reset() {
         return ResponseEntity.ok().body(lessonUnitService.resetAll());
     }
+
+    @GetMapping("/get-lesson-units-split-wrong")
+    public ResponseEntity<Object> getLessonUnitsSplitWrong() {
+        return ResponseEntity.ok().body(lessonUnitService.getLessonUnitsSplitWrong());
+    }
 }
