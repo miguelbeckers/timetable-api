@@ -103,8 +103,10 @@ public class TimetableService {
         List<Timeslot> timeslots = timeslotRepository.findAll();
         List<LessonUnit> lessonUnits = lessonUnitRepository.findAll();
 
+        List<LessonUnit> lessonBlocks = lessonUnitService.getLessonBlocksBySize(SizeConstant.SIZE_0_5, null, null);
+
         lessonUnits.forEach(lessonUnit -> lessonUnit.setIsPinned(false));
-        SolverJob<Timetable, UUID> solverJob = solve(lessonUnits, timeslots, classrooms);
+        SolverJob<Timetable, UUID> solverJob = solve(lessonBlocks, timeslots, classrooms);
         Timetable solution = solverJob.getFinalBestSolution();
 
         lessonUnitRepository.saveAll(solution.getLessonUnits());

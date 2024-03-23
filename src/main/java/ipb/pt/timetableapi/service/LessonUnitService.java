@@ -5,6 +5,7 @@ import ipb.pt.timetableapi.dto.LessonUnitDto;
 import ipb.pt.timetableapi.mapper.LessonUnitMapper;
 import ipb.pt.timetableapi.model.Lesson;
 import ipb.pt.timetableapi.model.LessonUnit;
+import ipb.pt.timetableapi.model.Timeslot;
 import ipb.pt.timetableapi.repository.LessonUnitRepository;
 import ipb.pt.timetableapi.solver.SizeConstant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Duration;
 import java.util.*;
 
 @Service
@@ -89,15 +91,10 @@ public class LessonUnitService {
 
     public List<LessonUnit> getLessonBlocksBySize(double size, Double nextSize, Double firstSize) {
         List<LessonUnit> lessonUnits = lessonUnitRepository.findAll();
-
-        if (size == SizeConstant.SIZE_0_5) {
-            return lessonUnits;
-        }
-
         List<LessonUnit> lessonBlocks = lessonUnitMapper.mapUnitsToBlocks(lessonUnits);
         List<LessonUnit> lessonBlocksOfTheCurrentSize = getLessonBlocksBySize(lessonBlocks, size, nextSize);
 
-        if (firstSize == size) {
+        if (firstSize != null && firstSize == size) {
             return lessonBlocksOfTheCurrentSize;
         }
 
@@ -110,8 +107,8 @@ public class LessonUnitService {
         }};
     }
 
-    private List<LessonUnit> getLessonBlocksBySize(List<LessonUnit> lessonBlocks, double size, Double nextSize) {
-        return lessonBlocks.stream().filter(lessonUnit -> lessonUnit.getBlockSize() <= size
+    private List<LessonUnit> getLessonBlocksBySize(List<LessonUnit> lessonBlocks, Double size, Double nextSize) {
+        return lessonBlocks.stream().filter(lessonUnit -> (size == null || lessonUnit.getBlockSize() <= size)
                 && (nextSize == null || lessonUnit.getBlockSize() > nextSize)).toList();
     }
 
@@ -119,8 +116,19 @@ public class LessonUnitService {
         return lessonUnitMapper.mapBlocksToUnits(lessonBlocks);
     }
 
-    public List<List<LessonUnit>> getLessonUnitsSplitWrong() {
+    public List<List<LessonUnitDto>> getLessonUnitsSplitWrong() {
         List<LessonUnit> lessonUnits = lessonUnitRepository.findAll();
+
+        for (LessonUnit lessonUnit : lessonUnits) {
+            Timeslot timeslot = lessonUnit.getTimeslot();
+
+            if (timeslot != null) {
+                Duration duration = Duration.between(timeslot.getStartTime(), timeslot.getEndTime());
+                if (duration.toMinutes() > SizeConstant.UNIT_DURATION) {
+                    throw new IllegalArgumentException("Something went wrong. The difference between the start and end time is more than 30 minutes");
+                }
+            }
+        }
 
         HashMap<Lesson, List<LessonUnit>> lessonUnitMap = new HashMap<>();
         List<List<LessonUnit>> lessonUnitsSplitWrong = new ArrayList<>();
@@ -129,6 +137,21 @@ public class LessonUnitService {
         for (LessonUnit lessonBlock : lessonUnits) {
             Lesson lesson = lessonBlock.getLesson();
             lessonUnitMap.computeIfAbsent(lesson, k -> new ArrayList<>()).add(lessonBlock);
+        }
+
+        for (Map.Entry<Lesson, List<LessonUnit>> entry : lessonUnitMap.entrySet()) {
+            List<LessonUnit> lessonUnitsWithSameLesson = entry.getValue();
+
+            for (LessonUnit lessonUnit : lessonUnitsWithSameLesson) {
+                Timeslot timeslot = lessonUnit.getTimeslot();
+
+                if (timeslot != null) {
+                    Duration duration = Duration.between(timeslot.getStartTime(), timeslot.getEndTime());
+                    if (duration.toMinutes() > SizeConstant.UNIT_DURATION) {
+                        throw new IllegalArgumentException("Something went wrong. The difference between the start and end time is more than 30 minutes");
+                    }
+                }
+            }
         }
 
         for (Map.Entry<Lesson, List<LessonUnit>> entry : lessonUnitMap.entrySet()) {
@@ -155,13 +178,27 @@ public class LessonUnitService {
             }
 
             if (lessonBlocksWithTheSameLesson.size() != lesson.getBlocks()) {
-                lessonUnitsSplitWrong.add(lessonBlocksWithTheSameLesson);
+                lessonUnitsSplitWrong.add(lessonUnitsWithSameLesson);
             } else {
-                lessonUnitsSplitCorrect.add(lessonBlocksWithTheSameLesson);
+                lessonUnitsSplitCorrect.add(lessonUnitsWithSameLesson);
+            }
+        }
+
+        for (LessonUnit lessonUnit : lessonUnitsSplitWrong.get(0)) {
+            Timeslot timeslot = lessonUnit.getTimeslot();
+
+            if (timeslot != null) {
+                Duration duration = Duration.between(timeslot.getStartTime(), timeslot.getEndTime());
+                if (duration.toMinutes() > SizeConstant.UNIT_DURATION) {
+                    throw new IllegalArgumentException("Something went wrong. The difference between the start and end time is more than 30 minutes");
+                }
             }
         }
 
         System.out.println("lessonUnitsSplitCorrect: " + lessonUnitsSplitCorrect.size());
-        return lessonUnitsSplitWrong;
+        List<List<LessonUnitDto>> lessonUnitsSplitWrongDto = new ArrayList<>();
+        lessonUnitsSplitWrong.forEach(list -> lessonUnitsSplitWrongDto.add(lessonUnitConverter.toDto(list)));
+
+        return lessonUnitsSplitWrongDto;
     }
 }

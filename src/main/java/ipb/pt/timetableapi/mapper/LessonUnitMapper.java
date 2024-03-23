@@ -1,5 +1,6 @@
 package ipb.pt.timetableapi.mapper;
 
+import ipb.pt.timetableapi.model.Classroom;
 import ipb.pt.timetableapi.model.Lesson;
 import ipb.pt.timetableapi.model.LessonUnit;
 import ipb.pt.timetableapi.model.Timeslot;
@@ -51,7 +52,49 @@ public class LessonUnitMapper {
             }
         }
 
+        lessonUnitChecker(lessonUnits);
         return lessonUnits;
+    }
+
+    public static void lessonUnitChecker(List<LessonUnit> lessonBlocks) {
+        System.out.println("##########################################################################################");
+
+        HashMap<Lesson, List<LessonUnit>> lessonUnitMap = new HashMap<>();
+        for (LessonUnit lessonBlock : lessonBlocks) {
+            Lesson lesson = lessonBlock.getLesson();
+            lessonUnitMap.computeIfAbsent(lesson, k -> new ArrayList<>()).add(lessonBlock);
+        }
+
+        for (Map.Entry<Lesson, List<LessonUnit>> entry : lessonUnitMap.entrySet()) {
+            List<LessonUnit> lessonBlocksWithSameLesson = entry.getValue();
+            Lesson lesson = entry.getKey();
+            boolean isTheRightNumber = lessonBlocksWithSameLesson.size() == lesson.getHoursPerWeek() / SizeConstant.SIZE_0_5;
+
+            System.out.println("--------------------------------------------------------------------------------------");
+            System.out.println("lesson: " + lesson.getId() +
+                    " | hoursPerWeek: " + lesson.getHoursPerWeek() +
+                    " | blocks: " + lesson.getBlocks() +
+                    " | created blocks: " + lessonBlocksWithSameLesson.size() +
+                    " | isPinned: " + lessonBlocksWithSameLesson.get(0).getIsPinned() +
+                    " | isTheRightNumber: " + isTheRightNumber);
+
+            for (LessonUnit lessonBlock : lessonBlocksWithSameLesson) {
+                Optional<Timeslot> timeslotOptional = Optional.ofNullable(lessonBlock.getTimeslot());
+                DayOfWeek dayOfWeek = timeslotOptional.map(Timeslot::getDayOfWeek).orElse(null);
+                LocalTime startTime = timeslotOptional.map(Timeslot::getStartTime).orElse(null);
+                LocalTime endTime = timeslotOptional.map(Timeslot::getEndTime).orElse(null);
+
+                Optional<Classroom> classroomOptional = Optional.ofNullable(lessonBlock.getClassroom());
+                Long classroomId = classroomOptional.map(Classroom::getId).orElse(null);
+
+                System.out.println("lessonBlockId: " + lessonBlock.getId() +
+                        " | blockSize: " + lessonBlock.getBlockSize() +
+                        " | dayOfWeek: " + dayOfWeek +
+                        " | startTime: " + startTime +
+                        " | endTime: " + endTime +
+                        " | classroomId: " + classroomId);
+            }
+        }
     }
 
     public List<LessonUnit> mapUnitsToBlocks(List<LessonUnit> lessonUnits) {
