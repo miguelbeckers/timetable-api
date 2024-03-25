@@ -3,18 +3,15 @@ package ipb.pt.timetableapi.service;
 import ipb.pt.timetableapi.converter.LessonUnitConverter;
 import ipb.pt.timetableapi.dto.LessonUnitDto;
 import ipb.pt.timetableapi.mapper.LessonUnitMapper;
-import ipb.pt.timetableapi.model.Lesson;
 import ipb.pt.timetableapi.model.LessonUnit;
-import ipb.pt.timetableapi.model.Timeslot;
 import ipb.pt.timetableapi.repository.LessonUnitRepository;
-import ipb.pt.timetableapi.solver.SizeConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class LessonUnitService {
@@ -114,91 +111,5 @@ public class LessonUnitService {
 
     public List<LessonUnit> divideLessonBlocksIntoUnits(List<LessonUnit> lessonBlocks) {
         return lessonUnitMapper.mapBlocksToUnits(lessonBlocks);
-    }
-
-    public List<List<LessonUnitDto>> getLessonUnitsSplitWrong() {
-        List<LessonUnit> lessonUnits = lessonUnitRepository.findAll();
-
-        for (LessonUnit lessonUnit : lessonUnits) {
-            Timeslot timeslot = lessonUnit.getTimeslot();
-
-            if (timeslot != null) {
-                Duration duration = Duration.between(timeslot.getStartTime(), timeslot.getEndTime());
-                if (duration.toMinutes() > SizeConstant.UNIT_DURATION) {
-                    throw new IllegalArgumentException("Something went wrong. The difference between the start and end time is more than 30 minutes");
-                }
-            }
-        }
-
-        HashMap<Lesson, List<LessonUnit>> lessonUnitsMap = new HashMap<>();
-        List<List<LessonUnit>> lessonUnitsSplitWrong = new ArrayList<>();
-        List<List<LessonUnit>> lessonUnitsSplitCorrect = new ArrayList<>();
-
-        for (LessonUnit lessonBlock : lessonUnits) {
-            Lesson lesson = lessonBlock.getLesson();
-            lessonUnitsMap.computeIfAbsent(lesson, k -> new ArrayList<>()).add(lessonBlock);
-        }
-
-        for (Map.Entry<Lesson, List<LessonUnit>> entry : lessonUnitsMap.entrySet()) {
-            List<LessonUnit> lessonUnitsWithSameLesson = entry.getValue();
-
-            for (LessonUnit lessonUnit : lessonUnitsWithSameLesson) {
-                Timeslot timeslot = lessonUnit.getTimeslot();
-
-                if (timeslot != null) {
-                    Duration duration = Duration.between(timeslot.getStartTime(), timeslot.getEndTime());
-                    if (duration.toMinutes() > SizeConstant.UNIT_DURATION) {
-                        throw new IllegalArgumentException("Something went wrong. The difference between the start and end time is more than 30 minutes");
-                    }
-                }
-            }
-        }
-
-        for (Map.Entry<Lesson, List<LessonUnit>> entry : lessonUnitsMap.entrySet()) {
-            List<LessonUnit> lessonUnitsWithSameLesson = entry.getValue();
-            List<LessonUnit> lessonBlocksWithTheSameLesson = new ArrayList<>(lessonUnitsWithSameLesson);
-            Lesson lesson = entry.getKey();
-
-            int i = 0;
-
-            while (i < lessonBlocksWithTheSameLesson.size() - 1) {
-                LessonUnit lessonUnit = lessonBlocksWithTheSameLesson.get(i);
-                LessonUnit nextLessonUnit = lessonBlocksWithTheSameLesson.get(i + 1);
-
-                if (lessonUnit.getTimeslot() != null && nextLessonUnit.getTimeslot() != null
-                        && lessonUnit.getClassroom() != null && nextLessonUnit.getClassroom() != null
-                        && lessonUnit.getClassroom().equals(nextLessonUnit.getClassroom())
-                        && lessonUnit.getTimeslot().getDayOfWeek() == nextLessonUnit.getTimeslot().getDayOfWeek()
-                        && lessonUnit.getTimeslot().getEndTime().equals(nextLessonUnit.getTimeslot().getStartTime())) {
-                    lessonBlocksWithTheSameLesson.remove(i + 1);
-                    lessonUnit.getTimeslot().setEndTime(nextLessonUnit.getTimeslot().getEndTime());
-                } else {
-                    i++;
-                }
-            }
-
-            if (lessonBlocksWithTheSameLesson.size() != lesson.getBlocks()) {
-                lessonUnitsSplitWrong.add(lessonUnitsWithSameLesson);
-            } else {
-                lessonUnitsSplitCorrect.add(lessonUnitsWithSameLesson);
-            }
-        }
-
-        for (LessonUnit lessonUnit : lessonUnitsSplitWrong.get(0)) {
-            Timeslot timeslot = lessonUnit.getTimeslot();
-
-            if (timeslot != null) {
-                Duration duration = Duration.between(timeslot.getStartTime(), timeslot.getEndTime());
-                if (duration.toMinutes() > SizeConstant.UNIT_DURATION) {
-                    throw new IllegalArgumentException("Something went wrong. The difference between the start and end time is more than 30 minutes");
-                }
-            }
-        }
-
-        System.out.println("lessonUnitsSplitCorrect: " + lessonUnitsSplitCorrect.size());
-        List<List<LessonUnitDto>> lessonUnitsSplitWrongDto = new ArrayList<>();
-        lessonUnitsSplitWrong.forEach(list -> lessonUnitsSplitWrongDto.add(lessonUnitConverter.toDto(list)));
-
-        return lessonUnitsSplitWrongDto;
     }
 }

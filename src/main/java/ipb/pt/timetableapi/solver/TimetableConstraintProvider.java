@@ -192,7 +192,7 @@ public class TimetableConstraintProvider implements ConstraintProvider {
                 .groupBy(LessonUnit::getLesson, lessonUnit -> lessonUnit.getTimeslot().getDayOfWeek(), count())
                 .filter((lesson, dayOfWeek, count) -> (
                         count != lesson.getHoursPerWeek()
-                                * SizeConstant.SIZE_0_5 / lesson.getBlocks()))
+                                * SizeConstant._0_5 / lesson.getBlocks()))
                 .penalizeConfigurable(TimetableConstraintConstant.LESSON_BLOCK_SIZE_EFFICIENCY);
     }
 

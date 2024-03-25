@@ -3,10 +3,10 @@ package ipb.pt.timetableapi.service;
 import ipb.pt.timetableapi.converter.TimeslotConverter;
 import ipb.pt.timetableapi.dto.TimeslotDto;
 import ipb.pt.timetableapi.mapper.TimeslotMapper;
-import ipb.pt.timetableapi.model.Lesson;
 import ipb.pt.timetableapi.model.LessonUnit;
 import ipb.pt.timetableapi.model.Timeslot;
 import ipb.pt.timetableapi.repository.TimeslotRepository;
+import ipb.pt.timetableapi.solver.SizeConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -70,12 +70,22 @@ public class TimeslotService {
 
     public List<Timeslot> getTimeslotsBySize(double blockSize) {
         List<Timeslot> timeslots = timeslotRepository.findAll();
+        if (blockSize == SizeConstant._0_5) return timeslots;
         return timeslotMapper.mapTimeslotsUnitsToBlocks(timeslots, blockSize);
     }
 
-    public void mapUnavailability(List<Timeslot> timeslotBlocks, List<LessonUnit> lessonUnits) {
-        for (LessonUnit lessonUnit : lessonUnits) {
-            Lesson lesson = lessonUnit.getLesson();
+    public void updateUnavailability(List<Timeslot> timeslots, List<LessonUnit> lessonBlocks) {
+        for (LessonUnit lessonBlock : lessonBlocks) {
+            lessonBlock.getLesson().getProfessors().forEach(professor -> professor.setUnavailability(
+                    timeslotMapper.mapUnavailabilityUnitsToBlocks(timeslots, professor.getUnavailability())));
+
+            lessonBlock.getLesson().getSubjectCourse().getCourse().setUnavailability(timeslotMapper.mapUnavailabilityUnitsToBlocks(
+                    timeslots, lessonBlock.getLesson().getSubjectCourse().getCourse().getUnavailability()));
+
+            if (lessonBlock.getClassroom() == null) continue;
+            lessonBlock.getClassroom().setUnavailability(timeslotMapper.mapUnavailabilityUnitsToBlocks(
+                    timeslots, lessonBlock.getClassroom().getUnavailability()));
+
         }
     }
 }

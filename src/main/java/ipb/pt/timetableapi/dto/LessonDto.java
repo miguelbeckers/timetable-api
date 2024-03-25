@@ -14,7 +14,7 @@ public class LessonDto {
     private String color;
     private Double hoursPerWeek;
     private Integer blocks;
-    private Boolean isEnabled = false;
+    private Boolean isEnabled;
     private Long subjectCourseId;
     private Long subjectTypeId;
     private List<Long> professorIds = new ArrayList<>();

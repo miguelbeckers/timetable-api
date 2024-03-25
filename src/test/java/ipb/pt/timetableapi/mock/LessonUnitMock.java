@@ -39,9 +39,9 @@ public class LessonUnitMock {
         long lessonUnitId = 1L;
 
         double timeslotSize = timeslotMapper.getTimeslotSize(hoursPerWeek / blocks);
-        double numberOfTimeslotUnitsPerBlock = timeslotSize / SizeConstant.SIZE_0_5;
+        double numberOfTimeslotUnitsPerBlock = timeslotSize / SizeConstant._0_5;
 
-        int numberOfLessonUnits = (int) (hoursPerWeek / SizeConstant.SIZE_0_5);
+        int numberOfLessonUnits = (int) (hoursPerWeek / SizeConstant._0_5);
         int numberOfLessonUnitsPerBlock = numberOfLessonUnits / blocks;
         int ignoredTimeslotUnitsPerBlock = (int) (numberOfTimeslotUnitsPerBlock - numberOfLessonUnitsPerBlock);
 
@@ -55,7 +55,7 @@ public class LessonUnitMock {
                 lessonUnit.setLesson(lesson);
                 lessonUnit.setTimeslot(timeslot);
                 lessonUnit.setClassroom(classroom);
-                lessonUnit.setBlockSize(SizeConstant.SIZE_0_5);
+                lessonUnit.setBlockSize(SizeConstant._0_5);
                 lessonUnit.setIsPinned(false);
                 lessonUnits.add(lessonUnit);
 
@@ -86,8 +86,8 @@ public class LessonUnitMock {
         long timeslotId = 1L;
 
         for (Double blockSize : blockSizes) {
-            int timeslotUnitsPerBlock = (int) (timeslotMapper.getTimeslotSize(blockSize) / SizeConstant.SIZE_0_5);
-            int lessonUnitsPerBlock = (int) (blockSize / SizeConstant.SIZE_0_5);
+            int timeslotUnitsPerBlock = (int) (timeslotMapper.getTimeslotSize(blockSize) / SizeConstant._0_5);
+            int lessonUnitsPerBlock = (int) (blockSize / SizeConstant._0_5);
 
             LocalTime endTime = startTime.plusMinutes(timeslotUnitsPerBlock * SizeConstant.UNIT_DURATION);
             Timeslot timeslot = new Timeslot(timeslotId, DayOfWeek.MONDAY, startTime, endTime);

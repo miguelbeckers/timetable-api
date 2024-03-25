@@ -16,7 +16,7 @@ public class TimeslotMock {
         List<Timeslot> timeslotUnits = new ArrayList<>();
 
         LocalTime startTime = LocalTime.parse(initialTime);
-        int numberOfUnits = (int) (numberOfHOurs / SizeConstant.SIZE_0_5);
+        int numberOfUnits = (int) (numberOfHOurs / SizeConstant._0_5);
 
         for (long i = initialId; i <= numberOfUnits; i++) {
             LocalTime endTime = startTime.plusMinutes(SizeConstant.UNIT_DURATION);

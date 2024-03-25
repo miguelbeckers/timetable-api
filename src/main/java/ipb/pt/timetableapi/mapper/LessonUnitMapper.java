@@ -1,6 +1,5 @@
 package ipb.pt.timetableapi.mapper;
 
-import ipb.pt.timetableapi.model.Classroom;
 import ipb.pt.timetableapi.model.Lesson;
 import ipb.pt.timetableapi.model.LessonUnit;
 import ipb.pt.timetableapi.model.Timeslot;
@@ -25,7 +24,7 @@ public class LessonUnitMapper {
         List<LessonUnit> lessonUnits = new ArrayList<>();
 
         for (LessonUnit lessonBlock : lessonBlocks) {
-            int unitsPerBlock = (int) (lessonBlock.getBlockSize() / SizeConstant.SIZE_0_5);
+            int unitsPerBlock = (int) (lessonBlock.getBlockSize() / SizeConstant._0_5);
 
             Optional<Timeslot> timeslotOptional = Optional.ofNullable(lessonBlock.getTimeslot());
             Long timeslotId = timeslotOptional.map(Timeslot::getId).orElse(null);
@@ -43,7 +42,7 @@ public class LessonUnitMapper {
 
                 LessonUnit lessonUnit = new LessonUnit();
                 lessonUnit.setId(lessonBlock.getId() + i);
-                lessonUnit.setBlockSize(SizeConstant.SIZE_0_5);
+                lessonUnit.setBlockSize(SizeConstant._0_5);
                 lessonUnit.setLesson(lessonBlock.getLesson());
                 lessonUnit.setIsPinned(lessonBlock.getIsPinned());
                 lessonUnit.setClassroom(lessonBlock.getClassroom());
@@ -52,49 +51,7 @@ public class LessonUnitMapper {
             }
         }
 
-        lessonUnitChecker(lessonUnits);
         return lessonUnits;
-    }
-
-    public static void lessonUnitChecker(List<LessonUnit> lessonBlocks) {
-        System.out.println("##########################################################################################");
-
-        HashMap<Lesson, List<LessonUnit>> lessonUnitMap = new HashMap<>();
-        for (LessonUnit lessonBlock : lessonBlocks) {
-            Lesson lesson = lessonBlock.getLesson();
-            lessonUnitMap.computeIfAbsent(lesson, k -> new ArrayList<>()).add(lessonBlock);
-        }
-
-        for (Map.Entry<Lesson, List<LessonUnit>> entry : lessonUnitMap.entrySet()) {
-            List<LessonUnit> lessonBlocksWithSameLesson = entry.getValue();
-            Lesson lesson = entry.getKey();
-            boolean isTheRightNumber = lessonBlocksWithSameLesson.size() == lesson.getHoursPerWeek() / SizeConstant.SIZE_0_5;
-
-            System.out.println("--------------------------------------------------------------------------------------");
-            System.out.println("lesson: " + lesson.getId() +
-                    " | hoursPerWeek: " + lesson.getHoursPerWeek() +
-                    " | blocks: " + lesson.getBlocks() +
-                    " | created blocks: " + lessonBlocksWithSameLesson.size() +
-                    " | isPinned: " + lessonBlocksWithSameLesson.get(0).getIsPinned() +
-                    " | isTheRightNumber: " + isTheRightNumber);
-
-            for (LessonUnit lessonBlock : lessonBlocksWithSameLesson) {
-                Optional<Timeslot> timeslotOptional = Optional.ofNullable(lessonBlock.getTimeslot());
-                DayOfWeek dayOfWeek = timeslotOptional.map(Timeslot::getDayOfWeek).orElse(null);
-                LocalTime startTime = timeslotOptional.map(Timeslot::getStartTime).orElse(null);
-                LocalTime endTime = timeslotOptional.map(Timeslot::getEndTime).orElse(null);
-
-                Optional<Classroom> classroomOptional = Optional.ofNullable(lessonBlock.getClassroom());
-                Long classroomId = classroomOptional.map(Classroom::getId).orElse(null);
-
-                System.out.println("lessonBlockId: " + lessonBlock.getId() +
-                        " | blockSize: " + lessonBlock.getBlockSize() +
-                        " | dayOfWeek: " + dayOfWeek +
-                        " | startTime: " + startTime +
-                        " | endTime: " + endTime +
-                        " | classroomId: " + classroomId);
-            }
-        }
     }
 
     public List<LessonUnit> mapUnitsToBlocks(List<LessonUnit> lessonUnits) {
@@ -111,8 +68,8 @@ public class LessonUnitMapper {
             Lesson lesson = entry.getKey();
 
             double blockSize = (double) lesson.getHoursPerWeek() / lesson.getBlocks();
-            int timeslotUnitsPerBlock = (int) (timeslotMapper.getTimeslotSize(blockSize) / SizeConstant.SIZE_0_5);
-            int lessonUnitsPerBlock = (int) (blockSize / SizeConstant.SIZE_0_5);
+            int timeslotUnitsPerBlock = (int) (timeslotMapper.getTimeslotSize(blockSize) / SizeConstant._0_5);
+            int lessonUnitsPerBlock = (int) (blockSize / SizeConstant._0_5);
 
             for (int i = 0; i < lesson.getBlocks(); i++) {
                 LessonUnit firstLessonUnit = lessonUnitsWithSameLesson.get(0);
@@ -149,7 +106,7 @@ public class LessonUnitMapper {
 
     public List<LessonUnit> mapBlocksToBlocks(List<LessonUnit> lessonBlocks, double blockSize) {
         List<LessonUnit> splitLessonBlocks = new ArrayList<>();
-        int timeslotUnitsPerBlock = (int) (timeslotMapper.getTimeslotSize(blockSize) / SizeConstant.SIZE_0_5);
+        int timeslotUnitsPerBlock = (int) (timeslotMapper.getTimeslotSize(blockSize) / SizeConstant._0_5);
 
         for (LessonUnit lessonBlock : lessonBlocks) {
             int numberOfBlocks = (int) Math.ceil(lessonBlock.getBlockSize() / blockSize);
@@ -172,7 +129,7 @@ public class LessonUnitMapper {
                     startTime = endTime;
                 }
 
-                long lessonBlockId = (long) (lessonBlock.getId() + (blockSize / SizeConstant.SIZE_0_5) * i);
+                long lessonBlockId = (long) (lessonBlock.getId() + (blockSize / SizeConstant._0_5) * i);
 
                 LessonUnit newLessonBlock = new LessonUnit();
                 newLessonBlock.setId(lessonBlockId);

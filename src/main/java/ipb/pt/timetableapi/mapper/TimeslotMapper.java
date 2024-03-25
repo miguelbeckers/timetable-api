@@ -13,8 +13,8 @@ import java.util.List;
 public class TimeslotMapper {
     public List<Timeslot> mapTimeslotsUnitsToBlocks(List<Timeslot> timeslotBlocks, double blockSize) {
         List<Timeslot> timeslotsBlocks = new ArrayList<>();
-        int timeslotUnits = (int) (blockSize / SizeConstant.SIZE_0_5);
-        int duration = (int) (blockSize / SizeConstant.SIZE_0_5 * SizeConstant.UNIT_DURATION);
+        int timeslotUnits = (int) (blockSize / SizeConstant._0_5);
+        int duration = (int) (blockSize / SizeConstant._0_5 * SizeConstant.UNIT_DURATION);
 
         for (int i = 0; i < timeslotBlocks.size(); i += timeslotUnits) {
             Timeslot timeslot = timeslotBlocks.get(i);
@@ -30,13 +30,12 @@ public class TimeslotMapper {
     }
 
     public double getTimeslotSize(double blockSize) {
-        return blockSize <= SizeConstant.SIZE_0_5 ? SizeConstant.SIZE_0_5
-                : blockSize <= SizeConstant.SIZE_2_5 ? SizeConstant.SIZE_2_5
-                : SizeConstant.SIZE_5;
+        return blockSize <= SizeConstant._0_5 ? SizeConstant._0_5
+                : blockSize <= SizeConstant._2_5 ? SizeConstant._2_5
+                : SizeConstant._5;
     }
 
-    public List<Timeslot> mapUnavailabilityUnitsToBlocks(
-            List<Timeslot> timeslotBlocks, List<Timeslot> unavailabilityUnits) {
+    public List<Timeslot> mapUnavailabilityUnitsToBlocks(List<Timeslot> timeslotBlocks, List<Timeslot> unavailabilityUnits) {
         HashMap<Long, Timeslot> unavailabilityBlocksHashMap = new HashMap<>();
 
         for (Timeslot unavailabilityUnit : unavailabilityUnits) {
@@ -53,7 +52,6 @@ public class TimeslotMapper {
 
         List<Timeslot> unavailabilityBlocks = new ArrayList<>(unavailabilityBlocksHashMap.values().stream().toList());
         unavailabilityBlocks.sort(Comparator.comparing(Timeslot::getStartTime));
-
         return unavailabilityBlocks;
     }
 }
