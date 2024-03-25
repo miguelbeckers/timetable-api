@@ -130,16 +130,16 @@ public class LessonUnitService {
             }
         }
 
-        HashMap<Lesson, List<LessonUnit>> lessonUnitMap = new HashMap<>();
+        HashMap<Lesson, List<LessonUnit>> lessonUnitsMap = new HashMap<>();
         List<List<LessonUnit>> lessonUnitsSplitWrong = new ArrayList<>();
         List<List<LessonUnit>> lessonUnitsSplitCorrect = new ArrayList<>();
 
         for (LessonUnit lessonBlock : lessonUnits) {
             Lesson lesson = lessonBlock.getLesson();
-            lessonUnitMap.computeIfAbsent(lesson, k -> new ArrayList<>()).add(lessonBlock);
+            lessonUnitsMap.computeIfAbsent(lesson, k -> new ArrayList<>()).add(lessonBlock);
         }
 
-        for (Map.Entry<Lesson, List<LessonUnit>> entry : lessonUnitMap.entrySet()) {
+        for (Map.Entry<Lesson, List<LessonUnit>> entry : lessonUnitsMap.entrySet()) {
             List<LessonUnit> lessonUnitsWithSameLesson = entry.getValue();
 
             for (LessonUnit lessonUnit : lessonUnitsWithSameLesson) {
@@ -154,7 +154,7 @@ public class LessonUnitService {
             }
         }
 
-        for (Map.Entry<Lesson, List<LessonUnit>> entry : lessonUnitMap.entrySet()) {
+        for (Map.Entry<Lesson, List<LessonUnit>> entry : lessonUnitsMap.entrySet()) {
             List<LessonUnit> lessonUnitsWithSameLesson = entry.getValue();
             List<LessonUnit> lessonBlocksWithTheSameLesson = new ArrayList<>(lessonUnitsWithSameLesson);
             Lesson lesson = entry.getKey();

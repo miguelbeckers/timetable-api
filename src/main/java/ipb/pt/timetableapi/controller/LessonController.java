@@ -43,4 +43,29 @@ public class LessonController {
         lessonService.findById(id);
         return ResponseEntity.ok().build();
     }
+
+    @PutMapping("enable-with-timeslot-and-classroom")
+    public ResponseEntity<Object> enableWithTimeslotAndClassroom() {
+        return ResponseEntity.ok().body(lessonService.enableLessonsWithTimeslotAndClassroom());
+    }
+
+    @PutMapping("enable-all")
+    public ResponseEntity<Object> enableAll() {
+        return ResponseEntity.ok().body(lessonService.enableAllLessons());
+    }
+
+    @PutMapping("enable/{id}")
+    public ResponseEntity<Object> enable(@PathVariable Long id) {
+        return ResponseEntity.ok().body(lessonService.enableLesson(id));
+    }
+
+    @PutMapping("disable-all")
+    public ResponseEntity<Object> disableAll() {
+        return ResponseEntity.ok().body(lessonService.disableAllLessons());
+    }
+
+    @PutMapping("disable/{id}")
+    public ResponseEntity<Object> disable(@PathVariable Long id) {
+        return ResponseEntity.ok().body(lessonService.disableLesson(id));
+    }
 }

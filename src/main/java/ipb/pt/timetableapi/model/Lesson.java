@@ -23,6 +23,7 @@ public class Lesson {
     private String color;
     private Double hoursPerWeek;
     private Integer blocks;
+    private Boolean isEnabled = false;
     @ManyToOne
     private SubjectCourse subjectCourse;
     @ManyToOne
