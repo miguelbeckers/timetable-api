@@ -101,7 +101,7 @@ public class TimetableService {
     public String solve() throws ExecutionException, InterruptedException {
         List<Classroom> classrooms = classroomRepository.findAll();
         List<Timeslot> timeslots = timeslotRepository.findAll();
-        List<LessonUnit> lessonUnits = lessonUnitRepository.findAll();
+        List<LessonUnit> lessonUnits = lessonUnitRepository.findByLessonIsEnabledTrue();
 
         List<LessonUnit> lessonBlocks = lessonUnitService.getLessonBlocksBySize(SizeConstant.SIZE_0_5, null, null);
 

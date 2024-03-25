@@ -90,7 +90,7 @@ public class LessonUnitService {
     }
 
     public List<LessonUnit> getLessonBlocksBySize(double size, Double nextSize, Double firstSize) {
-        List<LessonUnit> lessonUnits = lessonUnitRepository.findAll();
+        List<LessonUnit> lessonUnits = lessonUnitRepository.findByLessonIsEnabledTrue();
         List<LessonUnit> lessonBlocks = lessonUnitMapper.mapUnitsToBlocks(lessonUnits);
         List<LessonUnit> lessonBlocksOfTheCurrentSize = getLessonBlocksBySize(lessonBlocks, size, nextSize);
 
