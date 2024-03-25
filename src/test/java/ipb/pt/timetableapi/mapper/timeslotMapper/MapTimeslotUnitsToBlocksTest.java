@@ -12,12 +12,12 @@ import java.time.LocalTime;
 import java.util.List;
 
 @SpringBootTest
-public class MapTimeslotUnitsToTimeslotBlocksTest {
+public class MapTimeslotUnitsToBlocksTest {
     private final TimeslotMapper timeslotMapper;
     private final TimeslotMock timeslotMock;
 
     @Autowired
-    public MapTimeslotUnitsToTimeslotBlocksTest(TimeslotMapper timeslotMapper, TimeslotMock timeslotMock) {
+    public MapTimeslotUnitsToBlocksTest(TimeslotMapper timeslotMapper, TimeslotMock timeslotMock) {
         this.timeslotMapper = timeslotMapper;
         this.timeslotMock = timeslotMock;
     }
@@ -57,7 +57,7 @@ public class MapTimeslotUnitsToTimeslotBlocksTest {
         // 30 | MON - 22:30 -> 23:00 |             └> 23:00
 
         List<Timeslot> timeslotUnits = timeslotMock.getTimeslotUnits(15, 1L, "08:00");
-        List<Timeslot> timeslotBlocks = timeslotMapper.mapTimeslotsUnitsToTimeslotsBlocks(timeslotUnits, 5);
+        List<Timeslot> timeslotBlocks = timeslotMapper.mapTimeslotsUnitsToBlocks(timeslotUnits, 5);
 
         Assert.isTrue(timeslotBlocks.size() == 3,
                 "The list should have 3 elements");
@@ -125,7 +125,7 @@ public class MapTimeslotUnitsToTimeslotBlocksTest {
         // 30 | MON - 22:30 -> 23:00 |              └> 23:00
 
         List<Timeslot> timeslotUnits = timeslotMock.getTimeslotUnits(15, 1L, "08:00");
-        List<Timeslot> timeslotBlocks = timeslotMapper.mapTimeslotsUnitsToTimeslotsBlocks(timeslotUnits, 2.5);
+        List<Timeslot> timeslotBlocks = timeslotMapper.mapTimeslotsUnitsToBlocks(timeslotUnits, 2.5);
 
         Assert.isTrue(timeslotBlocks.size() == 6,
                 "The list should have 6 elements");
@@ -200,7 +200,7 @@ public class MapTimeslotUnitsToTimeslotBlocksTest {
         //    |                      |             └> 13:00
 
         List<Timeslot> timeslotUnits = timeslotMock.getTimeslotUnits(0.5, 1L, "08:00");
-        List<Timeslot> timeslotBlocks = timeslotMapper.mapTimeslotsUnitsToTimeslotsBlocks(timeslotUnits, 5);
+        List<Timeslot> timeslotBlocks = timeslotMapper.mapTimeslotsUnitsToBlocks(timeslotUnits, 5);
 
         Assert.isTrue(timeslotBlocks.size() == 1,
                 "The list should have 1 element");
@@ -225,7 +225,7 @@ public class MapTimeslotUnitsToTimeslotBlocksTest {
         //    |                      |             └> 10:30
 
         List<Timeslot> timeslotUnits = timeslotMock.getTimeslotUnits(0.5, 1L, "08:00");
-        List<Timeslot> timeslotBlocks = timeslotMapper.mapTimeslotsUnitsToTimeslotsBlocks(timeslotUnits, 2.5);
+        List<Timeslot> timeslotBlocks = timeslotMapper.mapTimeslotsUnitsToBlocks(timeslotUnits, 2.5);
 
         Assert.isTrue(timeslotBlocks.size() == 1,
                 "The list should have 1 element");
@@ -238,24 +238,5 @@ public class MapTimeslotUnitsToTimeslotBlocksTest {
 
         Assert.isTrue(timeslotBlocks.get(0).getEndTime().equals(LocalTime.parse("10:30")),
                 "The first element should have the end time 10:30");
-    }
-
-    @Test
-    public void testUpdateTimeslotCheckingSnap() {
-        // id | input                | output
-        //    |                      | MON - 08:00 ┐
-        // 02 | MON - 08:30 -> 09:00 |             │
-        //    |                      |             │
-        //    |                      |             │
-        //    |                      |             │
-        //    |                      |             │
-        //    |                      |             │
-        //    |                      |             │
-        //    |                      |             │
-        //    |                      |             └> 13:00
-
-        // Arrange
-        // Act
-        // Assert
     }
 }

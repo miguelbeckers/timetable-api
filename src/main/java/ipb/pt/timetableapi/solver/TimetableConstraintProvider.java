@@ -6,7 +6,6 @@ import org.optaplanner.core.api.score.stream.ConstraintFactory;
 import org.optaplanner.core.api.score.stream.ConstraintProvider;
 import org.optaplanner.core.api.score.stream.Joiners;
 
-import java.time.Duration;
 import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
@@ -22,21 +21,19 @@ public class TimetableConstraintProvider implements ConstraintProvider {
                 // Hard constraints
                 roomConflict(constraintFactory),
                 professorConflict(constraintFactory),
-//                courseLessonsConflict(constraintFactory),
-//                studentGroupConflict(constraintFactory),
-//
-//                resourceAvailability(constraintFactory),
-//                classroomAvailability(constraintFactory),
-//                professorAvailability(constraintFactory),
-//                courseAvailability(constraintFactory),
+                courseLessonsConflict(constraintFactory),
+                studentGroupConflict(constraintFactory),
 
-//                lessonBlockSizeEfficiency(constraintFactory),
-//                lessonTimeEfficiency(constraintFactory),
-//                lessonClassroomEfficiency(constraintFactory),
+                resourceAvailability(constraintFactory),
+                classroomAvailability(constraintFactory),
+                professorAvailability(constraintFactory),
+                courseAvailability(constraintFactory),
+
+                lessonBlockSizeEfficiency(constraintFactory),
+                lessonClassroomEfficiency(constraintFactory),
 
                 // Soft constraints
-//                professorTimeEfficiency(constraintFactory),
-//                startTimeBetweenTenAndTwo(constraintFactory),
+                startTimeBetweenTenAndTwo(constraintFactory),
         };
     }
 
@@ -230,21 +227,6 @@ public class TimetableConstraintProvider implements ConstraintProvider {
                 .filter((lessonUnit1, lessonUnit2) -> !lessonUnit1.getClassroom().equals(lessonUnit2.getClassroom())
                         && lessonUnit1.getTimeslot().getDayOfWeek().equals(lessonUnit2.getTimeslot().getDayOfWeek()))
                 .penalizeConfigurable(TimetableConstraintConstant.LESSON_CLASSROOM_EFFICIENCY);
-    }
-
-    private Constraint professorTimeEfficiency(ConstraintFactory constraintFactory) {
-        return constraintFactory
-                .forEach(LessonUnit.class)
-                .join(LessonUnit.class, Joiners.equal((lessonUnit) -> lessonUnit.getLesson().getProfessors()))
-                .filter((lessonUnit1, lessonUnit2) -> {
-                    Duration between = Duration.between(
-                            lessonUnit1.getTimeslot().getEndTime(),
-                            lessonUnit2.getTimeslot().getStartTime()
-                    );
-
-                    return !between.isNegative() && between.compareTo(Duration.ofMinutes(30)) <= 0;
-                })
-                .rewardConfigurable(TimetableConstraintConstant.PROFESSOR_TIME_EFFICIENCY);
     }
 
     private Constraint startTimeBetweenTenAndTwo(ConstraintFactory constraintFactory) {

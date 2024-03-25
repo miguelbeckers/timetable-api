@@ -68,6 +68,6 @@ public class TimeslotService {
 
     public List<Timeslot> getTimeslotsBySize(double blockSize) {
         List<Timeslot> timeslots = timeslotRepository.findAll();
-        return timeslotMapper.mapTimeslotsUnitsToTimeslotsBlocks(timeslots, blockSize);
+        return timeslotMapper.mapTimeslotsUnitsToBlocks(timeslots, blockSize);
     }
 }

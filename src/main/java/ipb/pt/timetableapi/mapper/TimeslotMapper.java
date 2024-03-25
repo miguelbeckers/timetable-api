@@ -5,27 +5,28 @@ import ipb.pt.timetableapi.solver.SizeConstant;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 
 @Component
 public class TimeslotMapper {
-    public List<Timeslot> mapTimeslotsUnitsToTimeslotsBlocks(List<Timeslot> timeslots, double blockSize) {
-        List<Timeslot> newTimeslots = new ArrayList<>();
+    public List<Timeslot> mapTimeslotsUnitsToBlocks(List<Timeslot> timeslotBlocks, double blockSize) {
+        List<Timeslot> timeslotsBlocks = new ArrayList<>();
         int timeslotUnits = (int) (blockSize / SizeConstant.SIZE_0_5);
         int duration = (int) (blockSize / SizeConstant.SIZE_0_5 * SizeConstant.UNIT_DURATION);
 
-        for (int i = 0; i < timeslots.size(); i += timeslotUnits) {
-            Timeslot timeslot = timeslots.get(i);
-            Timeslot newTimeslot = new Timeslot();
-            newTimeslot.setId(timeslot.getId());
-            newTimeslot.setDayOfWeek(timeslot.getDayOfWeek());
-            newTimeslot.setStartTime(timeslot.getStartTime());
-            newTimeslot.setEndTime(timeslot.getStartTime().plusMinutes(duration));
-
-            newTimeslots.add(newTimeslot);
+        for (int i = 0; i < timeslotBlocks.size(); i += timeslotUnits) {
+            Timeslot timeslot = timeslotBlocks.get(i);
+            Timeslot timeslotBlock = new Timeslot();
+            timeslotBlock.setId(timeslot.getId());
+            timeslotBlock.setDayOfWeek(timeslot.getDayOfWeek());
+            timeslotBlock.setStartTime(timeslot.getStartTime());
+            timeslotBlock.setEndTime(timeslot.getStartTime().plusMinutes(duration));
+            timeslotsBlocks.add(timeslotBlock);
         }
 
-        return newTimeslots;
+        return timeslotsBlocks;
     }
 
     public double getTimeslotSize(double blockSize) {
@@ -34,79 +35,25 @@ public class TimeslotMapper {
                 : SizeConstant.SIZE_5;
     }
 
-    // Quero receber uma lista de indisponibilidades e mapear elas
-    // para isso é preciso dar snap.
-    // Por exemplo, essa indisponibilidade poderia ser assim:
+    public List<Timeslot> mapUnavailabilityUnitsToBlocks(
+            List<Timeslot> timeslotBlocks, List<Timeslot> unavailabilityUnits) {
+        HashMap<Long, Timeslot> unavailabilityBlocksHashMap = new HashMap<>();
 
-    // id | input                | output
-    // 01 | MON - 08:00 -> 08:30 |  MON - 08:00 ┐
-    // 02 | MON - 08:30 -> 09:00 |              │
-    // 03 | MON - 09:00 -> 09:30 |              │
-    // 04 | MON - 09:30 -> 10:00 |              │
-    // 05 | MON - 10:00 -> 10:30 |              └> 10:30
-    // 06 | MON - 10:30 -> 11:00 |  MON - 10:30 ┐
-    // 07 | MON - 11:00 -> 11:30 |              │
-    // 08 | MON - 11:30 -> 12:00 |              │
-    // 09 | MON - 12:00 -> 12:30 |              │
-    // 10 | MON - 12:30 -> 13:00 |              └> 13:00
-    // 11 | MON - 13:00 -> 13:30 |  MON - 13:00 ┐
-    // 12 | MON - 13:30 -> 14:00 |              │
-    // 13 | MON - 14:00 -> 14:30 |              │
-    // 14 | MON - 14:30 -> 15:00 |              │
-    // 15 | MON - 15:00 -> 15:30 |              └> 15:30
-    // 16 | MON - 15:30 -> 16:00 |  MON - 15:30 ┐
-    // 17 | MON - 16:00 -> 16:30 |              │
-    // 18 | MON - 16:30 -> 17:00 |              │
-    // 19 | MON - 17:00 -> 17:30 |              │
-    // 20 | MON - 17:30 -> 18:00 |              └> 18:00
-    // 21 | MON - 18:00 -> 18:30 |  MON - 18:00 ┐
-    // 22 | MON - 18:30 -> 19:00 |              │
-    // 23 | MON - 19:00 -> 19:30 |              │
-    // 24 | MON - 19:30 -> 20:00 |              │
-    // 25 | MON - 20:00 -> 20:30 |              └> 20:30
-    // 26 | MON - 20:30 -> 21:00 |  MON - 20:30 ┐
-    // 27 | MON - 21:00 -> 21:30 |              │
-    // 28 | MON - 21:30 -> 22:00 |              │
-    // 29 | MON - 22:00 -> 22:30 |              │
-    // 30 | MON - 22:30 -> 23:00 |              └> 23:00
+        for (Timeslot unavailabilityUnit : unavailabilityUnits) {
+            for (Timeslot timeslotBlock : timeslotBlocks) {
+                if (unavailabilityUnit.getDayOfWeek().equals(timeslotBlock.getDayOfWeek())
+                        && (unavailabilityUnit.getStartTime().isAfter(timeslotBlock.getStartTime())
+                        || unavailabilityUnit.getStartTime().equals(timeslotBlock.getStartTime()))
+                        && (unavailabilityUnit.getEndTime().isBefore(timeslotBlock.getEndTime()))
+                        || unavailabilityUnit.getEndTime().equals(timeslotBlock.getEndTime())) {
+                    unavailabilityBlocksHashMap.put(timeslotBlock.getId(), timeslotBlock);
+                }
+            }
+        }
 
-    // nesse caso, não há problemas, pode se usar a conversão normal de unidade para bloco
-    // no entanto, se começar no meio de um bloco, ainda assim os blocos deveriam ser os mesmos
-    // por exemplo, para as entradas abaixo, todos os blocos devem ser retornados
+        List<Timeslot> unavailabilityBlocks = new ArrayList<>(unavailabilityBlocksHashMap.values().stream().toList());
+        unavailabilityBlocks.sort(Comparator.comparing(Timeslot::getStartTime));
 
-    // id | input                | output
-    // 01 |                      |  MON - 08:00 ┐
-    // 02 |                      |              │
-    // 03 |                      |              │
-    // 04 | MON - 09:30 -> 10:00 |              │
-    // 05 |                      |              └> 10:30
-    // 06 | MON - 10:30 -> 11:00 |  MON - 10:30 ┐
-    // 07 | MON - 11:00 -> 11:30 |              │
-    // 08 | MON - 11:30 -> 12:00 |              │
-    // 09 | MON - 12:00 -> 12:30 |              │
-    // 10 | MON - 12:30 -> 13:00 |              └> 13:00
-    // 11 | MON - 13:00 -> 13:30 |  MON - 13:00 ┐
-    // 12 |                      |              │
-    // 13 |                      |              │
-    // 14 |                      |              │
-    // 15 |                      |              └> 15:30
-    // 16 | MON - 15:30 -> 16:00 |  MON - 15:30 ┐
-    // 17 | MON - 16:00 -> 16:30 |              │
-    // 18 | MON - 16:30 -> 17:00 |              │
-    // 19 | MON - 17:00 -> 17:30 |              │
-    // 20 |                      |              └> 18:00
-    // 21 | MON - 18:00 -> 18:30 |  MON - 18:00 ┐
-    // 22 |                      |              │
-    // 23 |                      |              │
-    // 24 |                      |              │
-    // 25 |                      |              └> 20:30
-    // 26 |                      |  MON - 20:30 ┐
-    // 27 |                      |              │
-    // 28 |                      |              │
-    // 29 |                      |              │
-    // 30 | MON - 22:30 -> 23:00 |              └> 23:00
-
-    // como fazer isso?
-    // criar uma função que retorne o bloco da unidade com snap
-    // adicionar esses blocos a uma lista desconsiderando os repetidos.
+        return unavailabilityBlocks;
+    }
 }
