@@ -44,9 +44,9 @@ public class LessonController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("enable-with-timeslot-and-classroom")
+    @PutMapping("enable-with-timeslot")
     public ResponseEntity<Object> enableWithTimeslotAndClassroom() {
-        return ResponseEntity.ok().body(lessonService.enableLessonsWithTimeslotAndClassroom());
+        return ResponseEntity.ok().body(lessonService.enableLessonsWithTimeslot());
     }
 
     @PutMapping("enable-all")

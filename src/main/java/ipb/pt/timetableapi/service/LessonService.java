@@ -70,7 +70,7 @@ public class LessonService {
         return lessonConverter.toDto(lessonRepository.saveAll(lessons));
     }
 
-    public List<LessonDto> enableLessonsWithTimeslotAndClassroom() {
+    public List<LessonDto> enableLessonsWithTimeslot() {
         List<Lesson> enabledLessons = new ArrayList<>();
         List<LessonUnit> lessonUnits = lessonUnitRepository.findAll();
         HashMap<Lesson, List<LessonUnit>> lessonUnitsMap = new HashMap<>();
