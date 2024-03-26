@@ -8,10 +8,10 @@ import org.optaplanner.core.api.score.stream.Joiners;
 
 import java.time.LocalTime;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
-import static org.optaplanner.core.api.score.stream.ConstraintCollectors.count;
-//import static org.optaplanner.core.api.score.stream.ConstraintCollectors.toList;
+import static org.optaplanner.core.api.score.stream.ConstraintCollectors.toList;
 
 public class TimetableConstraintProvider implements ConstraintProvider {
 
@@ -29,11 +29,22 @@ public class TimetableConstraintProvider implements ConstraintProvider {
                 professorAvailability(constraintFactory),
                 courseAvailability(constraintFactory),
 
-                lessonBlockSizeEfficiency(constraintFactory),
+                lessonBlockEfficiency(constraintFactory),
                 lessonClassroomEfficiency(constraintFactory),
 
                 // Soft constraints
-                startTimeBetweenTenAndTwo(constraintFactory),
+                startTimeEfficiencyHigh(constraintFactory),
+                startTimeEfficiencyMediumHigh(constraintFactory),
+                startTimeEfficiencyMedium(constraintFactory),
+                startTimeEfficiencyMediumLow(constraintFactory),
+                startTimeEfficiencyLow(constraintFactory),
+
+                endTimeEfficiencyHigh(constraintFactory),
+                endTimeEfficiencyMediumHigh(constraintFactory),
+                endTimeEfficiencyMedium(constraintFactory),
+                endTimeEfficiencyMediumLow(constraintFactory),
+                endTimeEfficiencyLow(constraintFactory)
+
         };
     }
 
@@ -186,39 +197,43 @@ public class TimetableConstraintProvider implements ConstraintProvider {
         return hasUnavailabilityConflict(conflictingLessonUnit, courseUnavailability);
     }
 
-    private Constraint lessonBlockSizeEfficiency(ConstraintFactory constraintFactory) {
+    private Constraint lessonBlockEfficiency(ConstraintFactory constraintFactory) {
         return constraintFactory
                 .forEach(LessonUnit.class)
-                .groupBy(LessonUnit::getLesson, lessonUnit -> lessonUnit.getTimeslot().getDayOfWeek(), count())
-                .filter((lesson, dayOfWeek, count) -> (
-                        count != lesson.getHoursPerWeek()
-                                * SizeConstant._0_5 / lesson.getBlocks()))
-                .penalizeConfigurable(TimetableConstraintConstant.LESSON_BLOCK_SIZE_EFFICIENCY);
+                .groupBy(LessonUnit::getLesson, lessonUnit -> lessonUnit.getTimeslot().getDayOfWeek(), toList())
+                .filter((lesson, dayOfWeek, lessonUnitsInDay) -> checkIfTheUnitsAreConsecutive(lessonUnitsInDay))
+                .penalizeConfigurable(TimetableConstraintConstant.LESSON_BLOCK_EFFICIENCY);
     }
 
-//    private Constraint lessonTimeEfficiency(ConstraintFactory constraintFactory) {
-//        return constraintFactory
-//                .forEach(LessonUnit.class)
-//                .join(LessonUnit.class, Joiners.equal(LessonUnit::getLesson))
-//                .filter(TimetableConstraintProvider::checkIfTheLessonsAreOutOfTheBlock)
-//                .penalizeConfigurable(TimetableConstraintConstant.LESSON_TIME_EFFICIENCY);
-//    }
-//
-//    public static boolean checkIfTheLessonsAreOutOfTheBlock(LessonUnit lessonUnit1, LessonUnit lessonUnit2) {
-//        if (lessonUnit1.getTimeslot().getDayOfWeek() != lessonUnit2.getTimeslot().getDayOfWeek())
-//            return false;
-//
-//        int blocks = lessonUnit1.getLesson().getBlocks();
-//        double hoursPerWeek = lessonUnit1.getLesson().getHoursPerWeek();
-//        double unitsPerDay = hoursPerWeek * TimeslotConstant.SIZE_0_5 / blocks;
-//
-//        long minutesBetween = Duration.between(
-//                lessonUnit1.getTimeslot().getStartTime(),
-//                lessonUnit2.getTimeslot().getStartTime()
-//        ).abs().toMinutes();
-//
-//        return minutesBetween > unitsPerDay * TimeslotConstant.UNIT;
-//    }
+    private boolean checkIfTheUnitsAreConsecutive(List<LessonUnit> lessonUnitsInDay) {
+        lessonUnitsInDay.sort(Comparator.comparing(unit -> unit.getTimeslot().getId()));
+
+        for (int i = 0; i < lessonUnitsInDay.size(); i++) {
+            LessonUnit currentLesson = lessonUnitsInDay.get(i);
+
+            if (i > 0) {
+                LessonUnit previousLesson = lessonUnitsInDay.get(i - 1);
+                if (isAdjacentTimeslot(currentLesson, previousLesson)) {
+                    return false;
+                }
+            }
+
+            if (i < lessonUnitsInDay.size() - 1) {
+                LessonUnit nextLesson = lessonUnitsInDay.get(i + 1);
+                if (isAdjacentTimeslot(currentLesson, nextLesson)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private boolean isAdjacentTimeslot(LessonUnit lesson1, LessonUnit lesson2) {
+        Long timeslotId1 = lesson1.getTimeslot().getId();
+        Long timeslotId2 = lesson2.getTimeslot().getId();
+        return Math.abs(timeslotId1 - timeslotId2) == 1;
+    }
 
     private Constraint lessonClassroomEfficiency(ConstraintFactory constraintFactory) {
         return constraintFactory
@@ -229,16 +244,140 @@ public class TimetableConstraintProvider implements ConstraintProvider {
                 .penalizeConfigurable(TimetableConstraintConstant.LESSON_CLASSROOM_EFFICIENCY);
     }
 
-    private Constraint startTimeBetweenTenAndTwo(ConstraintFactory constraintFactory) {
+    private Constraint startTimeEfficiencyHigh(ConstraintFactory constraintFactory) {
         return constraintFactory
                 .forEach(LessonUnit.class)
-                .filter(lessonUnit -> isStartTimeBetweenTenAndTwo(lessonUnit.getTimeslot().getStartTime()))
-                .rewardConfigurable(TimetableConstraintConstant.START_TIME_BETWEEN_TEN_AND_TWO);
+                .filter(lessonUnit -> startTimeHigh(lessonUnit.getTimeslot()))
+                .rewardConfigurable(TimetableConstraintConstant.START_TIME_HIGH);
     }
 
-    private boolean isStartTimeBetweenTenAndTwo(LocalTime startTime) {
-        return startTime != null
-                && startTime.isAfter(LocalTime.of(10, 0))
-                && startTime.isBefore(LocalTime.of(14, 0));
+    private Constraint startTimeEfficiencyMediumHigh(ConstraintFactory constraintFactory) {
+        return constraintFactory
+                .forEach(LessonUnit.class)
+                .filter(lessonUnit -> startTimeMediumHigh(lessonUnit.getTimeslot()))
+                .rewardConfigurable(TimetableConstraintConstant.START_TIME_MEDIUM_HIGH);
+    }
+
+    private Constraint startTimeEfficiencyMedium(ConstraintFactory constraintFactory) {
+        return constraintFactory
+                .forEach(LessonUnit.class)
+                .filter(lessonUnit -> startTimeMedium(lessonUnit.getTimeslot()))
+                .rewardConfigurable(TimetableConstraintConstant.START_TIME_MEDIUM);
+    }
+
+    private Constraint startTimeEfficiencyMediumLow(ConstraintFactory constraintFactory) {
+        return constraintFactory
+                .forEach(LessonUnit.class)
+                .filter(lessonUnit -> startTimeMediumLow(lessonUnit.getTimeslot()))
+                .rewardConfigurable(TimetableConstraintConstant.START_TIME_MEDIUM_LOW);
+    }
+
+    private Constraint startTimeEfficiencyLow(ConstraintFactory constraintFactory) {
+        return constraintFactory
+                .forEach(LessonUnit.class)
+                .filter(lessonUnit -> startTimeLow(lessonUnit.getTimeslot()))
+                .rewardConfigurable(TimetableConstraintConstant.START_TIME_LOW);
+    }
+
+    private Constraint endTimeEfficiencyHigh(ConstraintFactory constraintFactory) {
+        return constraintFactory
+                .forEach(LessonUnit.class)
+                .filter(lessonUnit -> endTimeHigh(lessonUnit.getTimeslot()))
+                .rewardConfigurable(TimetableConstraintConstant.END_TIME_HIGH);
+    }
+
+    private Constraint endTimeEfficiencyMediumHigh(ConstraintFactory constraintFactory) {
+        return constraintFactory
+                .forEach(LessonUnit.class)
+                .filter(lessonUnit -> endTimeMediumHigh(lessonUnit.getTimeslot()))
+                .rewardConfigurable(TimetableConstraintConstant.END_TIME_MEDIUM_HIGH);
+    }
+
+    private Constraint endTimeEfficiencyMedium(ConstraintFactory constraintFactory) {
+        return constraintFactory
+                .forEach(LessonUnit.class)
+                .filter(lessonUnit -> endTimeMedium(lessonUnit.getTimeslot()))
+                .rewardConfigurable(TimetableConstraintConstant.END_TIME_MEDIUM);
+    }
+
+    private Constraint endTimeEfficiencyMediumLow(ConstraintFactory constraintFactory) {
+        return constraintFactory
+                .forEach(LessonUnit.class)
+                .filter(lessonUnit -> endTimeMediumLow(lessonUnit.getTimeslot()))
+                .rewardConfigurable(TimetableConstraintConstant.END_TIME_MEDIUM_LOW);
+    }
+
+    private Constraint endTimeEfficiencyLow(ConstraintFactory constraintFactory) {
+        return constraintFactory
+                .forEach(LessonUnit.class)
+                .filter(lessonUnit -> endTimeLow(lessonUnit.getTimeslot()))
+                .rewardConfigurable(TimetableConstraintConstant.END_TIME_LOW);
+    }
+
+    private boolean startTimeHigh(Timeslot timeslot) {
+        return timeslot != null
+                && timeslot.getStartTime().isAfter(LocalTime.parse("13:00"))
+                && timeslot.getStartTime().isAfter(LocalTime.parse("18:00"));
+    }
+
+    private boolean startTimeMediumHigh(Timeslot timeslot) {
+        return timeslot != null
+                && timeslot.getStartTime().isAfter(LocalTime.parse("13:30"))
+                && timeslot.getStartTime().isAfter(LocalTime.parse("14:00"))
+                && timeslot.getStartTime().isAfter(LocalTime.parse("18:30"))
+                && timeslot.getStartTime().isAfter(LocalTime.parse("19:00"));
+    }
+
+    private boolean startTimeMedium(Timeslot timeslot) {
+        return timeslot != null
+                && timeslot.getStartTime().isAfter(LocalTime.parse("14:30"))
+                && timeslot.getStartTime().isAfter(LocalTime.parse("15:00"))
+                && timeslot.getStartTime().isAfter(LocalTime.parse("19:30"))
+                && timeslot.getStartTime().isAfter(LocalTime.parse("20:00"));
+    }
+
+    private boolean startTimeMediumLow(Timeslot timeslot) {
+        return timeslot != null
+                && timeslot.getStartTime().isAfter(LocalTime.parse("15:30"))
+                && timeslot.getStartTime().isAfter(LocalTime.parse("16:00"))
+                && timeslot.getStartTime().isAfter(LocalTime.parse("20:30"))
+                && timeslot.getStartTime().isAfter(LocalTime.parse("21:00"));
+    }
+
+    private boolean startTimeLow(Timeslot timeslot) {
+        return timeslot != null
+                && timeslot.getStartTime().isAfter(LocalTime.parse("16:30"))
+                && timeslot.getStartTime().isAfter(LocalTime.parse("17:00"))
+                && timeslot.getStartTime().isAfter(LocalTime.parse("21:30"))
+                && timeslot.getStartTime().isAfter(LocalTime.parse("22:00"));
+    }
+
+    private boolean endTimeHigh(Timeslot timeslot) {
+        return timeslot != null
+                && timeslot.getEndTime().isAfter(LocalTime.parse("13:00"));
+    }
+
+    private boolean endTimeMediumHigh(Timeslot timeslot) {
+        return timeslot != null
+                && timeslot.getEndTime().isAfter(LocalTime.parse("12:00"))
+                && timeslot.getEndTime().isAfter(LocalTime.parse("12:30"));
+    }
+
+    private boolean endTimeMedium(Timeslot timeslot) {
+        return timeslot != null
+                && timeslot.getEndTime().isAfter(LocalTime.parse("11:00"))
+                && timeslot.getEndTime().isAfter(LocalTime.parse("11:30"));
+    }
+
+    private boolean endTimeMediumLow(Timeslot timeslot) {
+        return timeslot != null
+                && timeslot.getEndTime().isAfter(LocalTime.parse("10:00"))
+                && timeslot.getEndTime().isAfter(LocalTime.parse("10:30"));
+    }
+
+    private boolean endTimeLow(Timeslot timeslot) {
+        return timeslot != null
+                && timeslot.getEndTime().isAfter(LocalTime.parse("09:00"))
+                && timeslot.getEndTime().isAfter(LocalTime.parse("09:30"));
     }
 }

@@ -9,9 +9,17 @@ public class TimetableConstraintConstant {
     public static final String CLASSROOM_AVAILABILITY = "Classroom availability";
     public static final String PROFESSOR_AVAILABILITY = "Professor availability";
     public static final String COURSE_AVAILABILITY = "Course availability";
-    public static final String LESSON_BLOCK_SIZE_EFFICIENCY = "Lesson block size efficiency";
-    public static final String LESSON_TIME_EFFICIENCY = "Lesson time efficiency";
+    public static final String LESSON_BLOCK_EFFICIENCY = "Lesson block efficiency";
     public static final String LESSON_CLASSROOM_EFFICIENCY = "Lesson classroom efficiency";
     public static final String PROFESSOR_TIME_EFFICIENCY = "Professor time efficiency";
-    public static final String START_TIME_BETWEEN_TEN_AND_TWO = "Start time between 10 and 14";
+    public static final String START_TIME_HIGH = "Start time high";
+    public static final String START_TIME_MEDIUM_HIGH = "Start time medium-high";
+    public static final String START_TIME_MEDIUM = "Start time medium";
+    public static final String START_TIME_MEDIUM_LOW = "Start time medium-low";
+    public static final String START_TIME_LOW = "Start time low";
+    public static final String END_TIME_HIGH = "End time high";
+    public static final String END_TIME_MEDIUM_HIGH = "End time medium-high";
+    public static final String END_TIME_MEDIUM = "End time medium";
+    public static final String END_TIME_MEDIUM_LOW = "End time medium-low";
+    public static final String END_TIME_LOW = "End time low";
 }

@@ -32,7 +32,7 @@ public class TimeslotMapper {
     public double getTimeslotSize(double blockSize) {
         return blockSize <= SizeConstant._0_5 ? SizeConstant._0_5
                 : blockSize <= SizeConstant._2_5 ? SizeConstant._2_5
-                : SizeConstant._5;
+                : SizeConstant._5_0;
     }
 
     public List<Timeslot> mapUnavailabilityUnitsToBlocks(List<Timeslot> timeslotBlocks, List<Timeslot> unavailabilityUnits) {

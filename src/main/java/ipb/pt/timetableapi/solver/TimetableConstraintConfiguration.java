@@ -31,11 +31,8 @@ public class TimetableConstraintConfiguration {
     @ConstraintWeight(TimetableConstraintConstant.COURSE_AVAILABILITY)
     private HardSoftScore courseAvailability = HardSoftScore.ofHard(1);
 
-    @ConstraintWeight(TimetableConstraintConstant.LESSON_BLOCK_SIZE_EFFICIENCY)
-    private HardSoftScore lessonBlockSizeEfficiency = HardSoftScore.ofHard(1);
-
-    @ConstraintWeight(TimetableConstraintConstant.LESSON_TIME_EFFICIENCY)
-    private HardSoftScore lessonTimeEfficiency = HardSoftScore.ofHard(1);
+    @ConstraintWeight(TimetableConstraintConstant.LESSON_BLOCK_EFFICIENCY)
+    private HardSoftScore lessonBlockEfficiency = HardSoftScore.ofHard(1);
 
     @ConstraintWeight(TimetableConstraintConstant.LESSON_CLASSROOM_EFFICIENCY)
     private HardSoftScore lessonClassroomEfficiency = HardSoftScore.ofHard(1);
@@ -43,6 +40,33 @@ public class TimetableConstraintConfiguration {
     @ConstraintWeight(TimetableConstraintConstant.PROFESSOR_TIME_EFFICIENCY)
     private HardSoftScore professorTimeEfficiency = HardSoftScore.ofSoft(1);
 
-    @ConstraintWeight(TimetableConstraintConstant.START_TIME_BETWEEN_TEN_AND_TWO)
-    private HardSoftScore startTimeBetweenTenAndTwo = HardSoftScore.ofSoft(1);
+    @ConstraintWeight(TimetableConstraintConstant.START_TIME_HIGH)
+    private HardSoftScore startTimeEfficiencyHigh = HardSoftScore.ofSoft(5);
+
+    @ConstraintWeight(TimetableConstraintConstant.START_TIME_MEDIUM_HIGH)
+    private HardSoftScore startTimeEfficiencyMediumHigh = HardSoftScore.ofSoft(4);
+
+    @ConstraintWeight(TimetableConstraintConstant.START_TIME_MEDIUM)
+    private HardSoftScore startTimeEfficiencyMedium = HardSoftScore.ofSoft(3);
+
+    @ConstraintWeight(TimetableConstraintConstant.START_TIME_MEDIUM_LOW)
+    private HardSoftScore startTimeEfficiencyMediumLow = HardSoftScore.ofSoft(2);
+
+    @ConstraintWeight(TimetableConstraintConstant.START_TIME_LOW)
+    private HardSoftScore startTimeEfficiencyLow = HardSoftScore.ofSoft(1);
+
+    @ConstraintWeight(TimetableConstraintConstant.END_TIME_HIGH)
+    private HardSoftScore endTimeEfficiencyHigh = HardSoftScore.ofSoft(5);
+
+    @ConstraintWeight(TimetableConstraintConstant.END_TIME_MEDIUM_HIGH)
+    private HardSoftScore endTimeEfficiencyMediumHigh = HardSoftScore.ofSoft(4);
+
+    @ConstraintWeight(TimetableConstraintConstant.END_TIME_MEDIUM)
+    private HardSoftScore endTimeEfficiencyMedium = HardSoftScore.ofSoft(3);
+
+    @ConstraintWeight(TimetableConstraintConstant.END_TIME_MEDIUM_LOW)
+    private HardSoftScore endTimeEfficiencyMediumLow = HardSoftScore.ofSoft(2);
+
+    @ConstraintWeight(TimetableConstraintConstant.END_TIME_LOW)
+    private HardSoftScore endTimeEfficiencyLow = HardSoftScore.ofSoft(1);
 }
