@@ -6,6 +6,7 @@ import ipb.pt.timetableapi.repository.ClassroomRepository;
 import ipb.pt.timetableapi.repository.LessonUnitRepository;
 import ipb.pt.timetableapi.repository.TimeslotRepository;
 import ipb.pt.timetableapi.solver.TimetableConstraintConfiguration;
+import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
 import org.optaplanner.core.api.solver.SolverJob;
 import org.optaplanner.core.api.solver.SolverManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,9 +103,10 @@ public class TimetableService {
         List<Classroom> classrooms = classroomRepository.findAll();
         List<Timeslot> timeslots = timeslotRepository.findAll();
         List<LessonUnit> lessonBlocks = lessonUnitService.getLessonBlocksBySize(SizeConstant._0_5, null, null);
+        TimetableConstraintConfiguration config = new TimetableConstraintConfiguration();
 
         lessonBlocks.forEach(lessonUnit -> lessonUnit.setIsPinned(false));
-        SolverJob<Timetable, UUID> solverJob = solve(lessonBlocks, timeslots, classrooms);
+        SolverJob<Timetable, UUID> solverJob = solve(lessonBlocks, timeslots, classrooms, config);
         Timetable solution = solverJob.getFinalBestSolution();
 
         lessonUnitRepository.saveAll(solution.getLessonUnits());
@@ -114,10 +116,9 @@ public class TimetableService {
     private SolverJob<Timetable, UUID> solve(
             List<LessonUnit> lessonUnits,
             List<Timeslot> timeslots,
-            List<Classroom> classrooms
+            List<Classroom> classrooms,
+            TimetableConstraintConfiguration timetableConfiguration
     ) {
-        TimetableConstraintConfiguration timetableConfiguration = new TimetableConstraintConfiguration();
-
         Timetable problem = new Timetable();
         problem.setClassrooms(classrooms);
         problem.setTimeslots(timeslots);
@@ -264,11 +265,12 @@ public class TimetableService {
 
             List<Timeslot> timeslots = timeslotService.getTimeslotsBySize(size);
             List<LessonUnit> lessonBlocks = lessonUnitService.getLessonBlocksBySize(size, nextSize, firstSize);
+            TimetableConstraintConfiguration config = getConfig(size);
 
             if (size != SizeConstant._5_0) timeslotService.updateUnavailability(timeslots, lessonBlocks);
-//            else lessonBlocks.forEach(lessonUnit -> lessonUnit.setIsPinned(false));
+            else lessonBlocks.forEach(lessonUnit -> lessonUnit.setIsPinned(false));
 
-            SolverJob<Timetable, UUID> solverJob = solve(lessonBlocks, timeslots, classrooms);
+            SolverJob<Timetable, UUID> solverJob = solve(lessonBlocks, timeslots, classrooms, config);
             Timetable solution = solverJob.getFinalBestSolution();
 
             List<LessonUnit> lessonUnits = lessonUnitService.divideLessonBlocksIntoUnits(solution.getLessonUnits());
@@ -279,5 +281,29 @@ public class TimetableService {
         }
 
         return solutionScores;
+    }
+
+    private TimetableConstraintConfiguration getConfig(double size) {
+        TimetableConstraintConfiguration config = new TimetableConstraintConfiguration();
+
+        if (size >= SizeConstant._2_5) {
+            config.setLessonBlockEfficiency(HardSoftScore.ofHard(0));
+            config.setLessonClassroomEfficiency(HardSoftScore.ofHard(0));
+
+            config.setStartTimeEfficiencyMediumHigh(HardSoftScore.ofSoft(0));
+            config.setStartTimeEfficiencyMedium(HardSoftScore.ofSoft(0));
+            config.setStartTimeEfficiencyLow(HardSoftScore.ofSoft(0));
+
+            config.setEndTimeEfficiencyMediumHigh(HardSoftScore.ofSoft(0));
+            config.setEndTimeEfficiencyMedium(HardSoftScore.ofSoft(0));
+            config.setEndTimeEfficiencyLow(HardSoftScore.ofSoft(0));
+        }
+
+        if (size >= SizeConstant._5_0){
+            config.setStartTimeEfficiencyMediumLow(HardSoftScore.ofSoft(0));
+            config.setEndTimeEfficiencyMediumLow(HardSoftScore.ofSoft(0));
+        }
+
+        return config;
     }
 }
