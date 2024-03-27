@@ -13,14 +13,14 @@ public class TimetableConstraintConstant {
     public static final String LESSON_BLOCK_EFFICIENCY = "Lesson block efficiency";
     public static final String LESSON_CLASSROOM_EFFICIENCY = "Lesson classroom efficiency";
     public static final String PROFESSOR_TIME_EFFICIENCY = "Professor time efficiency";
-    public static final String START_TIME_HIGH = "Start time high";
-    public static final String START_TIME_MEDIUM_HIGH = "Start time medium-high";
-    public static final String START_TIME_MEDIUM = "Start time medium";
-    public static final String START_TIME_MEDIUM_LOW = "Start time medium-low";
-    public static final String START_TIME_LOW = "Start time low";
-    public static final String END_TIME_HIGH = "End time high";
-    public static final String END_TIME_MEDIUM_HIGH = "End time medium-high";
-    public static final String END_TIME_MEDIUM = "End time medium";
-    public static final String END_TIME_MEDIUM_LOW = "End time medium-low";
-    public static final String END_TIME_LOW = "End time low";
+    public static final String START_TIME_HIGH_ZONE = "Start time high zone";
+    public static final String START_TIME_MEDIUM_HIGH_ZONE = "Start time medium-high zone";
+    public static final String START_TIME_MEDIUM_ZONE = "Start time medium zone";
+    public static final String START_TIME_MEDIUM_LOW_ZONE = "Start time medium-low zone";
+    public static final String START_TIME_LOW_ZONE = "Start time low zone";
+    public static final String END_TIME_HIGH_ZONE = "End time high zone";
+    public static final String END_TIME_MEDIUM_HIGH_ZONE = "End time medium-high zone";
+    public static final String END_TIME_MEDIUM_ZONE = "End time medium zone";
+    public static final String END_TIME_MEDIUM_LOW_ZONE = "End time medium-low zone";
+    public static final String END_TIME_LOW_ZONE = "End time low zone";
 }
