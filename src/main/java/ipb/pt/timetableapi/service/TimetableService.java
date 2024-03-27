@@ -265,12 +265,12 @@ public class TimetableService {
 
             List<Timeslot> timeslots = timeslotService.getTimeslotsBySize(size);
             List<LessonUnit> lessonBlocks = lessonUnitService.getLessonBlocksBySize(size, nextSize, firstSize);
-            TimetableConstraintConfiguration config = getConfig(size);
+            TimetableConstraintConfiguration configuration = getTimetableConstraintConfiguration(size);
 
             if (size != SizeConstant._5_0) timeslotService.updateUnavailability(timeslots, lessonBlocks);
             else lessonBlocks.forEach(lessonUnit -> lessonUnit.setIsPinned(false));
 
-            SolverJob<Timetable, UUID> solverJob = solve(lessonBlocks, timeslots, classrooms, config);
+            SolverJob<Timetable, UUID> solverJob = solve(lessonBlocks, timeslots, classrooms, configuration);
             Timetable solution = solverJob.getFinalBestSolution();
 
             List<LessonUnit> lessonUnits = lessonUnitService.divideLessonBlocksIntoUnits(solution.getLessonUnits());
@@ -283,27 +283,27 @@ public class TimetableService {
         return solutionScores;
     }
 
-    private TimetableConstraintConfiguration getConfig(double size) {
-        TimetableConstraintConfiguration config = new TimetableConstraintConfiguration();
+    private TimetableConstraintConfiguration getTimetableConstraintConfiguration(double size) {
+        TimetableConstraintConfiguration configuration = new TimetableConstraintConfiguration();
 
         if (size >= SizeConstant._2_5) {
-            config.setLessonBlockEfficiency(HardSoftScore.ofHard(0));
-            config.setLessonClassroomEfficiency(HardSoftScore.ofHard(0));
+            configuration.setLessonBlockEfficiency(HardSoftScore.ofHard(0));
+            configuration.setLessonClassroomEfficiency(HardSoftScore.ofHard(0));
 
-            config.setStartTimeEfficiencyMediumHigh(HardSoftScore.ofSoft(0));
-            config.setStartTimeEfficiencyMedium(HardSoftScore.ofSoft(0));
-            config.setStartTimeEfficiencyLow(HardSoftScore.ofSoft(0));
+            configuration.setStartTimeEfficiencyMediumHigh(HardSoftScore.ofSoft(0));
+            configuration.setStartTimeEfficiencyMedium(HardSoftScore.ofSoft(0));
+            configuration.setStartTimeEfficiencyLow(HardSoftScore.ofSoft(0));
 
-            config.setEndTimeEfficiencyMediumHigh(HardSoftScore.ofSoft(0));
-            config.setEndTimeEfficiencyMedium(HardSoftScore.ofSoft(0));
-            config.setEndTimeEfficiencyLow(HardSoftScore.ofSoft(0));
+            configuration.setEndTimeEfficiencyMediumHigh(HardSoftScore.ofSoft(0));
+            configuration.setEndTimeEfficiencyMedium(HardSoftScore.ofSoft(0));
+            configuration.setEndTimeEfficiencyLow(HardSoftScore.ofSoft(0));
         }
 
         if (size >= SizeConstant._5_0){
-            config.setStartTimeEfficiencyMediumLow(HardSoftScore.ofSoft(0));
-            config.setEndTimeEfficiencyMediumLow(HardSoftScore.ofSoft(0));
+            configuration.setStartTimeEfficiencyMediumLow(HardSoftScore.ofSoft(0));
+            configuration.setEndTimeEfficiencyMediumLow(HardSoftScore.ofSoft(0));
         }
 
-        return config;
+        return configuration;
     }
 }

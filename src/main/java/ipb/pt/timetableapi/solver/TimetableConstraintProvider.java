@@ -5,6 +5,8 @@ import org.optaplanner.core.api.score.stream.Constraint;
 import org.optaplanner.core.api.score.stream.ConstraintFactory;
 import org.optaplanner.core.api.score.stream.ConstraintProvider;
 import org.optaplanner.core.api.score.stream.Joiners;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalTime;
 import java.util.Collections;
@@ -19,10 +21,11 @@ public class TimetableConstraintProvider implements ConstraintProvider {
     public Constraint[] defineConstraints(ConstraintFactory constraintFactory) {
         return new Constraint[]{
                 // Hard constraints
-                roomConflict(constraintFactory),
+                unassignedLessons(constraintFactory),
+                classroomConflict(constraintFactory),
                 professorConflict(constraintFactory),
-                courseLessonsConflict(constraintFactory),
-                studentGroupConflict(constraintFactory),
+//                courseLessonsConflict(constraintFactory),
+//                studentGroupConflict(constraintFactory),
 
                 resourceAvailability(constraintFactory),
                 classroomAvailability(constraintFactory),
@@ -48,14 +51,21 @@ public class TimetableConstraintProvider implements ConstraintProvider {
         };
     }
 
-    private Constraint roomConflict(ConstraintFactory constraintFactory) {
+    private Constraint unassignedLessons(ConstraintFactory constraintFactory) {
+        return constraintFactory
+                .forEach(LessonUnit.class)
+                .filter(lessonUnit -> lessonUnit.getTimeslot() == null || lessonUnit.getClassroom() == null)
+                .penalizeConfigurable(TimetableConstraintConstant.UNASSIGNED_LESSON);
+    }
+
+    private Constraint classroomConflict(ConstraintFactory constraintFactory) {
         return constraintFactory
                 .forEach(LessonUnit.class)
                 .join(LessonUnit.class,
                         Joiners.equal(LessonUnit::getTimeslot),
                         Joiners.equal(LessonUnit::getClassroom),
                         Joiners.lessThan(LessonUnit::getId))
-                .penalizeConfigurable(TimetableConstraintConstant.ROOM_CONFLICT);
+                .penalizeConfigurable(TimetableConstraintConstant.CLASSROOM_CONFLICT);
     }
 
     private Constraint professorConflict(ConstraintFactory constraintFactory) {
@@ -72,35 +82,156 @@ public class TimetableConstraintProvider implements ConstraintProvider {
                 .penalizeConfigurable(TimetableConstraintConstant.PROFESSOR_CONFLICT);
     }
 
+    /*
+
+     */
+
+    private void test() {
+        Course course = new Course();
+        course.setId(1L);
+
+        Period period1 = new Period();
+        period1.setId(1L);
+        period1.setAbbreviation("1");
+
+        Period period2 = new Period();
+        period2.setId(2L);
+        period2.setAbbreviation("2");
+
+        SubjectCourse subjectCourse1 = new SubjectCourse();
+        subjectCourse1.setId(1L);
+        subjectCourse1.setCourse(course);
+        subjectCourse1.setPeriod(period1);
+
+        SubjectCourse subjectCourse2 = new SubjectCourse();
+        subjectCourse2.setId(2L);
+        subjectCourse2.setCourse(course);
+        subjectCourse2.setPeriod(period2);
+
+        Lesson lesson1 = new Lesson();
+        lesson1.setId(1L);
+        lesson1.setSubjectCourse(subjectCourse1);
+
+        Lesson lesson2 = new Lesson();
+        lesson2.setId(2L);
+        lesson2.setSubjectCourse(subjectCourse2);
+
+        LessonUnit lessonUnit1 = new LessonUnit();
+        lessonUnit1.setId(1L);
+        lessonUnit1.setLesson(lesson1);
+
+        LessonUnit lessonUnit2 = new LessonUnit();
+        lessonUnit2.setId(2L);
+        lessonUnit2.setLesson(lesson2);
+
+        // se duas lesson units estiverem no mesmo timeslot, forem do mesmo curso, se uma estiver em período par e outra em período ímpar, retorne 1.
+    }
+
+    private void test2() {
+        Course course = new Course();
+        course.setId(1L);
+
+        Period period = new Period();
+        period.setId(1L);
+        period.setAbbreviation("1");
+
+        SubjectCourse subjectCourse1 = new SubjectCourse();
+        subjectCourse1.setId(1L);
+        subjectCourse1.setCourse(course);
+        subjectCourse1.setPeriod(period);
+
+        SubjectCourse subjectCourse2 = new SubjectCourse();
+        subjectCourse2.setId(2L);
+        subjectCourse2.setCourse(course);
+        subjectCourse2.setPeriod(period);
+
+        SubjectType subjectType = new SubjectType();
+        subjectType.setId(1L);
+
+        Lesson lesson1 = new Lesson();
+        lesson1.setId(1L);
+        lesson1.setSubjectCourse(subjectCourse1);
+        lesson1.setSubjectType(subjectType);
+        lesson1.setName("a");
+
+        Lesson lesson2 = new Lesson();
+        lesson2.setId(2L);
+        lesson2.setSubjectCourse(subjectCourse2);
+        lesson2.setSubjectType(subjectType);
+        lesson2.setName("b");
+
+        LessonUnit lessonUnit1 = new LessonUnit();
+        lessonUnit1.setId(1L);
+        lessonUnit1.setLesson(lesson1);
+
+        LessonUnit lessonUnit2 = new LessonUnit();
+        lessonUnit2.setId(2L);
+        lessonUnit2.setLesson(lesson2);
+
+        // se duas lesson units estiverem no mesmo timeslot, forem do mesmo curso e do mesmo período, verifica:
+
+        // se o group count de uma delas for 0, retorne 1
+
+        // se o group count de ambas for diferente de zero, verifica:
+
+        // se o group count for igual, e o group number for igual, retorne 1
+
+        // se o group count for diferente, aplica a fórmula
+    }
+
+
+    private boolean checkStudentGroupConflict(int s1, int s2) {
+
+        int primeiro = Math.min(s1, s2);
+        int segundo = Math.max(s1, s2);
+
+        for (int i = 1; i < s1; i++){
+            for (int j = 1; j < s2; j+= (s2 / s1) * i){
+                System.out.println("i: " + i + " j: " + j + " result: " + (s2 / s1) * i);
+            }
+        }
+
+        return false;
+    }
+
     private Constraint courseLessonsConflict(ConstraintFactory constraintFactory) {
         return constraintFactory
                 .forEach(LessonUnit.class)
                 .join(LessonUnit.class, Joiners.equal(LessonUnit::getTimeslot))
-                .filter((lessonUnit1, lessonUnit2) -> (
-                        lessonUnit1.getLesson().getSubjectCourse().getCourse()
-                                .equals(lessonUnit2.getLesson().getSubjectCourse().getCourse())
-                                && !lessonUnit1.getLesson().equals(lessonUnit2.getLesson())
-                ))
+                .filter(this::checkCoursePeriodConflict)
                 .penalizeConfigurable(TimetableConstraintConstant.COURSE_LESSONS_CONFLICT);
     }
 
-    private Constraint studentGroupConflict(ConstraintFactory constraintFactory) {
-        return constraintFactory
-                .forEach(LessonUnit.class)
-//                .filter(lessonUnit -> lessonUnit.getLesson().getGroupCount() > 0)
-                .filter(lessonUnit -> lessonUnit.getLesson().getName() != null)
-                .join(LessonUnit.class,
-                        Joiners.equal(lessonUnit -> lessonUnit.getLesson().getSubjectCourse().getCourse()),
-                        Joiners.equal(lessonUnit -> lessonUnit.getLesson().getSubjectCourse().getPeriod()),
-                        Joiners.equal(lessonUnit -> lessonUnit.getLesson().getSubjectCourse().getSubject()),
-                        Joiners.equal(lessonUnit -> lessonUnit.getLesson().getSubjectType()))
-                .filter((lessonUnit1, lessonUnit2) -> (
-                        !lessonUnit1.getLesson().equals(lessonUnit2.getLesson())
-                                && lessonUnit1.getLesson().getName().equals(lessonUnit2.getLesson().getName())
-                                && lessonUnit1.getTimeslot().equals(lessonUnit2.getTimeslot())
-                ))
-                .penalizeConfigurable(TimetableConstraintConstant.STUDENT_GROUP_CONFLICT);
+    private Boolean checkCoursePeriodConflict(LessonUnit lessonUnit1, LessonUnit lessonUnit2) {
+        SubjectCourse subjectCourse1 = lessonUnit1.getLesson().getSubjectCourse();
+        SubjectCourse subjectCourse2 = lessonUnit2.getLesson().getSubjectCourse();
+
+        boolean isSameCourse = subjectCourse1.getCourse().equals(subjectCourse2.getCourse());
+
+        if (!isSameCourse) return false;
+
+        boolean areTheyOddPeriods = Integer.parseInt(subjectCourse1.getPeriod().getAbbreviation()) % 2 != 0
+                && Integer.parseInt(subjectCourse2.getPeriod().getAbbreviation()) % 2 != 0;
+        boolean areTheyEvenPeriods = Integer.parseInt(subjectCourse1.getPeriod().getAbbreviation()) % 2 == 0
+                && Integer.parseInt(subjectCourse2.getPeriod().getAbbreviation()) % 2 == 0;
+
+        return areTheyOddPeriods || areTheyEvenPeriods;
     }
+
+//    private Constraint studentGroupConflict(ConstraintFactory constraintFactory) {
+//        return constraintFactory
+//                .forEach(LessonUnit.class)
+//                .join(LessonUnit.class,
+//                        Joiners.equal(lessonUnit -> lessonUnit.getLesson().getSubjectCourse().getCourse()),
+//                        Joiners.equal(lessonUnit -> lessonUnit.getLesson().getSubjectCourse().getPeriod()),
+//                        Joiners.equal(lessonUnit -> lessonUnit.getLesson().getSubjectCourse().getSubject()),
+//                        Joiners.equal(lessonUnit -> lessonUnit.getLesson().getSubjectType()))
+//                .filter(this::checkStudentGroupConflict)
+//                .penalizeConfigurable(TimetableConstraintConstant.STUDENT_GROUP_CONFLICT);
+//    }
+
+//    private Boolean checkStudentGroupConflict(LessonUnit lessonUnit1, LessonUnit lessonUnit2) {
+//    }
 
     private Constraint resourceAvailability(ConstraintFactory constraintFactory) {
         return constraintFactory

@@ -7,8 +7,11 @@ import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
 @Data
 @org.optaplanner.core.api.domain.constraintweight.ConstraintConfiguration
 public class TimetableConstraintConfiguration {
-    @ConstraintWeight(TimetableConstraintConstant.ROOM_CONFLICT)
-    private HardSoftScore roomConflict = HardSoftScore.ofHard(1);
+    @ConstraintWeight(TimetableConstraintConstant.UNASSIGNED_LESSON)
+    private HardSoftScore unassignedLesson = HardSoftScore.ofHard(1);
+
+    @ConstraintWeight(TimetableConstraintConstant.CLASSROOM_CONFLICT)
+    private HardSoftScore classroomConflict = HardSoftScore.ofHard(1);
 
     @ConstraintWeight(TimetableConstraintConstant.PROFESSOR_CONFLICT)
     private HardSoftScore professorConflict = HardSoftScore.ofHard(1);
